@@ -1,0 +1,1784 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ميزان · التغذية والدايت</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#191F1D;--ink2:#3E4B46;--muted:#6E7A73;
+  --paper:#EFF2ED;--card:#fff;--line:#DCE2DA;--soft:#F6F8F4;
+  --brand:#24564A;--brand-soft:#DCEAE3;
+  --plus:#A9500F;--plus-soft:#F8E8DA;
+  --minus:#1C6E8C;--minus-soft:#DEEBF2;
+  --gold:#9C7C22;--danger:#8E2C0F;--r:12px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:'Tajawal',system-ui,'Segoe UI',sans-serif;font-size:15px;line-height:1.55;padding-bottom:50px}
+h1,h2,h3{margin:0;font-weight:800;letter-spacing:-.2px}
+button,input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
+
+header{position:sticky;top:0;z-index:50;background:var(--ink);color:#fff}
+.hbar{display:flex;align-items:center;gap:10px;padding:10px 14px;max-width:1020px;margin:0 auto}
+.logo{font-size:17px;font-weight:800}
+.logo small{display:block;font-size:11px;font-weight:400;color:#93A29C}
+.langbtn{margin-inline-start:auto;background:#2A3733;border:1px solid #3A4A45;color:#DCE7E2;border-radius:8px;padding:6px 11px;font-size:12.5px;font-weight:700;cursor:pointer}
+nav{display:flex;max-width:1020px;margin:0 auto;border-top:1px solid #2C3936;overflow-x:auto}
+nav button{flex:1;min-width:80px;background:none;border:0;border-bottom:2px solid transparent;color:#8A9A94;padding:9px 6px;cursor:pointer;font-size:12.5px;font-weight:700;white-space:nowrap}
+nav button.on{color:#fff;border-bottom-color:#4E9C84}
+
+main{max-width:1020px;margin:0 auto;padding:14px}
+.page{display:none}.page.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:15px;margin-bottom:12px}
+.card h2{font-size:15.5px;margin-bottom:3px}
+.sub{font-size:12.5px;color:var(--muted);margin-bottom:12px}
+.grid{display:grid;gap:10px}
+.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:620px){.g3,.g4{grid-template-columns:1fr 1fr}}
+@media(max-width:390px){.g2,.g3,.g4{grid-template-columns:1fr}}
+
+label.f{display:block}
+label.f>span{display:block;font-size:11.5px;color:var(--muted);margin-bottom:4px;font-weight:500}
+input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:9px;background:var(--soft);outline:none}
+input:focus,select:focus{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft);background:#fff}
+input[type=checkbox]{width:auto}
+.req{color:var(--plus);font-weight:700}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border-radius:9px;padding:9px 14px;border:1px solid var(--brand);background:var(--brand);color:#fff;font-weight:700;font-size:13.5px;cursor:pointer}
+.btn.ghost{background:#fff;color:var(--ink2);border-color:var(--line)}
+.btn.sm{padding:6px 10px;font-size:12.5px}
+.btn.warn{background:#fff;color:var(--plus);border-color:var(--plus-soft)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.pill{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px}
+.pill.food{background:var(--plus-soft);color:var(--plus)}
+.pill.ex{background:var(--minus-soft);color:var(--minus)}
+.note{font-size:12.5px;line-height:1.75;background:var(--brand-soft);color:#1D453B;padding:11px;border-radius:10px}
+.warnbox{font-size:12.5px;line-height:1.7;background:var(--plus-soft);color:var(--plus);padding:11px;border-radius:10px;margin-top:10px}
+.fine{font-size:11.5px;color:var(--muted);line-height:1.7}
+hr{border:0;border-top:1px dashed var(--line);margin:14px 0}
+
+/* شريط الحالة الحي */
+.live{position:sticky;top:88px;z-index:40;background:var(--ink);color:#fff;border-radius:11px;padding:10px 12px;margin-bottom:12px;display:flex;gap:8px;align-items:center;overflow-x:auto}
+.live .lv{flex:1;min-width:74px;text-align:center}
+.live .lv i{display:block;font-style:normal;font-size:10px;color:#8FA49D}
+.live .lv b{font-size:16px;font-weight:800}
+.live .dot{width:7px;height:7px;border-radius:50%;background:#4E9C84;flex:none}
+@keyframes fl{0%{background:#CFE6DA}100%{background:transparent}}
+.flash{animation:fl .5s ease-out}
+
+.stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(142px,1fr));gap:9px}
+.stat{background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:10px 11px}
+.stat .k{font-size:11px;color:var(--muted);margin-bottom:3px}
+.stat .v{font-size:19px;font-weight:800;line-height:1.15}
+.stat .v u{font-size:11px;font-weight:500;color:var(--muted);text-decoration:none;margin-inline-start:3px}
+.stat .h{font-size:10.5px;color:var(--muted);margin-top:2px;line-height:1.4}
+.stat.hi{background:var(--brand-soft);border-color:#BFD8CD}.stat.hi .v{color:var(--brand)}
+.stat.warn{background:var(--plus-soft);border-color:#EED7C2}.stat.warn .v{color:var(--plus)}
+
+.scale{margin-top:12px}
+.scale .track{display:flex;height:10px;border-radius:6px;overflow:hidden}
+.scale .track i{display:block;height:100%}
+.scale .ptr{position:relative;height:15px}
+.scale .ptr b{position:absolute;transform:translateX(50%);font-size:10.5px;font-weight:800}
+html[dir=ltr] .scale .ptr b{transform:translateX(-50%)}
+.scale .marks{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:3px}
+
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+.tablewrap table{width:100%;border-collapse:collapse;font-size:13px;background:#fff;min-width:660px}
+.tablewrap th{background:var(--soft);text-align:start;font-size:11.5px;color:var(--muted);font-weight:700;padding:8px 9px;white-space:nowrap;border-bottom:1px solid var(--line)}
+.tablewrap td{padding:8px 9px;border-bottom:1px solid var(--line)}
+.tablewrap tr:last-child td{border-bottom:0}
+tr.food{border-inline-start:3px solid var(--plus)}
+tr.ex{border-inline-start:3px solid var(--minus)}
+.iconbtn{background:none;border:0;cursor:pointer;color:var(--muted);padding:3px 5px;font-size:15px}
+.gh{background:var(--soft);font-weight:800;font-size:12px;color:var(--brand)}
+@media(max-width:720px){
+  .tablewrap table{min-width:0}.tablewrap thead{display:none}
+  .tablewrap tr{display:block;border-bottom:1px solid var(--line);padding:7px 4px}
+  .tablewrap td{display:flex;justify-content:space-between;gap:12px;border:0;padding:2px 8px}
+  .tablewrap td::before{content:attr(data-l);color:var(--muted);font-size:11.5px;font-weight:600}
+  .tablewrap td.name::before{display:none}.tablewrap td.name{font-weight:700;font-size:14.5px;padding-bottom:5px}
+  .tablewrap tr.gr{display:block;background:var(--soft);padding:6px 10px;font-weight:800;color:var(--brand);font-size:12.5px}
+  .tablewrap tr.gr td{display:block;padding:0}.tablewrap tr.gr td::before{display:none}
+}
+
+.day{border:1px solid var(--line);border-radius:11px;background:#fff;margin-bottom:8px;overflow:hidden}
+.day.open{border-color:var(--brand)}
+.dayhead{display:flex;align-items:center;gap:11px;padding:11px 13px;cursor:pointer}
+.daynum{width:42px;padding:4px 2px;flex:none;border-radius:9px;background:var(--soft);border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
+.daynum b{font-size:15px}.daynum i{font-size:8.5px;color:var(--muted);font-style:normal}
+.daynum u{font-size:8px;color:var(--muted);text-decoration:none}
+.dayinfo{flex:1;min-width:0}.dayinfo .t{font-weight:700;font-size:14px}.dayinfo .s{font-size:11.5px;color:var(--muted)}
+.splitbar{display:flex;height:26px;border-radius:8px;overflow:hidden;border:1px solid var(--line)}
+.splitbar i{display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:800;font-style:normal}
+.rowsum{display:flex;justify-content:space-between;font-size:12px;margin:7px 0 12px;font-weight:600}
+.mrow{display:flex;align-items:center;gap:9px;padding:8px 9px;border:1px solid var(--line);border-radius:10px;margin-bottom:7px;background:var(--soft)}
+.mrow .dotc{width:10px;height:10px;border-radius:3px;flex:none}
+.mrow .ml{flex:1;min-width:0}
+.mrow .ml b{display:block;font-size:13px}
+.mrow .ml span{font-size:11px;color:var(--muted)}
+.mrow select{width:96px;flex:none;padding:6px;font-size:12.5px;background:#fff}
+.mrow .mauto{width:96px;flex:none;text-align:center;font-weight:800;font-size:13px;color:var(--brand);background:var(--brand-soft);border-radius:8px;padding:5px 4px}
+.mrow .mauto i{display:block;font-style:normal;font-size:9px;font-weight:600}
+.autobtn{flex:none;width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--muted);cursor:pointer;font-size:14px}
+.autobtn.on{background:var(--brand);border-color:var(--brand);color:#fff}
+.d3{flex:1;display:flex;gap:5px;text-align:center;min-width:0;overflow-x:auto;overflow-y:hidden;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:2px}
+.d3::-webkit-scrollbar{display:none}
+.d3 .c i{overflow:visible}
+/* قائمة عناصر اليوم على البطاقة */
+/* جدول اليوم */
+.dwrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-top:1px solid var(--line)}
+.dwrap::-webkit-scrollbar{height:5px}
+.dwrap::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px}
+.dtab{width:100%;border-collapse:collapse;font-size:11.5px;background:#fff}
+.dtab th{background:var(--soft);color:var(--muted);font-weight:700;font-size:10px;padding:5px 7px;
+  white-space:nowrap;border-bottom:1px solid var(--line);text-align:center}
+.dtab td{padding:5px 7px;text-align:center;white-space:nowrap;border-bottom:1px solid #EFF2ED}
+.dtab .it{text-align:start;font-weight:600;min-width:130px;max-width:150px;overflow:hidden;
+  text-overflow:ellipsis;position:sticky;inset-inline-start:0;background:#fff;z-index:2}
+.dtab th.it{background:var(--soft);z-index:3}
+.dtab tr.sumr td{background:#F3F6F2;font-weight:800;border-top:1px solid var(--line)}
+.dtab tr.tgtr td{background:#FBFCFA;color:var(--muted);font-weight:700}
+.dtab tr.diffr td{background:var(--brand-soft);font-weight:800}
+.dtab tr.pctr td{background:#FBFCFA;font-weight:700;font-size:10.5px}
+.dtab .sumr .it,.dtab .tgtr .it,.dtab .diffr .it,.dtab .pctr .it{background:inherit}
+.dtab .tg{display:inline-flex;width:15px;height:15px;border-radius:4px;font-size:8.5px;font-weight:800;
+  color:#fff;align-items:center;justify-content:center;margin-inline-end:5px;vertical-align:middle}
+.dtab .rp{font-size:8px;font-weight:800;padding:0 4px;border-radius:20px;margin-inline-start:4px}
+.dhinfo{flex:1;min-width:0}
+.dhinfo b{display:block;font-size:14.5px}
+.dhinfo span{font-size:11px;color:var(--muted)}
+.daylist{border-top:1px solid var(--line);padding:6px 12px 9px}
+.dl{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:12.5px}
+.dl+.dl{border-top:1px dashed var(--line)}
+.dl .tg{width:16px;height:16px;flex:none;border-radius:5px;font-size:9px;font-weight:800;color:#fff;
+  display:flex;align-items:center;justify-content:center}
+.dl b{flex:1;min-width:0;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dl .q{flex:none;font-size:11px;color:var(--muted);font-weight:700}
+.dl .k{flex:none;font-weight:800;width:56px;text-align:end}
+.dl .rp{flex:none;font-size:8.5px;font-weight:800;padding:1px 5px;border-radius:20px}
+.dayempty{padding:8px 12px 10px;font-size:12px;color:var(--muted);border-top:1px dashed var(--line)}
+/* النافذة المنبثقة */
+.mask{position:fixed;inset:0;background:rgba(18,28,26,.5);z-index:80;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--paper);width:100%;max-width:700px;max-height:92vh;border-radius:16px 16px 0 0;
+  display:flex;flex-direction:column;overflow:hidden;box-shadow:0 -8px 30px rgba(0,0,0,.25)}
+@media(min-width:700px){.mask{align-items:center}.sheet{border-radius:16px;max-height:88vh}}
+.sheethead{padding:11px 14px;background:var(--ink);color:#fff;display:flex;align-items:center;gap:10px;flex:none}
+.sheethead b{font-size:15px}.sheethead span{font-size:11.5px;color:#93A29C}
+.sheethead button{margin-inline-start:auto;background:#2A3733;border:1px solid #3A4A45;color:#DCE7E2;
+  border-radius:8px;width:32px;height:32px;font-size:15px;cursor:pointer;flex:none}
+.sheetbody{overflow-y:auto;-webkit-overflow-scrolling:touch;flex:1}
+.sheetbody .daybody{border-top:0;padding:0 13px 16px}
+.grab{width:34px;height:4px;border-radius:3px;background:#3A4A45;margin:6px auto 0}
+.d3 .c{flex:0 0 auto;min-width:58px;padding:3px 6px;border-radius:8px;white-space:nowrap}
+.d3 .c i{display:block;font-style:normal;font-size:9.5px;color:var(--muted);white-space:nowrap;overflow:hidden}
+.d3 .c b{font-size:14.5px;font-weight:800}
+.d3 .mid{background:var(--soft);border:1px solid var(--line)}
+.d3 .mid b{font-size:16px}
+.chev{color:var(--muted);font-size:12px}.day.open .chev{transform:rotate(180deg)}
+.daybody{padding:0 13px 13px;border-top:1px solid var(--line)}
+.balance .bar{display:flex;height:26px;border-radius:8px;overflow:hidden;background:var(--soft);border:1px solid var(--line);margin-top:12px}
+.balance .bar i{display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;font-style:normal;overflow:hidden}
+.balance .lg{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin:5px 0 12px}
+.pickhead{display:flex;align-items:center;gap:8px;margin:14px 0 8px}
+.pickhead h3{font-size:13px}.pickhead .c{font-size:11.5px;color:var(--muted);margin-inline-start:auto}
+.pick{display:flex;align-items:center;gap:9px;padding:7px 9px;border:1px solid var(--line);border-radius:9px;margin-bottom:6px}
+.pick.sel{border-color:var(--brand);background:var(--brand-soft)}
+.pick input[type=checkbox]{width:18px;height:18px;flex:none;accent-color:var(--brand)}
+.pick .nm{flex:1;min-width:0}
+.pick .nm b{display:block;font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pick .nm span{font-size:11px;color:var(--muted)}
+.pick select{width:76px;flex:none;padding:5px 6px;font-size:12.5px}
+.pick .kc{width:64px;flex:none;text-align:end;font-weight:800;font-size:13.5px;color:var(--muted)}
+.pick{flex-wrap:wrap}
+.pick .rep{flex-basis:100%;display:flex;gap:5px;align-items:center;margin-top:7px;padding-top:7px;border-top:1px dashed var(--line)}
+.pick .rep>span{font-size:10.5px;color:var(--muted);flex:none}
+.pick .rep button{flex:1;border:1px solid var(--line);background:#fff;color:var(--ink2);border-radius:7px;padding:5px 4px;font-size:11.5px;font-weight:700;cursor:pointer}
+.pick .rep button.on{background:var(--minus);border-color:var(--minus);color:#fff}
+/* شريط ما تبقّى */
+.budget{position:sticky;top:0;z-index:6;background:var(--paper);padding:10px 0 9px;margin-bottom:2px}
+.gzrow{display:flex;gap:6px}
+.gz{flex:1;min-width:0;background:#fff;border:1px solid var(--line);border-radius:10px;padding:6px 4px;text-align:center}
+.gz i{display:block;font-style:normal;font-size:9.5px;color:var(--muted)}
+.gz b{font-size:15px;font-weight:800;line-height:1.2}
+.gz u{display:block;font-size:8.5px;color:var(--muted);text-decoration:none;margin-top:2px}
+.gz .gb{height:4px;border-radius:3px;background:var(--canvas);margin-top:4px;overflow:hidden}
+.gz .gb i{display:block;height:100%}
+.modes{display:flex;gap:6px;margin:10px 0}
+.modes button{flex:1;border:1px solid var(--line);background:#fff;color:var(--ink2);border-radius:9px;
+  padding:8px 4px;font-size:12.5px;font-weight:700;cursor:pointer}
+.modes button.on{background:var(--brand);border-color:var(--brand);color:#fff}
+.fit{font-style:normal;font-weight:800;font-size:10px;padding:1px 6px;border-radius:20px;white-space:nowrap}
+.mxb{flex:none;min-width:32px;height:32px;border:1px solid var(--brand);color:var(--brand);background:#fff;
+  border-radius:8px;font-size:13px;font-weight:800;cursor:pointer}
+.overbox{background:var(--plus-soft);border:1px solid #EED7C2;border-radius:11px;padding:11px;margin-bottom:4px}
+.overbox>b{display:block;font-size:13px;color:var(--plus);margin-bottom:8px}
+.overbox .obs{font-size:11px;color:var(--plus);margin:6px 0 4px;font-weight:700}
+.overbox .obrow{display:flex;gap:6px;flex-wrap:wrap}
+.overbox .obrow button{background:#fff;border:1px solid #E4CDB8;border-radius:8px;padding:5px 9px;
+  font-size:11.5px;font-weight:700;color:var(--ink2);cursor:pointer}
+.overbox .obrow button u{color:var(--plus);text-decoration:none;font-size:10.5px}
+.pick .nm span{display:block}
+.day.repw{background:#F2F7FA;border-color:#B8D2DF}
+.day.repm{background:#F6F2F8;border-color:#D2C0D6}
+.day .rbadge{font-size:9.5px;font-weight:800;padding:1px 6px;border-radius:20px;flex:none}
+.empty{color:var(--muted);font-size:13px;padding:10px 2px}
+
+/* حقل الثابت */
+.cf{border:1px solid var(--line);border-radius:10px;padding:9px 10px;background:var(--soft)}
+.cf>span{display:block;font-size:12px;font-weight:700;margin-bottom:6px}
+.cf .cin{display:flex;gap:6px}
+.cf select{flex:1.6;min-width:0;padding:7px 8px;font-size:12.5px;background:#fff}
+.cf input{flex:1;min-width:0;padding:7px 8px;font-size:13px;font-weight:700;background:#fff;text-align:center}
+
+.toast{position:fixed;bottom:16px;inset-inline-start:50%;transform:translateX(50%);background:var(--ink);color:#fff;padding:9px 16px;border-radius:20px;font-size:13px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .25s;z-index:99}
+html[dir=ltr] .toast{transform:translateX(-50%)}
+.toast.on{opacity:1}
+</style>
+</head>
+<body>
+<header>
+  <div class="hbar">
+    <div class="logo"><span id="appName">ميزان</span><small id="appTag">تغذية ودايت بالحساب</small></div>
+    <button class="langbtn" id="langBtn">English</button>
+  </div>
+  <nav id="nav"></nav>
+</header>
+<main>
+  <section class="page on" id="p-person"></section>
+  <section class="page" id="p-items"></section>
+  <section class="page" id="p-cycle"></section>
+  <section class="page" id="p-settings"></section>
+</main>
+<div id="modal"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ======================= تخزين آمن ======================= */
+const Store=(()=>{let mem={},ok=true;try{localStorage.setItem('__t','1');localStorage.removeItem('__t')}catch(e){ok=false}
+return{get:k=>{try{return ok?localStorage.getItem(k):(mem[k]??null)}catch(e){return mem[k]??null}},
+set:(k,v)=>{try{ok?localStorage.setItem(k,v):(mem[k]=v)}catch(e){mem[k]=v}},ok}})();
+const KEY='mizan-v5';
+
+/* ======================= الترجمة ======================= */
+const D={
+app:['ميزان','Mizan'],tag:['تغذية ودايت بالحساب','Nutrition & diet, calculated'],
+navPerson:['التقييم','Assessment'],navItems:['المدخلات','Entries'],navCycle:['الدورة','Cycle'],navSet:['الإعدادات','Settings'],
+basics:['البيانات الأساسية','Basic data'],
+basicsSub:['المطلوب فقط: العمر والطول والوزن. النتائج تتحدث فورًا مع كل رقم تكتبه.','Only age, height and weight are required. Results update live as you type.'],
+age:['العمر','Age'],years:['سنة','yr'],sex:['الجنس','Sex'],male:['ذكر','Male'],female:['أنثى','Female'],
+height:['الطول','Height'],weight:['الوزن الحالي','Current weight'],cm:['سم','cm'],kg:['كغ','kg'],
+optional:['بيانات اختيارية','Optional data'],
+optionalSub:['كل حقل تعبّئه يفتح نتائج إضافية. اتركه فارغًا إن لم يتوفر.','Each field you fill unlocks more results. Leave blank if unavailable.'],
+activity:['مستوى النشاط','Activity level'],waist:['محيط الخصر','Waist'],neck:['محيط الرقبة','Neck'],hip:['محيط الورك','Hip'],
+bodyfat:['نسبة الدهون المعروفة','Known body fat'],target:['الوزن المستهدف','Target weight'],
+goalRate:['معدل التغيير المستهدف','Target rate'],perWeek:['كغ/أسبوع','kg/wk'],name:['الاسم','Name'],
+a1:['خامل','Sedentary'],a2:['خفيف','Light'],a3:['متوسط','Moderate'],a4:['عالٍ','High'],a5:['شديد','Very high'],
+rBody:['تحليل الجسم','Body analysis'],bmi:['مؤشر كتلة الجسم','BMI'],
+wNormalMin:['أدنى وزن طبيعي','Min normal weight'],wNormalMax:['أعلى وزن طبيعي','Max normal weight'],
+wDiff:['الفرق عن المدى الطبيعي','Off normal range'],ideal:['الوزن المثالي','Ideal weight'],
+devine:['ديفاين','Devine'],robinson:['روبنسون','Robinson'],miller:['ميلر','Miller'],hamwi:['هاموي','Hamwi'],
+broca:['بروكا','Broca'],lemmens:['ليمنز','Lemmens'],avg4:['متوسط الصيغ','Formula average'],
+bf:['نسبة دهون الجسم','Body fat'],fatMass:['كتلة الدهون','Fat mass'],leanMass:['الكتلة الصافية','Lean mass'],
+whtr:['الخصر إلى الطول','Waist to height'],whr:['الخصر إلى الورك','Waist to hip'],
+water:['احتياج الماء اليومي','Daily water'],liter:['لتر','L'],
+rEnergy:['الطاقة والاحتياج','Energy & requirement'],bmr:['الأيض الأساسي','BMR'],tdee:['الاحتياج اليومي','TDEE'],
+kcal:['سعرة','kcal'],targetKcal:['سعرات الهدف','Target calories'],safeMin:['الحد الأدنى الآمن','Safe minimum'],
+macroP:['بروتين','Protein'],macroC:['كربوهيدرات','Carbs'],macroF:['دهون','Fat'],gram:['غ','g'],
+targetMacros:['المغذيات المستهدفة يوميًا','Daily macro targets'],
+rCurrent:['وضعك الحالي من الدورة','Your current intake'],curKcal:['متوسط الاستهلاك اليومي','Avg daily intake'],
+curBurn:['متوسط الحرق بالرياضة','Avg exercise burn'],curBalance:['الرصيد اليومي','Daily balance'],
+daysUsed:['أيام مسجّلة','Days logged'],curP:['متوسط البروتين','Avg protein'],curC:['متوسط الكربوهيدرات','Avg carbs'],
+curF:['متوسط الدهون','Avg fat'],curFib:['متوسط الألياف','Avg fibre'],curSug:['متوسط السكر','Avg sugar'],
+curNa:['متوسط الصوديوم','Avg sodium'],
+rFuture:['إلى أين يقودك هذا المعدل','Where this rate leads'],
+chgWeek:['خلال أسبوع','In a week'],chgMonth:['خلال شهر','In a month'],chg3:['خلال 3 أشهر','In 3 months'],
+chg6:['خلال 6 أشهر','In 6 months'],chg12:['خلال سنة','In a year'],wAfterYear:['وزنك بعد سنة','Weight after a year'],
+bmiAfterYear:['مؤشر الكتلة بعد سنة','BMI after a year'],toTarget:['للوصول للوزن المستهدف','To reach target'],
+days:['يوم','days'],noData:['لا توجد بيانات','No data'],never:['لن تصل بهذا المعدل','Not on this trend'],
+needBasics:['أدخل العمر والطول والوزن لتظهر النتائج.','Enter age, height and weight to see results.'],
+needCycle:['سجّل يومًا واحدًا في صفحة الدورة ليظهر تحليل استهلاكك الفعلي.','Log one day in the Cycle page to see your actual intake analysis.'],
+itemsTitle:['مدخلات الأغذية والرياضات','Food & exercise entries'],
+itemsSub:['كل مُدخل غذاء (يزيد) أو رياضة (تنقص). القيم لحصة واحدة.','Every entry is food (adds) or exercise (subtracts). Values are per one serving.'],
+type:['النوع','Type'],food:['غذاء','Food'],exercise:['رياضة','Exercise'],serving:['وصف الحصة','Serving'],
+servingPh:['مثال: رغيف 90 غ','e.g. one loaf 90 g'],namePh:['مثال: دجاج مشوي','e.g. grilled chicken'],
+cal:['سعرات','Calories'],prot:['بروتين','Protein'],carb:['كربوهيدرات','Carbs'],fat:['دهون','Fat'],
+fiber:['ألياف','Fibre'],sugar:['سكر','Sugar'],sodium:['صوديوم','Sodium'],mg:['ملغ','mg'],
+minutes:['الدقائق','Minutes'],met:['معامل MET','MET'],useMet:['احسب السعرات من MET ووزن جسمك','Compute calories from MET and body weight'],
+add:['إضافة','Add'],save:['حفظ','Save'],cancel:['إلغاء','Cancel'],edit:['تعديل','Edit'],del:['حذف','Delete'],
+search:['بحث','Search'],all:['الكل','All'],perServing:['لكل حصة','per serving'],
+seed:['استعادة القائمة الجاهزة','Restore starter list'],exportD:['تصدير','Export'],importD:['استيراد','Import'],
+confirmDel:['حذف هذا المُدخل؟','Delete this entry?'],reqName:['اكتب الاسم أولًا','Enter a name first'],
+addedMsg:['أُضيف المُدخل','Entry added'],savedMsg:['تم الحفظ','Saved'],updated:['تم التحديث','Updated'],
+cycleTitle:['دورة الأيام','Day cycle'],
+cycleSub:['اضغط أي يوم ليتوسع، ثم حدّد ما أكلته وما تمرّنته مع عدد الحصص.','Tap a day to expand, then tick what you ate and trained, with servings.'],
+cycleLen:['طول الدورة','Cycle length'],startDate:['تاريخ البداية','Start date'],clearDay:['مسح اليوم','Clear day'],
+dayW:['يوم','Day'],net:['الصافي','Net'],inK:['داخل','In'],outK:['خارج','Out'],
+vsTarget:['مقارنة بالهدف','vs target'],remain:['المتبقي','Remaining'],over:['تجاوز','Over'],
+showSel:['المحدد فقط','Selected only'],cycleTotal:['إجمالي الدورة','Cycle total'],cycleAvg:['متوسط اليوم','Daily average'],
+cycleChange:['تغيّر الوزن المتوقع','Projected change'],emptyLib:['لا توجد مدخلات.','No entries yet.'],
+nothingSel:['لم تحدد شيئًا في هذا اليوم.','Nothing selected for this day.'],items:['عنصر','items'],
+nothingLogged:['لم يُسجَّل شيء','nothing logged'],
+setTitle:['الثوابت والطرق العلمية','Constants & methods'],
+setSub:['لكل ثابت عدة قيم معتمدة من مراجع مختلفة. اختر من القائمة أو اكتب قيمتك في الحقل المجاور.','Each constant offers several published values. Pick one, or type your own in the field beside it.'],
+custom:['قيمة من عندي','My own value'],
+mBmr:['طريقة حساب الأيض الأساسي','BMR equation'],
+mIdeal:['طريقة الوزن المثالي','Ideal weight formula'],
+mBf:['طريقة قياس دهون الجسم','Body fat method'],
+autoM:['تلقائي (الأدق حسب قياساتك)','Auto (best available)'],
+navyM:['البحرية الأمريكية','US Navy'],deurM:['دورنبرغ','Deurenberg'],cunbae:['CUN-BAE'],ymca:['YMCA'],manualM:['مُدخل يدويًا','Entered manually'],
+needMeasure:['يحتاج الخصر والرقبة','needs waist & neck'],
+sBmrC:['معاملات المعادلة المخصصة','Custom equation coefficients'],
+cW:['معامل الوزن','Weight coeff.'],cH:['معامل الطول','Height coeff.'],cA:['معامل العمر','Age coeff.'],
+cM:['ثابت الذكر','Male const.'],cF:['ثابت الأنثى','Female const.'],
+sAct:['معاملات النشاط','Activity factors'],sAtw:['سعرات الغرام الواحد','Calories per gram'],
+sBmi:['حدود مؤشر كتلة الجسم','BMI thresholds'],
+bUnder:['حد النحافة','Underweight'],bNormal:['حد الوزن الطبيعي','Normal'],bOb1:['السمنة الأولى','Obesity I'],
+bOb2:['السمنة الثانية','Obesity II'],bOb3:['السمنة المفرطة','Obesity III'],
+sMisc:['ثوابت عامة','General constants'],kcalKg:['سعرات كيلو الدهن','kcal per kg of fat'],
+waterK:['ماء لكل كيلو (مل)','Water per kg (ml)'],minM:['أدنى سعرات آمنة ذكر','Safe min, male'],
+minF:['أدنى سعرات آمنة أنثى','Safe min, female'],protK:['بروتين لكل كيلو','Protein per kg'],
+fatPct:['نسبة الدهون من السعرات %','Fat share %'],whtrR:['حد خطر الخصر/الطول','Waist-to-height limit'],
+metC:['ثابت MET','MET constant'],metD:['مقسوم MET','MET divisor'],
+resetSet:['استعادة الأرقام الافتراضية','Restore defaults'],confirmReset:['استعادة كل الثوابت؟','Restore all constants?'],
+resetAll:['حذف كل شيء والبدء من جديد','Erase everything and restart'],
+confirmAll:['سيُحذف كل شيء ويُستبدل بالبيانات الجاهزة. متأكد؟','Everything will be erased and replaced with the sample data. Sure?'],
+storageOff:['التخزين المحلي غير متاح هنا، فالبيانات تبقى ما دامت الصفحة مفتوحة. احفظ نسخة بزر التصدير.','Local storage is unavailable here, so data lasts only while the page is open. Use Export to keep a copy.'],
+cUnder:['نحافة','Underweight'],cNormal:['وزن طبيعي','Normal weight'],cOver:['زيادة وزن','Overweight'],
+cOb1:['سمنة درجة أولى','Obesity I'],cOb2:['سمنة درجة ثانية','Obesity II'],cOb3:['سمنة مفرطة','Obesity III'],
+above:['فوق الطبيعي','above normal'],below:['تحت الطبيعي','below normal'],inside:['داخل الطبيعي','within normal'],
+loss:['نقص','loss'],gain:['زيادة','gain'],low:['منخفض','low'],high:['مرتفع','high'],okv:['طبيعي','normal'],
+gMeat:['لحوم ودواجن','Meat & poultry'],gFish:['أسماك','Fish'],gDairy:['بيض وألبان','Eggs & dairy'],
+gGrain:['حبوب وخبز','Grains & bread'],gLeg:['بقوليات','Legumes'],gVeg:['خضار وأطباق','Vegetables & dishes'],
+gFruit:['فواكه','Fruits'],gNut:['مكسرات وزيوت','Nuts & oils'],gFast:['وجبات سريعة','Fast food'],
+gSweet:['حلويات ومشروبات','Sweets & drinks'],gCardio:['كارديو','Cardio'],gGym:['نادي وقوة','Gym & strength'],
+gSport:['رياضات','Sports'],gDaily:['نشاط يومي','Daily activity'],
+curNeed:['احتياجك اليومي الحالي','Your current daily need'],
+maintain:['سعرات الثبات على وزنك','Calories to stay at this weight'],
+maintainMacros:['المغذيات المناسبة لوضعك الحالي','Macros suited to your current state'],
+compare:['مقارنة وضعك بالطبيعي','Your state vs normal'],
+compareSub:['كل سطر يقارن رقمك الحالي بالمدى المعتمد صحيًا.','Each row compares your number with the accepted healthy range.'],
+cMetric:['المؤشر','Metric'],cNow:['وضعك الحالي','Yours now'],cNorm:['المدى الطبيعي','Normal range'],cState:['الحالة','State'],
+sLow:['أقل من الطبيعي','Below normal'],sOk:['طبيعي','Normal'],sHigh:['أعلى من الطبيعي','Above normal'],
+mWaist:['محيط الخصر','Waist circumference'],mIntake:['السعرات المستهلكة','Calories consumed'],
+mProt:['البروتين اليومي','Daily protein'],mFib:['الألياف اليومية','Daily fibre'],
+mSug:['السكر اليومي','Daily sugar'],mNa:['الصوديوم اليومي','Daily sodium'],
+under:['أقل من','under'],between:['بين','between'],
+goalPick:['الوزن الذي تريد الوصول إليه','Weight you want to reach'],
+gNormalMax:['الحد الأعلى للوزن الطبيعي','Upper limit of normal weight'],
+gNormalMin:['الحد الأدنى للوزن الطبيعي','Lower limit of normal weight'],
+gIdeal:['الوزن المثالي','Ideal weight'],gManual:['وزن أحدده بنفسي','A weight I set myself'],
+deltaK:['فارق السعرات اليومي','Daily calorie gap'],
+deltaSub:['كم سعرة تنقص أو تزيد كل يوم عن احتياجك. كلما زاد الرقم قصرت الدورة.','How many calories to cut or add each day. The bigger the gap, the shorter the cycle.'],
+planTitle:['الدورة المحسوبة تلقائيًا','Auto-calculated cycle'],
+targetW:['الوزن المستهدف','Target weight'],weightDiff:['فرق الوزن','Weight difference'],
+cycleDays:['مدة الدورة','Cycle length'],endDate:['تاريخ الانتهاء','End date'],
+dailyPlan:['سعرات اليوم في الخطة','Daily calories in plan'],weekRate:['معدل التغيير الأسبوعي','Weekly rate'],
+dayTarget:['هدف اليوم','Day target'],dayLogged:['المسجّل','Logged'],dayDiff:['الفرق','Difference'],
+inRange:['وزنك مطابق للهدف المختار، لا حاجة لدورة. اختر هدفًا آخر لبناء دورة.','Your weight already matches the chosen goal, so no cycle is needed. Pick another goal to build one.'],
+needPerson:['أدخل العمر والطول والوزن في صفحة الشخص أولًا.','Enter age, height and weight in the Profile page first.'],
+clampWarn:['الفارق المطلوب ينزل بالسعرات تحت الحد الآمن، فتم تثبيتها عند الحد الآمن وطالت مدة الدورة تلقائيًا.','The requested gap would push intake below the safe floor, so it was held at the floor and the cycle was extended.'],
+showMore:['عرض أيام أكثر','Show more days'],
+plannedTotal:['إجمالي خطة الأيام المسجّلة','Planned total for logged days'],
+loggedTotal:['إجمالي المسجّل','Logged total'],
+aheadBy:['أنت متقدم على الخطة','Ahead of plan'],behindBy:['أنت متأخر عن الخطة','Behind plan'],
+kcalDay:['سعرة/يوم','kcal/day'],
+sBands:['النطاقات الصحية المعتمدة','Accepted healthy ranges'],
+bfMlo:['أدنى دهون صحية للذكر','Min healthy fat, male'],bfMhi:['أعلى دهون صحية للذكر','Max healthy fat, male'],
+bfFlo:['أدنى دهون صحية للأنثى','Min healthy fat, female'],bfFhi:['أعلى دهون صحية للأنثى','Max healthy fat, female'],
+waistM:['حد خصر الذكر','Waist limit, male'],waistF:['حد خصر الأنثى','Waist limit, female'],
+fibDay:['الألياف اليومية','Daily fibre'],sugPct:['حد السكر % من السعرات','Sugar limit % of calories'],
+naDay:['حد الصوديوم اليومي','Daily sodium limit'],deltaDefault:['الفارق الافتراضي','Default gap'],
+curKcalIn:['السعرات التي تستهلكها يوميًا حاليًا','Calories you currently eat daily'],
+curKcalHint:['اتركه فارغًا ليأخذ الرقم من أيام الدورة المسجّلة.','Leave blank to take the number from your logged cycle days.'],
+fromEntered:['من الرقم الذي أدخلته','from the number you entered'],
+fromCycle:['من أيام الدورة المسجّلة','from your logged days'],
+projTitle:['إلى أين يقودك استهلاكك الحالي','Where your current intake leads'],
+projSub:['لو بقيت على هذا الاستهلاك اليومي دون تغيير.','If you keep eating this much every day.'],
+dailyBal:['الرصيد اليومي','Daily balance'],
+toNormal:['للوصول إلى المدى الطبيعي','To reach normal range'],
+alreadyIn:['أنت داخله بالفعل','Already inside'],
+movingAway:['تتحرك بعيدًا عنه','Moving away from it'],
+autoDir:['اتجاه الدورة','Cycle direction'],
+needLoss:['جسمك يحتاج نقص وزن','Your body needs to lose'],
+needGain:['جسمك يحتاج زيادة وزن','Your body needs to gain'],
+deltaOnly:['أدخل عدد السعرات فقط. التطبيق يعرف وحده هل هي نقص أم زيادة، ويحسب عدد الأيام بالضبط حسب حاجة جسمك.','Enter the calorie number only. The app decides deficit or surplus by itself, and computes the exact number of days your body needs.'],
+willGain:['ستزيد','You will gain'],willLose:['ستنقص','You will lose'],stable:['وزنك ثابت تقريبًا','Roughly stable'],
+assessTitle:['تقييم الوضع الحالي','Current-state assessment'],
+assessSub:['صفحة مستقلة تصف حالتك اليوم قبل أي دورة أو خطة. لا تتأثر بما تسجّله في صفحة الدورة.','A standalone page describing where you stand today, before any cycle or plan. Nothing here is affected by what you log in the Cycle page.'],
+repScope:['يتكرر','Repeats'],repOnce:['هذا اليوم فقط','This day only'],
+repWeek:['هذا اليوم من كل أسبوع','This day every week'],repMonth:['هذا اليوم من كل شهر','This day every month'],
+rOnce:['مرة','Once'],rWeek:['كل أسبوع','Weekly'],rMonth:['كل شهر','Monthly'],
+badgeW:['أسبوعي','Weekly'],badgeM:['شهري','Monthly'],
+inherited:['موروث من يوم متكرر','Inherited from a repeating day'],
+showTitle:['ما يظهر في بيانات اليوم','What shows in the day panel'],
+showSub:['اختر الأرقام التي تريد رؤيتها داخل كل يوم في الدورة.','Pick the numbers you want to see inside each cycle day.'],
+fDiff:['الفرق عن هدف اليوم','Difference from day target'],fIn:['مجموع سعرات الغذاء','Food calories'],
+fOut:['مجموع سعرات الرياضة','Exercise calories'],fNet:['الصافي','Net'],
+fProt:['البروتين','Protein'],fCarb:['الكربوهيدرات','Carbs'],fFat:['الدهون','Fat'],
+fFib:['الألياف','Fibre'],fSug:['السكر','Sugar'],fNa:['الصوديوم','Sodium'],
+fTarget:['هدف اليوم','Day target'],fLogged:['المسجّل','Logged'],
+zTarget:['هدف','Target'],zLogged:['مسجّل','Logged'],zDiff:['الفرق','Diff'],
+zIn:['غذاء','Food'],zOut:['رياضة','Sport'],zProt:['بروتين','Prot'],zCarb:['كربو','Carb'],
+zFat:['دهون','Fat'],zFib:['ألياف','Fib'],zSug:['سكر','Sugar'],zNa:['صوديوم','Na'],
+showSub2:['هذه الأرقام تظهر مباشرة على بطاقة اليوم دون فتحه.','These numbers appear directly on the day card without opening it.'],
+splitTitle:['توزيع سعرات اليوم','Splitting the day calories'],
+splitSub:['وزّع السعرات على المغذيات. المجموع مقفل، فلا يمكن أن يزيد أو ينقص.','Distribute the calories across macros. The total is locked, so it can never be off.'],
+byPct:['بالنسب %','By percent %'],byGram:['بالغرامات','By grams'],
+autoFill:['يكمل الباقي','Fills the rest'],remains:['المتبقي','Remaining'],
+lockedOk:['المجموع مضبوط','Total is exact'],
+perDay:['في اليوم','per day'],ofTarget:['من الهدف','of target'],
+maxNow:['أقصى ما يمكنك الآن','Max available now'],
+tapEdit:['اضغط للتعديل','Tap to edit'],close:['إغلاق','Close'],
+emptyDay:['لم تحدد شيئًا لهذا اليوم','Nothing chosen for this day'],
+editDay:['تعديل اليوم','Edit day'],
+colItem:['العنصر','Item'],zKcal:['سعرات','kcal'],
+rowTotal:['المجموع','Total'],rowTarget:['المستهدف','Target'],rowDiff:['الفرق','Difference'],
+rowPct:['نسبة الإنجاز','Progress'],
+colsTitle:['أعمدة جدول اليوم','Day table columns'],
+rowsTitle:['أسطر المقارنة','Comparison rows'],
+colsSub:['اختر ما يظهر في جدول كل يوم من أعمدة وأسطر.','Choose which columns and rows appear in each day table.'],
+ofDay:['من هدف اليوم','of the day target']
+};
+let lang='ar';
+const t=k=>D[k]?D[k][lang==='ar'?0:1]:k;
+
+/* ======================= الافتراضيات ======================= */
+const DEF={
+  bmrMethod:'mifflin', idealMethod:'avg4', bfMethod:'auto',
+  bmr:{w:10,h:6.25,a:5,male:5,female:-161},
+  act:{a1:1.2,a2:1.375,a3:1.55,a4:1.725,a5:1.9},
+  atwater:{p:4,c:4,f:9},
+  bmiT:{under:18.5,normal:25,ob1:30,ob2:35,ob3:40},
+  misc:{kcalPerKgFat:7700,waterMlPerKg:35,minM:1500,minF:1200,proteinPerKg:1.8,fatPct:27,whtr:0.5,metC:3.5,metD:200},
+  band:{bfMlo:10,bfMhi:20,bfFlo:18,bfFhi:30,waistM:94,waistF:80,fiber:30,sugarPct:10,sodium:2300,delta:500},
+  show:{kcal:1,prot:1,carb:1,fat:1,fib:0,sug:0,na:0,rTotal:1,rTarget:1,rDiff:1,rPct:0}
+};
+
+/* خيارات كل ثابت: [القيمة, وصف المصدر عربي, إنجليزي] */
+const OPT={
+ 'act.a1':[[1.2,'هاريس التقليدي','Harris classic'],[1.25,'ADA'],[1.4,'منظمة الصحة PAL','WHO PAL'],[1.15,'مرضى راقدون','Bedridden']],
+ 'act.a2':[[1.375,'هاريس التقليدي','Harris classic'],[1.4,'ADA'],[1.6,'منظمة الصحة','WHO PAL'],[1.3,'محافظ','Conservative']],
+ 'act.a3':[[1.55,'هاريس التقليدي','Harris classic'],[1.6,'ADA'],[1.8,'منظمة الصحة','WHO PAL'],[1.5,'محافظ','Conservative']],
+ 'act.a4':[[1.725,'هاريس التقليدي','Harris classic'],[1.8,'ADA'],[2.0,'منظمة الصحة','WHO PAL'],[1.65,'محافظ','Conservative']],
+ 'act.a5':[[1.9,'هاريس التقليدي','Harris classic'],[2.0,'ADA'],[2.4,'رياضيون محترفون','Elite athletes'],[2.2,'عمل بدني شاق','Heavy labour']],
+ 'atwater.p':[[4,'أتواتر القياسي','Atwater standard'],[3.47,'بروتين نباتي','Plant protein'],[4.27,'بروتين حيواني','Animal protein']],
+ 'atwater.c':[[4,'أتواتر القياسي','Atwater standard'],[3.75,'كربوهيدرات متاحة','Available carbs'],[2,'ألياف','Fibre']],
+ 'atwater.f':[[9,'أتواتر القياسي','Atwater standard'],[8.37,'دهون نباتية','Plant fat'],[9.02,'دهون حيوانية','Animal fat']],
+ 'bmiT.under':[[18.5,'منظمة الصحة','WHO'],[18.5,'آسيوي','Asia-Pacific'],[20,'تصنيف صارم','Strict']],
+ 'bmiT.normal':[[25,'منظمة الصحة','WHO'],[23,'آسيوي','Asia-Pacific'],[24,'اليابان','Japan']],
+ 'bmiT.ob1':[[30,'منظمة الصحة','WHO'],[25,'آسيوي','Asia-Pacific'],[28,'الصين','China']],
+ 'bmiT.ob2':[[35,'منظمة الصحة','WHO'],[30,'آسيوي','Asia-Pacific']],
+ 'bmiT.ob3':[[40,'منظمة الصحة','WHO'],[35,'آسيوي','Asia-Pacific']],
+ 'misc.kcalPerKgFat':[[7700,'الشائع في التغذية','Common practice'],[7716,'3500 سعرة للرطل','3500 kcal per lb'],[9440,'دهن نقي 100%','Pure fat'],[7000,'تقدير محافظ','Conservative']],
+ 'misc.waterMlPerKg':[[35,'البالغ العادي','Average adult'],[30,'كبار السن','Older adults'],[40,'رياضي أو جو حار','Athlete or hot climate'],[33,'المعهد الأمريكي','IOM estimate']],
+ 'misc.minM':[[1500,'الحد المعتمد للذكر','Standard male floor'],[1800,'حد متحفظ','Conservative'],[1200,'إشراف طبي فقط','Medical supervision only']],
+ 'misc.minF':[[1200,'الحد المعتمد للأنثى','Standard female floor'],[1400,'حد متحفظ','Conservative'],[1000,'إشراف طبي فقط','Medical supervision only']],
+ 'misc.proteinPerKg':[[0.8,'الحد الأدنى RDA','RDA minimum'],[1.2,'نشاط خفيف','Light activity'],[1.6,'بناء عضل','Muscle building'],[1.8,'حمية مع رياضة','Diet with training'],[2.2,'حمية قاسية','Aggressive cut'],[2.5,'كمال أجسام','Bodybuilding']],
+ 'misc.fatPct':[[27,'متوازن','Balanced'],[20,'قليل الدهون','Low fat'],[30,'متوسطي','Mediterranean'],[35,'عالي الدهون','High fat'],[40,'كيتو معتدل','Moderate keto']],
+ 'misc.whtr':[[0.5,'القاعدة العالمية','Global rule'],[0.53,'حد الذكور','Male limit'],[0.49,'حد الإناث','Female limit'],[0.6,'خطر مرتفع','High risk']],
+ 'misc.metC':[[3.5,'استهلاك الأكسجين القياسي','Standard VO2'],[3.3,'تقدير منخفض','Lower estimate'],[3.7,'تقدير مرتفع','Higher estimate']],
+ 'misc.metD':[[200,'المعادلة القياسية','Standard equation'],[210,'تعديل محافظ','Conservative adjust']],
+ 'bmr.w':[[10,'ميفلين','Mifflin'],[13.397,'هاريس المنقح ذكر','Harris revised M'],[9.247,'هاريس المنقح أنثى','Harris revised F']],
+ 'bmr.h':[[6.25,'ميفلين','Mifflin'],[4.799,'هاريس المنقح ذكر','Harris revised M'],[3.098,'هاريس المنقح أنثى','Harris revised F']],
+ 'bmr.a':[[5,'ميفلين','Mifflin'],[5.677,'هاريس المنقح ذكر','Harris revised M'],[4.33,'هاريس المنقح أنثى','Harris revised F']],
+ 'bmr.male':[[5,'ميفلين','Mifflin'],[88.362,'هاريس المنقح','Harris revised'],[66.473,'هاريس الأصلي','Harris original']],
+ 'bmr.female':[[-161,'ميفلين','Mifflin'],[447.593,'هاريس المنقح','Harris revised'],[655.1,'هاريس الأصلي','Harris original']],
+ 'band.bfMlo':[[10,'الحد الرياضي','Athletic floor'],[8,'رياضي محترف','Elite athlete'],[12,'محافظ','Conservative']],
+ 'band.bfMhi':[[20,'المجلس الأمريكي للرياضة','ACE standard'],[25,'حد السمنة','Obesity threshold'],[18,'لياقة عالية','High fitness']],
+ 'band.bfFlo':[[18,'الحد الرياضي','Athletic floor'],[14,'رياضية محترفة','Elite athlete'],[21,'محافظ','Conservative']],
+ 'band.bfFhi':[[30,'المجلس الأمريكي للرياضة','ACE standard'],[32,'حد السمنة','Obesity threshold'],[25,'لياقة عالية','High fitness']],
+ 'band.waistM':[[94,'منظمة الصحة','WHO'],[102,'خطر مرتفع','High risk'],[90,'المعيار الآسيوي','Asian standard']],
+ 'band.waistF':[[80,'منظمة الصحة','WHO'],[88,'خطر مرتفع','High risk'],[85,'المعيار الآسيوي','Asian standard']],
+ 'band.fiber':[[30,'الموصى به للبالغين','Adult recommendation'],[25,'الحد الأدنى','Minimum'],[38,'للرجال','For men'],[21,'للنساء فوق 50','Women over 50']],
+ 'band.sugarPct':[[10,'منظمة الصحة','WHO limit'],[5,'الهدف المثالي','WHO ideal'],[25,'الحد الأقصى المتساهل','Loose maximum']],
+ 'band.sodium':[[2300,'إدارة الغذاء والدواء','FDA limit'],[2000,'منظمة الصحة','WHO limit'],[1500,'جمعية القلب','AHA ideal']],
+ 'band.delta':[[500,'نصف كيلو أسبوعيًا','Half kg per week'],[250,'ربع كيلو أسبوعيًا','Quarter kg per week'],[750,'ثلاثة أرباع كيلو','0.75 kg per week'],[1000,'كيلو أسبوعيًا','1 kg per week'],[300,'تدريجي','Gradual']]
+};
+const BMR_METHODS=[['mifflin','ميفلين–سانت جور (الأدق للعموم)','Mifflin–St Jeor (most accurate)'],
+ ['harrisRev','هاريس–بنديكت المنقّحة 1984','Harris–Benedict revised 1984'],
+ ['harrisOrig','هاريس–بنديكت الأصلية 1919','Harris–Benedict original 1919'],
+ ['katch','كاتش–مكاردل (يحتاج نسبة الدهون)','Katch–McArdle (needs body fat)'],
+ ['cunningham','كننغهام (رياضيون)','Cunningham (athletes)'],
+ ['owen','أوين','Owen'],['schofield','شوفيلد / منظمة الصحة','Schofield / WHO'],
+ ['custom','معادلة مخصصة بمعاملاتي','Custom coefficients']];
+const IDEAL_METHODS=[['avg4','متوسط الصيغ الأربع','Average of four formulas'],
+ ['devine','ديفاين 1974','Devine 1974'],['robinson','روبنسون 1983','Robinson 1983'],
+ ['miller','ميلر 1983','Miller 1983'],['hamwi','هاموي 1964','Hamwi 1964'],
+ ['broca','بروكا المعدّلة','Broca modified'],['lemmens','ليمنز (BMI 22)','Lemmens (BMI 22)']];
+const BF_METHODS=[['auto','تلقائي (الأدق حسب قياساتك)','Auto (best available)'],
+ ['navy','البحرية الأمريكية (خصر ورقبة)','US Navy (waist & neck)'],
+ ['deurenberg','دورنبرغ من مؤشر الكتلة','Deurenberg from BMI'],
+ ['cunbae','CUN-BAE (الأدق للسمنة)','CUN-BAE (best for obesity)'],
+ ['ymca','YMCA (خصر ووزن)','YMCA (waist & weight)']];
+
+/* ======================= بيانات جاهزة ======================= */
+const SAMPLE_PERSON={name:'أحمد',age:34,sex:'male',height:176,weight:92,act:'a2',waist:98,neck:40,hip:105,bf:'',curKcal:2900};
+const F=(g,n,ne,u,k,p,c,f,fb,sg,na)=>({t:'food',g,n,ne,u,k,p,c,f,fb,sg,na});
+const X=(g,n,ne,u,met,min)=>({t:'ex',g,n,ne,u,met,min,useMet:true,k:0});
+const STARTER=[
+/* لحوم ودواجن */
+F('gMeat','صدر دجاج مشوي','Grilled chicken breast','150 غ',248,46,0,5.4,0,0,110),
+F('gMeat','فخذ دجاج بالجلد','Chicken thigh with skin','150 غ',330,26,0,25,0,0,120),
+F('gMeat','دجاج مقلي','Fried chicken','قطعة 100 غ',320,19,12,22,0.5,0,700),
+F('gMeat','لحم غنم مشوي','Grilled lamb','120 غ',310,30,0,20,0,0,80),
+F('gMeat','لحم بقري مفروم','Cooked minced beef','100 غ',250,26,0,16,0,0,75),
+F('gMeat','لحم جمل مسلوق','Boiled camel meat','120 غ',190,26,0,9,0,0,90),
+F('gMeat','كبدة غنم','Lamb liver','100 غ',190,26,3,7,0,0,90),
+F('gMeat','كباب مشوي','Grilled kebab','سيخان 150 غ',330,28,4,22,0.5,1,450),
+F('gMeat','شاورما دجاج','Chicken shawarma','سندويش',480,28,45,20,3,4,900),
+F('gMeat','شاورما لحم','Meat shawarma','سندويش',560,30,46,28,3,4,1000),
+F('gMeat','نقانق','Sausage','100 غ',300,13,3,26,0,1,900),
+/* أسماك */
+F('gFish','هامور مشوي','Grilled hammour','150 غ',138,29,0,1.5,0,0,90),
+F('gFish','كنعد مشوي','Grilled kingfish','150 غ',230,32,0,11,0,0,95),
+F('gFish','سمك مقلي','Fried fish','150 غ',320,26,12,18,0.5,0,300),
+F('gFish','سردين معلب بالزيت','Canned sardines in oil','100 غ',208,25,0,11,0,0,505),
+F('gFish','تونة معلبة بالماء','Canned tuna in water','100 غ',116,26,0,1,0,0,320),
+F('gFish','روبيان مشوي','Grilled shrimp','120 غ',120,23,1,2,0,0,220),
+/* بيض وألبان */
+F('gDairy','بيضة مسلوقة','Boiled egg','بيضة 50 غ',72,6.5,0.5,4.8,0,0,70),
+F('gDairy','بيضة مقلية','Fried egg','بيضة',110,6.5,0.6,9,0,0,95),
+F('gDairy','حليب كامل الدسم','Whole milk','كوب 240 مل',146,7.7,11.5,7.9,0,12,105),
+F('gDairy','حليب قليل الدسم','Low-fat milk','كوب 240 مل',102,8,12,2.4,0,12,107),
+F('gDairy','لبن زبادي','Plain yoghurt','علبة 170 غ',107,9,12,2.5,0,11,60),
+F('gDairy','لبن رائب (شنينة)','Buttermilk','كوب 240 مل',98,8,12,2.2,0,11,190),
+F('gDairy','جبن حلوم مقلي','Fried halloumi','50 غ',165,11,1.2,13,0,0,600),
+F('gDairy','لبنة','Labneh','ملعقتان 40 غ',70,3.2,2.4,5.2,0,2,120),
+F('gDairy','جبن فيتا','Feta cheese','30 غ',79,4,1.2,6.4,0,0,320),
+F('gDairy','قشطة','Cream','30 غ',100,1,2,10,0,2,20),
+/* حبوب وخبز */
+F('gGrain','رغيف خبز عربي','Arabic flat bread','رغيف 90 غ',248,8.1,49.5,1.1,2,1,430),
+F('gGrain','خبز أسمر','Brown bread','شريحة 35 غ',90,4,15,1.2,2.5,1.5,150),
+F('gGrain','خبز توست أبيض','White toast','شريحتان 60 غ',160,5,30,2,1.5,3,300),
+F('gGrain','خبز تنور / ملوج','Tannour bread','100 غ',270,8,54,1.5,2,1,400),
+F('gGrain','أرز أبيض مطبوخ','Cooked white rice','كوب 160 غ',208,4.3,45,0.5,0.6,0,2),
+F('gGrain','أرز بني مطبوخ','Cooked brown rice','كوب 160 غ',216,5,45,1.8,3.5,0,5),
+F('gGrain','كبسة دجاج','Chicken kabsa','صحن 350 غ',620,32,72,22,3,3,900),
+F('gGrain','مندي لحم','Lamb mandi','صحن 350 غ',700,34,70,30,3,2,850),
+F('gGrain','برياني دجاج','Chicken biryani','صحن 300 غ',580,28,66,22,3,4,880),
+F('gGrain','مكرونة مطبوخة','Cooked pasta','كوب 140 غ',220,8,43,1.3,2.5,1,1),
+F('gGrain','معكرونة بالصلصة','Pasta with sauce','صحن 300 غ',400,13,60,11,4,8,600),
+F('gGrain','شوفان مطبوخ','Cooked oats','كوب 230 غ',158,6,27,3.2,4,1,5),
+F('gGrain','كورن فليكس بحليب','Cereal with milk','كوب',240,8,42,4,2,14,300),
+/* بقوليات */
+F('gLeg','فول مدمس','Ful medames','كوب 250 غ',275,19,47,1.2,15,2,600),
+F('gLeg','عدس مطبوخ','Cooked lentils','كوب 200 غ',232,18,40,0.8,15,2,4),
+F('gLeg','حمص مسلوق','Boiled chickpeas','كوب 160 غ',262,14,43,4.2,12,7,10),
+F('gLeg','حمص بالطحينة','Hummus dip','100 غ',170,7,15,9,6,1,380),
+F('gLeg','فلافل','Falafel','5 حبات 100 غ',330,13,32,18,5,1,290),
+F('gLeg','فاصولياء بالصلصة','Beans in sauce','كوب 250 غ',240,14,42,1,10,6,650),
+/* خضار وأطباق */
+F('gVeg','سلطة خضراء','Green salad','صحن 150 غ',30,1.8,5.4,0.3,2.2,2,15),
+F('gVeg','تبولة','Tabbouleh','100 غ',130,2,12,9,3,2,250),
+F('gVeg','فتوش','Fattoush','150 غ',180,3,18,11,3.5,3,300),
+F('gVeg','خضار مشكل مطبوخ','Mixed cooked vegetables','كوب 160 غ',80,3,15,0.6,5,5,40),
+F('gVeg','بامية باللحم','Okra with meat','صحن 250 غ',260,18,16,14,5,5,600),
+F('gVeg','ملوخية باللحم','Molokhia with meat','صحن 250 غ',280,20,14,16,5,3,650),
+F('gVeg','شوربة عدس','Lentil soup','كوب 250 مل',180,11,28,2.5,6,2,600),
+F('gVeg','شوربة خضار','Vegetable soup','كوب 250 مل',90,3,15,2,3,4,600),
+F('gVeg','سليق / حريس','Harees','صحن 250 غ',330,16,45,9,3,1,500),
+F('gVeg','بطاطس مسلوقة','Boiled potato','150 غ',130,3,30,0.2,2.5,1.5,8),
+F('gVeg','بطاطس مقلية','French fries','100 غ',312,3.4,41,15,3.8,0.3,210),
+F('gVeg','باذنجان مقلي','Fried aubergine','100 غ',230,1.2,10,21,3,4,10),
+/* فواكه */
+F('gFruit','موز','Banana','حبة 120 غ',107,1.3,27,0.4,3.1,14,1),
+F('gFruit','تفاح','Apple','حبة 180 غ',94,0.5,25,0.3,4.3,19,2),
+F('gFruit','برتقال','Orange','حبة 150 غ',71,1.4,18,0.2,3.6,14,0),
+F('gFruit','تمر','Dates','3 حبات 24 غ',68,0.6,18,0.1,1.6,16,0),
+F('gFruit','مانجو','Mango','حبة 200 غ',120,1.6,30,0.8,3.2,27,2),
+F('gFruit','عنب','Grapes','كوب 150 غ',104,1.1,27,0.2,1.4,23,3),
+F('gFruit','بطيخ','Watermelon','شريحة 250 غ',75,1.5,19,0.4,1,15,3),
+F('gFruit','فراولة','Strawberries','كوب 150 غ',48,1,11.5,0.5,3,7,2),
+F('gFruit','أفوكادو','Avocado','نصف حبة 100 غ',160,2,9,15,7,0.7,7),
+F('gFruit','سلطة فواكه','Fruit salad','200 غ',130,1.5,32,0.4,3,26,10),
+/* مكسرات وزيوت */
+F('gNut','لوز','Almonds','30 غ',174,6.3,6.6,15,3.8,1.2,0),
+F('gNut','فول سوداني محمص','Roasted peanuts','30 غ',170,7,5,14,2.5,1.3,5),
+F('gNut','كاجو','Cashews','30 غ',157,5,9,12,1,1.7,4),
+F('gNut','مكسرات مشكلة مملحة','Salted mixed nuts','40 غ',240,7,10,20,3,2,180),
+F('gNut','زيت زيتون','Olive oil','ملعقة 15 مل',119,0,0,13.5,0,0,0),
+F('gNut','سمن أو زبدة','Ghee or butter','ملعقة 14 غ',100,0.1,0,11.5,0,0,90),
+F('gNut','طحينة','Tahini','ملعقة 15 غ',89,2.6,3.2,8,1.4,0.1,17),
+F('gNut','زبدة فول سوداني','Peanut butter','ملعقة 16 غ',94,4,3.2,8,1,1.5,75),
+/* وجبات سريعة */
+F('gFast','برجر لحم','Beef burger','سندويش',540,25,42,30,2,7,900),
+F('gFast','بيتزا','Pizza','قطعتان 200 غ',540,22,62,22,3,6,1100),
+F('gFast','ناجتس دجاج','Chicken nuggets','100 غ',296,15,16,19,1,0,600),
+F('gFast','سمبوسة لحم','Meat samosa','3 حبات',300,10,28,16,2,2,450),
+F('gFast','معجنات جبن','Cheese pastry','قطعة 100 غ',300,10,32,14,1.5,3,500),
+/* حلويات ومشروبات */
+F('gSweet','شاي بسكر','Tea with sugar','كوب + ملعقتان',40,0,10,0,0,10,5),
+F('gSweet','قهوة عربية','Arabic coffee','فنجان',5,0.2,0.8,0,0,0,3),
+F('gSweet','مشروب غازي','Soft drink','علبة 330 مل',139,0,35,0,0,35,15),
+F('gSweet','مشروب طاقة','Energy drink','علبة 250 مل',110,0,28,0,0,27,100),
+F('gSweet','عصير برتقال طبيعي','Fresh orange juice','كوب 240 مل',112,1.7,26,0.5,0.5,21,2),
+F('gSweet','عصير معلب','Packaged juice','كوب 240 مل',130,0.5,32,0.2,0.5,30,10),
+F('gSweet','ماء','Water','كوب 250 مل',0,0,0,0,0,0,0),
+F('gSweet','لقيمات','Luqaimat','5 حبات',260,3,35,12,1,18,120),
+F('gSweet','كنافة','Kunafa','100 غ',350,6,40,18,1,25,200),
+F('gSweet','بسبوسة','Basbousa','100 غ',380,4,55,16,1,35,180),
+F('gSweet','آيس كريم','Ice cream','كوب 100 غ',207,3.5,24,11,0.7,21,80),
+F('gSweet','شوكولاتة حليب','Milk chocolate','40 غ',210,3,23,12,1.4,21,32),
+F('gSweet','عسل','Honey','ملعقة 21 غ',64,0,17,0,0,17,1),
+F('gSweet','بسكويت سادة','Plain biscuits','30 غ',130,2,20,5,0.6,7,100),
+/* رياضات — كارديو */
+X('gCardio','مشي بطيء','Slow walking','30 دقيقة',2.8,30),
+X('gCardio','مشي سريع','Brisk walking','30 دقيقة',4.3,30),
+X('gCardio','هرولة 8 كم/س','Jogging 8 km/h','30 دقيقة',8.3,30),
+X('gCardio','جري 10 كم/س','Running 10 km/h','30 دقيقة',9.8,30),
+X('gCardio','جري 12 كم/س','Running 12 km/h','30 دقيقة',11.8,30),
+X('gCardio','دراجة معتدلة','Cycling moderate','30 دقيقة',7.5,30),
+X('gCardio','دراجة سريعة','Cycling fast','30 دقيقة',10,30),
+X('gCardio','سباحة معتدلة','Swimming moderate','30 دقيقة',7,30),
+X('gCardio','سباحة سريعة','Swimming fast','30 دقيقة',9.8,30),
+X('gCardio','جهاز إليبتكال','Elliptical','30 دقيقة',5,30),
+X('gCardio','تجديف','Rowing','30 دقيقة',7,30),
+X('gCardio','صعود الدرج','Stair climbing','15 دقيقة',8.8,15),
+X('gCardio','نط الحبل','Jump rope','15 دقيقة',11,15),
+X('gCardio','مشي على منحدر','Incline treadmill','30 دقيقة',6,30),
+/* نادي وقوة */
+X('gGym','حديد خفيف','Light weights','45 دقيقة',3.5,45),
+X('gGym','حديد شديد','Heavy weights','45 دقيقة',6,45),
+X('gGym','تمارين HIIT','HIIT','20 دقيقة',9,20),
+X('gGym','كروس فت','CrossFit','30 دقيقة',8,30),
+X('gGym','ضغط وعقلة','Push-ups & pull-ups','15 دقيقة',8,15),
+X('gGym','تمارين البطن','Core workout','15 دقيقة',3.8,15),
+X('gGym','يوغا','Yoga','45 دقيقة',3,45),
+X('gGym','بيلاتس','Pilates','45 دقيقة',3.8,45),
+X('gGym','تمدد وإحماء','Stretching','20 دقيقة',2.3,20),
+/* رياضات */
+X('gSport','كرة قدم','Football','45 دقيقة',8,45),
+X('gSport','كرة سلة','Basketball','45 دقيقة',6.5,45),
+X('gSport','كرة طائرة','Volleyball','45 دقيقة',4,45),
+X('gSport','كرة يد','Handball','45 دقيقة',8,45),
+X('gSport','تنس أرضي','Tennis','45 دقيقة',7.3,45),
+X('gSport','كرة طاولة','Table tennis','30 دقيقة',4,30),
+X('gSport','ملاكمة على الكيس','Boxing on bag','30 دقيقة',5.5,30),
+X('gSport','كاراتيه أو تايكوندو','Karate or taekwondo','45 دقيقة',10,45),
+X('gSport','ركوب الخيل','Horse riding','45 دقيقة',5.5,45),
+/* نشاط يومي */
+X('gDaily','تنظيف المنزل','House cleaning','45 دقيقة',3.3,45),
+X('gDaily','العمل في الحديقة','Gardening','45 دقيقة',3.8,45),
+X('gDaily','اللعب مع الأطفال','Playing with kids','30 دقيقة',4,30),
+X('gDaily','المشي في التسوق','Shopping walk','45 دقيقة',2.3,45),
+X('gDaily','صعود ونزول السلالم بالبيت','Stairs at home','10 دقائق',5,10)
+];
+
+/* ======================= أدوات ======================= */
+const uid=()=>Math.random().toString(36).slice(2,9);
+const todayISO=()=>new Date().toISOString().slice(0,10);
+const num=v=>{const x=parseFloat(v);return isFinite(x)?x:0};
+const has=v=>v!==''&&v!==null&&v!==undefined&&isFinite(parseFloat(v))&&parseFloat(v)>0;
+const r0=v=>Math.round(v),r1=v=>Math.round(v*10)/10,r2=v=>Math.round(v*100)/100;
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const iname=it=>(lang==='en'&&it.ne)?it.ne:it.n;
+const sign=v=>(v>0?'+':v<0?'−':'')+Math.abs(r0(v));
+const skg=v=>Math.abs(v)<0.005?'0':(v>0?'+':'−')+(Math.abs(v)<10?r2(Math.abs(v)):r1(Math.abs(v)));
+
+/* ======================= الحالة ======================= */
+let S={lang:'ar',settings:JSON.parse(JSON.stringify(DEF)),
+  person:Object.assign({},SAMPLE_PERSON),
+  items:[],cycle:{delta:500,start:todayISO(),sel:{},open:null,shown:60,split:{mode:'pct',auto:'c',p:30,c:42,f:28}},page:'person'};
+
+function freshItems(){return STARTER.map(x=>Object.assign({n:'',ne:'',u:'',k:0,p:0,c:0,f:0,fb:0,sg:0,na:0,met:0,min:0,useMet:false},x,{id:uid()}))}
+function deepMerge(a,b){for(const k in b){a[k]=(b[k]&&typeof b[k]==='object'&&!Array.isArray(b[k]))?deepMerge(a[k]||{},b[k]):b[k]}return a}
+function load(){
+  const raw=Store.get(KEY);
+  if(raw){try{const o=JSON.parse(raw);S=Object.assign(S,o);
+    S.settings=deepMerge(JSON.parse(JSON.stringify(DEF)),o.settings||{});}catch(e){}}
+  if(!S.items||!S.items.length){S.items=freshItems();sampleCycle();}
+  lang=S.lang||'ar';
+}
+function sampleCycle(){
+  const find=n=>{const it=S.items.find(x=>x.n===n);return it?it.id:null};
+  const mk=(pairs)=>{const o={};pairs.forEach(([n,q])=>{const id=find(n);if(id)o[id]=q});return o};
+  S.cycle.sel={
+    0:mk([['رغيف خبز عربي',1],['بيضة مسلوقة',2],['لبن زبادي',1],['كبسة دجاج',1],['تمر',2],['شاي بسكر',3],['مشي سريع',1]]),
+    1:mk([['شوفان مطبوخ',1],['حليب قليل الدسم',1],['موز',1],['صدر دجاج مشوي',1],['أرز أبيض مطبوخ',1],['سلطة خضراء',1],['حديد شديد',1]]),
+    2:mk([['فول مدمس',1],['رغيف خبز عربي',2],['شاورما دجاج',1],['مشروب غازي',1],['مشي سريع',1]])
+  };
+}
+let saveT;
+function save(){clearTimeout(saveT);saveT=setTimeout(()=>Store.set(KEY,JSON.stringify(S)),250)}
+function toast(m){const e=document.getElementById('toast');e.textContent=m;e.classList.add('on');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('on'),1300)}
+
+/* ======================= الحسابات ======================= */
+function itemKcal(it){
+  if(it.t==='ex'&&it.useMet&&num(it.met)>0){
+    const w=has(S.person.weight)?num(S.person.weight):70,m=S.settings.misc;
+    return num(it.met)*m.metC*w/m.metD*num(it.min);
+  }
+  return num(it.k);
+}
+const bmiOf=(w,h)=>w/Math.pow(h/100,2);
+function bmiClass(b){const T=S.settings.bmiT;
+  if(b<T.under)return{k:'cUnder',c:'#1C6E8C'};if(b<T.normal)return{k:'cNormal',c:'#24564A'};
+  if(b<T.ob1)return{k:'cOver',c:'#9C7C22'};if(b<T.ob2)return{k:'cOb1',c:'#A9500F'};
+  if(b<T.ob3)return{k:'cOb2',c:'#A9500F'};return{k:'cOb3',c:'#8E2C0F'}}
+
+function bodyFatPct(p){
+  const h=num(p.height),w=num(p.weight),a=num(p.age),b=bmiOf(w,h),Lg=Math.log10,M=p.sex!=='female';
+  const navy=()=>{
+    if(M&&has(p.waist)&&has(p.neck))return 495/(1.0324-0.19077*Lg(num(p.waist)-num(p.neck))+0.15456*Lg(h))-450;
+    if(!M&&has(p.waist)&&has(p.neck)&&has(p.hip))return 495/(1.29579-0.35004*Lg(num(p.waist)+num(p.hip)-num(p.neck))+0.22100*Lg(h))-450;
+    return null;};
+  const deur=()=>1.20*b+0.23*a-10.8*(M?1:0)-5.4;
+  const cun=()=>{const s=M?0:1;return -44.988+0.503*a+10.689*s+3.172*b-0.026*b*b+0.181*b*s-0.02*b*a-0.005*b*b*s+0.00021*b*b*a};
+  const ymca=()=>{if(!has(p.waist))return null;const wi=num(p.waist)/2.54,lb=w*2.20462;
+    return((M?-98.42:-76.76)+4.15*wi-0.082*lb)/lb*100};
+  if(has(p.bf))return{v:num(p.bf),m:t('manualM')};
+  const meth=S.settings.bfMethod;
+  let v=null,name='';
+  if(meth==='navy'){v=navy();name=t('navyM')}
+  else if(meth==='deurenberg'){v=deur();name=t('deurM')}
+  else if(meth==='cunbae'){v=cun();name='CUN-BAE'}
+  else if(meth==='ymca'){v=ymca();name='YMCA'}
+  else{v=navy();name=t('navyM');if(v===null||!isFinite(v)||v<=0){v=cun();name='CUN-BAE'}}
+  if(v===null||!isFinite(v)||v<=0||v>70){v=deur();name=t('deurM')}
+  return{v:Math.max(2,Math.min(70,v)),m:name};
+}
+function bmrOf(p){
+  const w=num(p.weight),h=num(p.height),a=num(p.age),M=p.sex!=='female';
+  const lbm=w*(1-bodyFatPct(p).v/100);
+  switch(S.settings.bmrMethod){
+    case 'harrisRev': return M?88.362+13.397*w+4.799*h-5.677*a:447.593+9.247*w+3.098*h-4.330*a;
+    case 'harrisOrig':return M?66.473+13.7516*w+5.0033*h-6.755*a:655.0955+9.5634*w+1.8496*h-4.6756*a;
+    case 'katch':     return 370+21.6*lbm;
+    case 'cunningham':return 500+22*lbm;
+    case 'owen':      return M?879+10.2*w:795+7.18*w;
+    case 'schofield':{
+      const T=M?[[3,60.9,-54],[10,22.7,495],[18,17.5,651],[30,15.3,679],[60,11.6,879],[999,13.5,487]]
+              :[[3,61,-51],[10,22.5,499],[18,12.2,746],[30,14.7,496],[60,8.7,829],[999,10.5,596]];
+      const row=T.find(r=>a<r[0])||T[T.length-1];return row[1]*w+row[2];}
+    case 'custom':{const c=S.settings.bmr;return c.w*w+c.h*h-c.a*a+(M?c.male:c.female);}
+    default: return 10*w+6.25*h-5*a+(M?5:-161);
+  }
+}
+function idealWeight(h,sex){
+  const inch=Math.max(0,h/2.54-60),M=sex!=='female';
+  const f={devine:(M?50:45.5)+2.3*inch,robinson:(M?52:49)+(M?1.9:1.7)*inch,
+    miller:(M?56.2:53.1)+(M?1.41:1.36)*inch,hamwi:(M?48:45.5)+(M?2.7:2.2)*inch,
+    broca:(h-100)*(M?0.9:0.85),lemmens:22*Math.pow(h/100,2)};
+  f.avg4=(f.devine+f.robinson+f.miller+f.hamwi)/4;
+  return{all:f,pick:f[S.settings.idealMethod]??f.avg4};
+}
+function tdeeOf(p){return bmrOf(p)*S.settings.act[p.act]}
+function normalRange(){
+  const p=S.person,T=S.settings.bmiT,h=num(p.height);
+  return{min:T.under*Math.pow(h/100,2),max:T.normal*Math.pow(h/100,2)};
+}
+/* يبني الدورة تلقائيًا من الوزن الهدف وفارق السعرات اليومي */
+function cyclePlan(){
+  const p=S.person,M=S.settings.misc,c=S.cycle;
+  if(!(has(p.age)&&has(p.height)&&has(p.weight)))return{ok:false,days:0,daily:0};
+  const w=num(p.weight),R=normalRange();
+  /* الاتجاه يُستنتج وحده: فوق المدى الطبيعي = نقص، تحته = زيادة، داخله = لا دورة */
+  const tw = w>R.max?R.max : w<R.min?R.min : w;
+  const need = w>R.max?'loss' : w<R.min?'gain' : 'none';
+  const tdee=tdeeOf(p),safe=p.sex==='female'?M.minF:M.minM;
+  const diff=tw-w, dir=Math.abs(diff)<0.05?0:(diff>0?1:-1);
+  const delta=Math.abs(num(c.delta));
+  let daily=tdee+dir*delta, clamped=false;
+  if(dir<0&&daily<safe){daily=safe;clamped=true}
+  const eff=Math.abs(tdee-daily);
+  const totalK=Math.abs(diff)*M.kcalPerKgFat;
+  let days=(dir===0||eff<1)?0:Math.ceil(totalK/eff);
+  days=Math.min(days,3650);
+  const end=new Date(c.start+'T00:00:00');
+  end.setDate(end.getDate()+Math.max(0,days-1));
+  return{ok:true,R,need,targetW:tw,diff,dir,tdee,daily,eff,totalK,days,clamped,safe,
+    weekly:eff*7/M.kcalPerKgFat*(dir<0?-1:1),
+    end:(days&&!isNaN(end))?end.toISOString().slice(0,10):''};
+}
+const targetKcal=()=>{const P=cyclePlan();return P.ok?P.daily:0};
+/* موزّع مغلق: النسب الثلاث مجموعها 100 دائمًا، والثالث يمتص الباقي */
+const MAC=[['p','macroP','var(--brand)'],['c','macroC','var(--gold)'],['f','macroF','#6C3D6B']];
+function getSplit(){
+  const d=S.cycle.split||{mode:'pct',auto:'c',p:30,c:42,f:28};
+  const o={mode:d.mode||'pct',auto:d.auto||'c',p:num(d.p),c:num(d.c),f:num(d.f)};
+  const others=['p','c','f'].filter(k=>k!==o.auto);
+  let sum=others.reduce((a,k)=>a+o[k],0);
+  if(sum>100){const sc=100/sum;others.forEach(k=>o[k]=Math.round(o[k]*sc/5)*5);sum=others.reduce((a,k)=>a+o[k],0)}
+  o[o.auto]=Math.max(0,100-sum);
+  return o;
+}
+function setSplit(key,pct){
+  const o=getSplit();
+  if(key===o.auto)return;
+  const other=['p','c','f'].find(k=>k!==key&&k!==o.auto);
+  o[key]=Math.max(0,Math.min(100,pct));
+  if(o[key]+o[other]>100)o[other]=100-o[key];
+  o[o.auto]=100-o[key]-o[other];
+  S.cycle.split={mode:o.mode,auto:o.auto,p:o.p,c:o.c,f:o.f};save();
+}
+/* غرامات كل مغذٍّ لعدد سعرات معيّن */
+function splitGrams(kcal){
+  if(!kcal)return null;
+  const o=getSplit(),A=S.settings.atwater;
+  return{p:kcal*o.p/100/A.p, c:kcal*o.c/100/A.c, f:kcal*o.f/100/A.f, pct:o};
+}
+/* السعرات الحالية: الرقم المُدخل أولًا، وإلا متوسط أيام الدورة */
+function currentIntake(){
+  const p=S.person;
+  return has(p.curKcal)?{v:num(p.curKcal)}:{v:0};
+}
+const normSel=v=>(v&&typeof v==='object')?{q:num(v.q),rep:v.rep||'once'}:{q:num(v),rep:'once'};
+const dayDate=i=>{const d=new Date(S.cycle.start+'T00:00:00');d.setDate(d.getDate()+i);return d};
+/* الاختيار الفعّال ليوم: اختياراته الخاصة + ما يرثه من أيام متكررة قبله */
+function effSel(i){
+  const out={},di=dayDate(i);
+  for(let j=0;j<=i;j++){
+    const day=S.cycle.sel[j];if(!day)continue;
+    for(const id in day){
+      const e=normSel(day[id]);
+      if(j===i){out[id]={q:e.q,rep:e.rep,own:true};continue}
+      if(e.rep==='week'&&(i-j)%7===0)out[id]={q:e.q,rep:'week',own:false,from:j};
+      else if(e.rep==='month'&&dayDate(j).getDate()===di.getDate())out[id]={q:e.q,rep:'month',own:false,from:j};
+    }
+  }
+  for(const id in out)if(!(out[id].q>0))delete out[id];
+  return out;
+}
+/* هل اليوم يحتوي عنصرًا موروثًا من تكرار؟ */
+function dayRepeatKind(i){
+  const e=effSel(i);let k='';
+  for(const id in e){if(e[id].rep==='month')return 'month';if(e[id].rep==='week')k='week'}
+  return k;
+}
+function dayTotals(i){
+  const sel=effSel(i);let o={inK:0,outK:0,p:0,c:0,f:0,fb:0,sg:0,na:0,items:0};
+  for(const id in sel){const q=num(sel[id].q);if(!q)continue;
+    const it=S.items.find(x=>x.id===id);if(!it)continue;o.items++;
+    const k=itemKcal(it)*q;
+    if(it.t==='food'){o.inK+=k;o.p+=num(it.p)*q;o.c+=num(it.c)*q;o.f+=num(it.f)*q;o.fb+=num(it.fb)*q;o.sg+=num(it.sg)*q;o.na+=num(it.na)*q}
+    else o.outK+=k;}
+  o.net=o.inK-o.outK;return o;
+}
+function cycleStats(){
+  let a={inK:0,outK:0,p:0,c:0,f:0,fb:0,sg:0,na:0,used:0};
+  const P=cyclePlan(),n=Math.min(P.days||0,400);
+  for(let i=0;i<n;i++){const d=dayTotals(i);if(!d.items)continue;
+    a.used++;['inK','outK','p','c','f','fb','sg','na'].forEach(x=>a[x]+=d[x]);}
+  const u=a.used||1;
+  return Object.assign(a,{avgIn:a.inK/u,avgOut:a.outK/u,avgP:a.p/u,avgC:a.c/u,avgF:a.f/u,avgFb:a.fb/u,avgSg:a.sg/u,avgNa:a.na/u});
+}
+
+/* ======================= واجهة ======================= */
+const PAGES=[['person','navPerson'],['items','navItems'],['cycle','navCycle'],['settings','navSet']];
+function stat(k,v,u,h,cls){return`<div class="stat ${cls||''}"><div class="k">${k}</div><div class="v">${v}${u?`<u>${u}</u>`:''}</div>${h?`<div class="h">${h}</div>`:''}</div>`}
+
+function renderNav(){
+  document.getElementById('nav').innerHTML=PAGES.map(([id,k])=>`<button class="${S.page===id?'on':''}" data-p="${id}">${t(k)}</button>`).join('');
+  document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>{if(document.getElementById('mask'))closeDay();S.page=b.dataset.p;save();renderPage();window.scrollTo(0,0)});
+  PAGES.forEach(([id])=>document.getElementById('p-'+id).classList.toggle('on',S.page===id));
+  document.getElementById('appName').textContent=t('app');
+  document.getElementById('appTag').textContent=t('tag');
+  document.getElementById('langBtn').textContent=lang==='ar'?'English':'العربية';
+  document.documentElement.dir=lang==='ar'?'rtl':'ltr';
+}
+function renderPage(){
+  renderNav();
+  if(S.page==='person')buildPerson();
+  else if(S.page==='items')buildItems();
+  else if(S.page==='cycle')buildCycle();
+  else buildSettings();
+}
+function renderAll(){renderPage()}
+
+/* ---------- صفحة الشخص: النموذج يُبنى مرة واحدة، والنتائج فقط تتحدث ---------- */
+function buildPerson(){
+  const p=S.person,acts=['a1','a2','a3','a4','a5'];
+  document.getElementById('p-person').innerHTML=`
+  <div class="live" id="live"></div>
+  <div class="card" style="background:var(--brand-soft);border-color:#BFD8CD">
+    <h2 style="color:var(--brand)">${t('assessTitle')}</h2>
+    <div class="sub" style="margin:4px 0 0">${t('assessSub')}</div></div>
+  <div class="card"><h2>${t('basics')}</h2><div class="sub">${t('basicsSub')}</div>
+    <div class="grid g2" style="margin-bottom:10px">
+      <label class="f"><span>${t('name')}</span><input id="pf-name" value="${esc(p.name)}"></label>
+      <label class="f"><span>${t('sex')}</span><select id="pf-sex">
+        <option value="male" ${p.sex==='male'?'selected':''}>${t('male')}</option>
+        <option value="female" ${p.sex==='female'?'selected':''}>${t('female')}</option></select></label>
+    </div>
+    <div class="grid g3">
+      <label class="f"><span class="req">${t('age')} · ${t('years')} *</span><input type="number" inputmode="numeric" id="pf-age" value="${p.age}"></label>
+      <label class="f"><span class="req">${t('height')} · ${t('cm')} *</span><input type="number" inputmode="decimal" id="pf-height" value="${p.height}"></label>
+      <label class="f"><span class="req">${t('weight')} · ${t('kg')} *</span><input type="number" inputmode="decimal" step="0.1" id="pf-weight" value="${p.weight}"></label>
+    </div></div>
+  <div class="card"><h2>${t('optional')}</h2><div class="sub">${t('optionalSub')}</div>
+    <div class="grid g2" style="margin-bottom:10px">
+      <label class="f"><span>${t('activity')}</span><select id="pf-act">
+        ${acts.map(a=>`<option value="${a}" ${p.act===a?'selected':''}>${t(a)} (${S.settings.act[a]})</option>`).join('')}</select></label>
+      <label class="f"><span>${t('curKcalIn')} · ${t('kcal')}</span>
+        <input type="number" inputmode="numeric" id="pf-curKcal" value="${p.curKcal??''}"></label>
+    </div>
+    <div class="grid g4">
+      <label class="f"><span>${t('waist')} · ${t('cm')}</span><input type="number" inputmode="decimal" id="pf-waist" value="${p.waist}"></label>
+      <label class="f"><span>${t('neck')} · ${t('cm')}</span><input type="number" inputmode="decimal" id="pf-neck" value="${p.neck}"></label>
+      <label class="f"><span>${t('hip')} · ${t('cm')}</span><input type="number" inputmode="decimal" id="pf-hip" value="${p.hip}"></label>
+      <label class="f"><span>${t('bodyfat')} %</span><input type="number" inputmode="decimal" id="pf-bf" value="${p.bf}"></label>
+    </div>
+  </div>
+  <div id="person-out"></div>`;
+
+  ['name','sex','age','height','weight','act','curKcal','waist','neck','hip','bf'].forEach(k=>{
+    const el=document.getElementById('pf-'+k);
+    el.addEventListener('input',()=>{S.person[k]=el.value;save();paintPerson()});
+    el.addEventListener('change',()=>{S.person[k]=el.value;save();paintPerson()});
+  });
+  paintPerson();
+}
+function paintPerson(){
+  const out=document.getElementById('person-out'),live=document.getElementById('live');
+  if(!out)return;
+  const p=S.person,ready=has(p.age)&&has(p.height)&&has(p.weight);
+  if(!ready){live.innerHTML=`<div class="lv" style="flex:1"><b style="font-size:13px">${t('needBasics')}</b></div>`;
+    out.innerHTML=`<div class="card"><div class="note">${t('needBasics')}</div></div>`;return;}
+  const b=bmiOf(num(p.weight),num(p.height));
+  live.innerHTML=`<span class="dot"></span>
+    <div class="lv"><i>${t('bmi')}</i><b>${r1(b)}</b></div>
+    <div class="lv"><i>${t('curNeed')}</i><b>${r0(tdeeOf(p))}</b></div>
+    <div class="lv"><i>${t('bf')}</i><b>${r1(bodyFatPct(p).v)}%</b></div>
+    ${(()=>{const I=currentIntake();return I.v>0?`<div class="lv"><i>${t('dailyBal')}</i><b style="color:${Math.abs(I.v-tdeeOf(p))<25?'#fff':(I.v>tdeeOf(p)?'#F0A878':'#7FD9C6')}">${sign(I.v-tdeeOf(p))}</b></div>`:''})()}`;
+  out.innerHTML=personResults();
+  live.classList.remove('flash');void live.offsetWidth;live.classList.add('flash');
+}
+function personResults(){
+  const p=S.person,M=S.settings.misc,T=S.settings.bmiT;
+  const w=num(p.weight),ht=num(p.height);
+  const bmi=bmiOf(w,ht),cls=bmiClass(bmi);
+  const nMin=T.under*Math.pow(ht/100,2),nMax=T.normal*Math.pow(ht/100,2);
+  const off=w>nMax?w-nMax:w<nMin?w-nMin:0;
+  const IW=idealWeight(ht,p.sex),BF=bodyFatPct(p);
+  const fatMass=w*BF.v/100,lean=w-fatMass;
+  const bmr=bmrOf(p),tdee=tdeeOf(p);
+  const safeMin=p.sex==='female'?M.minF:M.minM;
+  const tp=M.proteinPerKg*w,tf=tdee*M.fatPct/100/S.settings.atwater.f;
+  const tc=Math.max(0,(tdee-tp*S.settings.atwater.p-tf*S.settings.atwater.f)/S.settings.atwater.c);
+
+  let h=`<div class="card"><h2>${t('rBody')}</h2><div class="sub">${lang==='ar'?'صورة وضعك الحالي بالأرقام.':'Your current state in numbers.'}</div>
+  <div class="stats">
+    ${stat(t('bmi'),r1(bmi),'',t(cls.k))}
+    ${stat(t('wNormalMin'),r1(nMin),t('kg'))}
+    ${stat(t('wNormalMax'),r1(nMax),t('kg'))}
+    ${stat(t('wDiff'),skg(off),t('kg'),off>0?t('above'):off<0?t('below'):t('inside'),off!==0?'warn':'hi')}
+    ${stat(t('ideal'),r1(IW.pick),t('kg'),`${t('devine')} ${r1(IW.all.devine)} · ${t('robinson')} ${r1(IW.all.robinson)} · ${t('miller')} ${r1(IW.all.miller)} · ${t('hamwi')} ${r1(IW.all.hamwi)} · ${t('broca')} ${r1(IW.all.broca)} · ${t('lemmens')} ${r1(IW.all.lemmens)}`)}
+    ${stat(t('bf'),r1(BF.v),'%',BF.m)}
+    ${stat(t('fatMass'),r1(fatMass),t('kg'))}
+    ${stat(t('leanMass'),r1(lean),t('kg'))}
+    ${has(p.waist)?stat(t('whtr'),r2(num(p.waist)/ht),'',(num(p.waist)/ht)>M.whtr?t('high'):t('okv'),(num(p.waist)/ht)>M.whtr?'warn':''):''}
+    ${has(p.waist)&&has(p.hip)?stat(t('whr'),r2(num(p.waist)/num(p.hip))):''}
+    ${stat(t('water'),r1(w*M.waterMlPerKg/1000),t('liter'))}
+  </div>${bmiScale(bmi)}</div>`;
+
+  h+=`<div class="card"><h2>${t('rEnergy')}</h2>
+  <div class="sub">${(BMR_METHODS.find(m=>m[0]===S.settings.bmrMethod)||BMR_METHODS[0])[lang==='ar'?1:2]}</div>
+  <div class="stats">
+    ${stat(t('bmr'),r0(bmr),t('kcal'))}
+    ${stat(t('curNeed'),r0(tdee),t('kcal'),t('maintain'),'hi')}
+    ${stat(t('activity'),t(p.act),'',`× ${S.settings.act[p.act]}`)}
+    ${stat(t('safeMin'),r0(safeMin),t('kcal'))}
+  </div>
+  <div class="sub" style="margin:14px 0 8px;font-weight:700;color:var(--ink)">${t('maintainMacros')}</div>
+  <div class="stats">
+    ${stat(t('macroP'),r0(tp),t('gram'),`${M.proteinPerKg} ${t('gram')}/${t('kg')}`)}
+    ${stat(t('macroC'),r0(tc),t('gram'))}
+    ${stat(t('macroF'),r0(tf),t('gram'),`${M.fatPct}%`)}
+  </div>
+  </div>`;
+
+  const IN=currentIntake();
+  if(IN.v>0){
+    const bal=IN.v-tdee,per=d=>bal*d/M.kcalPerKgFat;
+    const wY=w+per(365),bY=bmiOf(wY,ht);
+    let reach=t('noData');
+    if(w>=nMin&&w<=nMax)reach=t('alreadyIn');
+    else{
+      const goal=w>nMax?nMax:nMin,need=goal-w;
+      reach=(Math.abs(bal)<1||need*bal<=0)?t('movingAway')
+           :r0(Math.abs(need*M.kcalPerKgFat/bal))+' '+t('days');
+    }
+    const verdict=Math.abs(bal)<25?t('stable'):bal>0?t('willGain'):t('willLose');
+    h+=`<div class="card"><h2>${t('projTitle')}</h2>
+    <div class="sub">${t('projSub')} · ${r0(IN.v)} ${t('kcal')} ${IN.src}</div>
+    <div class="stats">
+      ${stat(t('dailyBal'),sign(bal),t('kcal'),verdict,Math.abs(bal)<25?'':bal>0?'warn':'hi')}
+      ${stat(t('chgWeek'),skg(per(7)),t('kg'))}
+      ${stat(t('chgMonth'),skg(per(30)),t('kg'))}
+      ${stat(t('chg3'),skg(per(90)),t('kg'))}
+      ${stat(t('chg6'),skg(per(180)),t('kg'))}
+      ${stat(t('chg12'),skg(per(365)),t('kg'))}
+      ${stat(t('wAfterYear'),r1(wY),t('kg'))}
+      ${stat(t('bmiAfterYear'),r1(bY),'',t(bmiClass(bY).k))}
+      ${stat(t('toNormal'),reach)}
+    </div></div>`;
+  }
+  h+=compareTable({w,ht,bmi,nMin,nMax,BF,tdee,tp,IN});
+  return h;
+}
+/* جدول المقارنة: وضعك الحالي مقابل المدى الطبيعي */
+function compareTable(x){
+  const p=S.person,B=S.settings.band,T=S.settings.bmiT,M=S.settings.misc;
+  const male=p.sex!=='female';
+  const rows=[];
+  const add=(m,now,norm,st)=>rows.push([m,now,norm,st]);
+  const band=(v,lo,hi)=>v<lo?'low':v>hi?'high':'ok';
+
+  add(t('weight'),`${r1(x.w)} ${t('kg')}`,`${r1(x.nMin)} – ${r1(x.nMax)} ${t('kg')}`,band(x.w,x.nMin,x.nMax));
+  add(t('bmi'),r1(x.bmi),`${T.under} – ${T.normal}`,band(x.bmi,T.under,T.normal));
+  const flo=male?B.bfMlo:B.bfFlo,fhi=male?B.bfMhi:B.bfFhi;
+  add(t('bf'),`${r1(x.BF.v)} %`,`${flo} – ${fhi} %`,band(x.BF.v,flo,fhi));
+  if(has(p.waist)){
+    const wl=male?B.waistM:B.waistF;
+    add(t('mWaist'),`${r1(num(p.waist))} ${t('cm')}`,`${t('under')} ${wl} ${t('cm')}`,num(p.waist)>wl?'high':'ok');
+    add(t('whtr'),r2(num(p.waist)/x.ht),`${t('under')} ${M.whtr}`,(num(p.waist)/x.ht)>M.whtr?'high':'ok');
+  }
+  if(x.IN&&x.IN.v>0)
+    add(t('mIntake'),`${r0(x.IN.v)} ${t('kcal')}`,`${r0(x.tdee*0.9)} – ${r0(x.tdee*1.1)} ${t('kcal')}`,band(x.IN.v,x.tdee*0.9,x.tdee*1.1));
+  const col={low:'var(--minus)',ok:'var(--brand)',high:'var(--plus)'};
+  const bg={low:'var(--minus-soft)',ok:'var(--brand-soft)',high:'var(--plus-soft)'};
+  const lbl={low:t('sLow'),ok:t('sOk'),high:t('sHigh')};
+  return `<div class="card"><h2>${t('compare')}</h2><div class="sub">${t('compareSub')}</div>
+  <div class="tablewrap"><table style="min-width:0"><thead><tr>
+    <th>${t('cMetric')}</th><th>${t('cNow')}</th><th>${t('cNorm')}</th><th>${t('cState')}</th></tr></thead><tbody>
+  ${rows.map(([m,n2,nr,st])=>`<tr>
+    <td class="name" data-l="${t('cMetric')}">${m}</td>
+    <td data-l="${t('cNow')}"><b style="color:${col[st]}">${n2}</b></td>
+    <td data-l="${t('cNorm')}">${nr}</td>
+    <td data-l="${t('cState')}"><span class="pill" style="background:${bg[st]};color:${col[st]}">${lbl[st]}</span></td></tr>`).join('')}
+  </tbody></table></div></div>`;
+}
+function bmiScale(b){
+  const T=S.settings.bmiT,lo=12,hi=45;
+  const segs=[[lo,T.under,'#1C6E8C'],[T.under,T.normal,'#24564A'],[T.normal,T.ob1,'#9C7C22'],[T.ob1,T.ob2,'#A9500F'],[T.ob2,hi,'#8E2C0F']];
+  const pct=Math.max(0,Math.min(100,(b-lo)/(hi-lo)*100));
+  return`<div class="scale"><div class="track">${segs.map(([a,z,c])=>`<i style="background:${c};flex:${Math.max(.01,Math.min(hi,z)-Math.max(lo,a))}"></i>`).join('')}</div>
+  <div class="ptr"><b style="inset-inline-start:${100-pct}%;color:${bmiClass(b).c}">▲ ${r1(b)}</b></div>
+  <div class="marks"><span>${lo}</span><span>${T.under}</span><span>${T.normal}</span><span>${T.ob1}</span><span>${T.ob2}</span><span>${hi}+</span></div></div>`;
+}
+
+/* ---------- صفحة المدخلات ---------- */
+let draft=blank(),itemQ='',itemT='all';
+function blank(){return{id:'',t:'food',g:'',n:'',ne:'',u:'',k:'',p:'',c:'',f:'',fb:'',sg:'',na:'',met:'',min:30,useMet:false}}
+function buildItems(){
+  const ex=draft.t==='ex';
+  document.getElementById('p-items').innerHTML=`
+  <div class="card"><h2>${t('itemsTitle')}</h2><div class="sub">${t('itemsSub')}</div>
+  <div class="row" style="margin-bottom:12px">
+    <button class="btn sm ${ex?'ghost':''}" id="dt-food" style="${ex?'':'background:var(--plus);border-color:var(--plus)'}">● ${t('food')}</button>
+    <button class="btn sm ${ex?'':'ghost'}" id="dt-ex" style="${ex?'background:var(--minus);border-color:var(--minus)':''}">● ${t('exercise')}</button>
+    <span class="fine">${ex?(lang==='ar'?'ينقص السعرات':'subtracts'):(lang==='ar'?'يزيد السعرات':'adds')}</span>
+  </div>
+  <div class="grid g3" style="margin-bottom:10px">
+    <label class="f"><span>${t('name')} *</span><input id="d-n" value="${esc(draft.n)}" placeholder="${t('namePh')}"></label>
+    <label class="f"><span>${t('name')} (EN)</span><input id="d-ne" value="${esc(draft.ne)}"></label>
+    <label class="f"><span>${t('serving')}</span><input id="d-u" value="${esc(draft.u)}" placeholder="${t('servingPh')}"></label>
+  </div>
+  ${ex?`<div class="grid g3">
+    <label class="f"><span>${t('minutes')}</span><input type="number" inputmode="numeric" id="d-min" value="${draft.min}"></label>
+    <label class="f"><span>${t('met')}</span><input type="number" inputmode="decimal" step="0.1" id="d-met" value="${draft.met}"></label>
+    <label class="f"><span>${t('cal')}</span><input type="number" inputmode="decimal" id="d-k" value="${draft.k}" ${draft.useMet?'disabled':''}></label>
+  </div><label class="row" style="margin-top:8px;cursor:pointer"><input type="checkbox" id="d-usemet" ${draft.useMet?'checked':''}> <span class="fine">${t('useMet')}</span></label>`
+  :`<div class="grid g4">
+    <label class="f"><span>${t('cal')} *</span><input type="number" inputmode="decimal" id="d-k" value="${draft.k}"></label>
+    <label class="f"><span>${t('prot')} · ${t('gram')}</span><input type="number" inputmode="decimal" id="d-p" value="${draft.p}"></label>
+    <label class="f"><span>${t('carb')} · ${t('gram')}</span><input type="number" inputmode="decimal" id="d-c" value="${draft.c}"></label>
+    <label class="f"><span>${t('fat')} · ${t('gram')}</span><input type="number" inputmode="decimal" id="d-f" value="${draft.f}"></label>
+  </div><div class="grid g3" style="margin-top:10px">
+    <label class="f"><span>${t('fiber')} · ${t('gram')}</span><input type="number" inputmode="decimal" id="d-fb" value="${draft.fb}"></label>
+    <label class="f"><span>${t('sugar')} · ${t('gram')}</span><input type="number" inputmode="decimal" id="d-sg" value="${draft.sg}"></label>
+    <label class="f"><span>${t('sodium')} · ${t('mg')}</span><input type="number" inputmode="decimal" id="d-na" value="${draft.na}"></label>
+  </div>`}
+  <div class="row" style="margin-top:13px">
+    <button class="btn" id="d-save">${draft.id?t('save'):t('add')}</button>
+    ${draft.id?`<button class="btn ghost" id="d-cancel">${t('cancel')}</button>`:''}
+    <span style="flex:1"></span>
+    <button class="btn ghost sm" id="d-export">${t('exportD')}</button>
+    <label class="btn ghost sm" style="cursor:pointer">${t('importD')}<input type="file" id="d-import" accept="application/json" style="display:none"></label>
+  </div></div>
+
+  <div class="card">
+  <div class="row" style="margin-bottom:12px">
+    <input id="f-q" value="${esc(itemQ)}" placeholder="${t('search')}" style="flex:1;min-width:130px">
+    <select id="f-t" style="width:auto">
+      <option value="all" ${itemT==='all'?'selected':''}>${t('all')}</option>
+      <option value="food" ${itemT==='food'?'selected':''}>${t('food')}</option>
+      <option value="ex" ${itemT==='ex'?'selected':''}>${t('exercise')}</option>
+    </select>
+    <button class="btn ghost sm" id="d-seed">${t('seed')}</button>
+  </div>
+  <div id="items-table"></div></div>
+  ${Store.ok?'':`<div class="card"><div class="warnbox" style="margin:0">${t('storageOff')}</div></div>`}`;
+
+  ['n','ne','u','k','p','c','f','fb','sg','na','met','min'].forEach(k=>{
+    const el=document.getElementById('d-'+k);if(el)el.addEventListener('input',()=>draft[k]=el.value);});
+  document.getElementById('dt-food').onclick=()=>{draft.t='food';buildItems()};
+  document.getElementById('dt-ex').onclick=()=>{draft.t='ex';buildItems()};
+  const um=document.getElementById('d-usemet');if(um)um.onchange=()=>{draft.useMet=um.checked;buildItems()};
+  document.getElementById('d-save').onclick=saveDraft;
+  const dc=document.getElementById('d-cancel');if(dc)dc.onclick=()=>{draft=blank();buildItems()};
+  document.getElementById('d-seed').onclick=()=>{if(!confirm(t('confirmAll')))return;
+    S.items=freshItems();S.cycle.sel={};sampleCycle();save();buildItems();toast(t('savedMsg'))};
+  document.getElementById('d-export').onclick=exportData;
+  document.getElementById('d-import').onchange=importData;
+  const q=document.getElementById('f-q');
+  q.addEventListener('input',()=>{itemQ=q.value;paintTable()});
+  document.getElementById('f-t').onchange=e=>{itemT=e.target.value;paintTable()};
+  paintTable();
+}
+function paintTable(){
+  const box=document.getElementById('items-table');if(!box)return;
+  const qq=itemQ.trim().toLowerCase();
+  const list=S.items.filter(it=>(itemT==='all'||it.t===itemT)&&(!qq||(it.n||'').toLowerCase().includes(qq)||(it.ne||'').toLowerCase().includes(qq)));
+  if(!list.length){box.innerHTML=`<div class="empty">—</div>`;return}
+  let h=`<div class="fine" style="margin-bottom:8px">${list.length} ${t('items')}</div>
+  <div class="tablewrap"><table><thead><tr><th>${t('name')}</th><th>${t('type')}</th><th>${t('serving')}</th><th>${t('cal')}</th><th>${t('prot')}</th><th>${t('carb')}</th><th>${t('fat')}</th><th>${t('fiber')}</th><th></th></tr></thead><tbody>`;
+  let g='';
+  list.forEach(it=>{
+    if(it.g&&it.g!==g){g=it.g;h+=`<tr class="gr"><td class="gh" colspan="9">${t(g)}</td></tr>`}
+    const k=itemKcal(it),isF=it.t==='food';
+    h+=`<tr class="${it.t}">
+      <td class="name" data-l="${t('name')}">${esc(iname(it))}</td>
+      <td data-l="${t('type')}"><span class="pill ${isF?'food':'ex'}">${isF?t('food'):t('exercise')}</span></td>
+      <td data-l="${t('serving')}">${esc(it.u||'—')}${!isF&&it.useMet?` <span class="fine">MET ${it.met}</span>`:''}</td>
+      <td data-l="${t('cal')}"><b style="color:${isF?'var(--plus)':'var(--minus)'}">${isF?'+':'−'}${r0(k)}</b></td>
+      <td data-l="${t('prot')}">${isF?r1(num(it.p)):'—'}</td>
+      <td data-l="${t('carb')}">${isF?r1(num(it.c)):'—'}</td>
+      <td data-l="${t('fat')}">${isF?r1(num(it.f)):'—'}</td>
+      <td data-l="${t('fiber')}">${isF?r1(num(it.fb)):'—'}</td>
+      <td><button class="iconbtn" data-ed="${it.id}">✎</button><button class="iconbtn" data-del="${it.id}">✕</button></td></tr>`;
+  });
+  box.innerHTML=h+'</tbody></table></div>';
+  box.querySelectorAll('[data-ed]').forEach(b=>b.onclick=()=>{
+    draft=Object.assign(blank(),S.items.find(x=>x.id===b.dataset.ed));buildItems();window.scrollTo(0,0)});
+  box.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{
+    if(!confirm(t('confirmDel')))return;const id=b.dataset.del;
+    S.items=S.items.filter(x=>x.id!==id);
+    for(const d in S.cycle.sel)delete S.cycle.sel[d][id];
+    save();paintTable();toast(t('savedMsg'))});
+}
+function saveDraft(){
+  if(!String(draft.n).trim()){toast(t('reqName'));return}
+  const isNew=!draft.id;
+  if(isNew){draft.id=uid();S.items.push(Object.assign({},draft))}
+  else{const i=S.items.findIndex(x=>x.id===draft.id);if(i>-1)S.items[i]=Object.assign({},draft)}
+  const nm=draft.n;draft=blank();save();buildItems();toast((isNew?t('addedMsg'):t('savedMsg'))+' · '+nm);
+}
+function exportData(){const b=new Blob([JSON.stringify(S,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='mizan-'+todayISO()+'.json';a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast(t('savedMsg'))}
+function importData(e){const f=e.target.files[0];if(!f)return;const rd=new FileReader();
+  rd.onload=()=>{try{const o=JSON.parse(rd.result);S=Object.assign(S,o);
+    S.settings=deepMerge(JSON.parse(JSON.stringify(DEF)),o.settings||{});lang=S.lang||'ar';save();renderPage();toast(t('savedMsg'))}
+    catch(err){alert('JSON ✕')}};rd.readAsText(f)}
+
+/* ---------- صفحة الدورة ---------- */
+const SERV=[0.25,0.5,0.75,1,1.25,1.5,1.75,2,2.5,3,3.5,4,4.5,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20];
+let dayQ='',daySelOnly=false;
+function buildCycle(){
+  const c=S.cycle;
+  document.getElementById('p-cycle').innerHTML=`
+  <div class="card"><h2>${t('cycleTitle')}</h2><div class="sub">${t('deltaOnly')}</div>
+  <div class="grid g2">
+    <label class="f"><span>${t('deltaK')} · ${t('kcalDay')}</span><input type="number" inputmode="numeric" id="c-delta" value="${c.delta}"></label>
+    <label class="f"><span>${t('startDate')}</span><input type="date" id="c-start" value="${c.start}"></label>
+  </div>
+  <div class="row" style="margin-top:8px" id="delta-quick">
+    ${[250,300,500,750,1000].map(v=>`<button class="btn ghost sm" data-dq="${v}">${v}</button>`).join('')}
+  </div></div>
+  <div id="cycle-plan"></div><div id="cycle-sum"></div><div id="cycle-days"></div>`;
+
+  const dl=document.getElementById('c-delta');
+  dl.addEventListener('input',()=>{S.cycle.delta=dl.value;S.cycle.shown=60;save();repaintCycle();markQuick()});
+  document.querySelectorAll('[data-dq]').forEach(b2=>b2.onclick=()=>{
+    S.cycle.delta=+b2.dataset.dq;dl.value=b2.dataset.dq;S.cycle.shown=60;save();repaintCycle();markQuick()});
+  document.getElementById('c-start').addEventListener('change',e=>{S.cycle.start=e.target.value;save();repaintCycle()});
+  markQuick();repaintCycle();
+}
+function repaintCycle(){paintPlan();paintCycleSum();paintCycleList()}
+function markQuick(){
+  document.querySelectorAll('[data-dq]').forEach(b=>{
+    const on=num(S.cycle.delta)===+b.dataset.dq;
+    b.style.borderColor=on?'var(--brand)':'';b.style.color=on?'var(--brand)':''});
+}
+function paintPlan(){
+  const box=document.getElementById('cycle-plan');if(!box)return;
+  const P=cyclePlan();
+  if(!P.ok){box.innerHTML=`<div class="card"><div class="note">${t('needPerson')}</div></div>`;return}
+  if(!P.days){box.innerHTML=`<div class="card"><div class="note">${t('inRange')}</div></div>`;return}
+  const w=num(S.person.weight);
+  const dirTxt=P.need==='loss'?t('needLoss'):t('needGain');
+  const dirSign=P.dir<0?'−':'+';
+  box.innerHTML=`<div class="card" id="plan-card"><h2>${t('planTitle')}</h2>
+  <div class="sub">${lang==='ar'
+    ?`${dirTxt}: من ${r1(w)} كغ إلى ${r1(P.targetW)} كغ، بـ ${dirSign}${r0(P.eff)} سعرة عن احتياجك كل يوم.`
+    :`${dirTxt}: from ${r1(w)} kg to ${r1(P.targetW)} kg at ${dirSign}${r0(P.eff)} kcal per day.`}</div>
+  <div class="stats">
+    ${stat(t('autoDir'),dirTxt,'',`${dirSign}${r0(P.eff)} ${t('kcalDay')}`,P.dir<0?'hi':'warn')}
+    ${stat(t('targetW'),r1(P.targetW),t('kg'),'','hi')}
+    ${stat(t('weightDiff'),skg(P.diff),t('kg'))}
+    ${stat(t('dailyPlan'),r0(P.daily),t('kcal'),`${t('tdee')} ${r0(P.tdee)}`,'hi')}
+    ${stat(t('cycleDays'),P.days,t('days'))}
+    ${stat(t('endDate'),P.end)}
+    ${stat(t('weekRate'),skg(P.weekly),t('kg'))}
+  </div>
+  ${P.clamped?`<div class="warnbox">${t('clampWarn')}</div>`:''}
+  <hr><h2 style="font-size:14.5px">${t('splitTitle')}</h2>
+  <div class="sub">${t('splitSub')}</div>
+  <div id="split-box"></div></div>`;
+  box.classList.remove('flash');void box.offsetWidth;box.classList.add('flash');
+  paintSplit();
+}
+function paintSplit(){
+  const box=document.getElementById('split-box');if(!box)return;
+  const P=cyclePlan();if(!P.ok||!P.days)return;
+  const K=P.daily,o=getSplit(),A=S.settings.atwater,gram=splitGrams(K);
+  const kcalOf=k=>K*o[k]/100;
+  const step=5;
+  /* المدى المتاح لكل مغذٍّ: 100 ناقص المغذي الحر الآخر */
+  const free=['p','c','f'].filter(k=>k!==o.auto);
+  const rowsHtml=MAC.map(([k,lab,col])=>{
+    const isAuto=k===o.auto;
+    const other=free.find(x=>x!==k);
+    const max=isAuto?o[k]:100-(other?o[other]:0);
+    const opts=[];for(let v=0;v<=max;v+=step)opts.push(v);
+    if(!opts.includes(o[k]))opts.push(o[k]);
+    opts.sort((a,b)=>a-b);
+    const g=gram[k];
+    return`<div class="mrow">
+      <span class="dotc" style="background:${col}"></span>
+      <div class="ml"><b>${t(lab)}</b><span>${r0(kcalOf(k))} ${t('kcal')} · ${r1(g)} ${t('gram')}</span></div>
+      ${isAuto
+        ? `<div class="mauto">${o[k]}% <i>${t('autoFill')}</i></div>`
+        : (o.mode==='pct'
+          ? `<select data-mac="${k}">${opts.map(v=>`<option value="${v}" ${v===o[k]?'selected':''}>${v}%</option>`).join('')}</select>`
+          : `<select data-macg="${k}">${(()=>{const step2=k==='f'?5:10,mg=max*K/100/A[k],out=[];
+              for(let v=0;v<=mg;v+=step2)out.push(v);
+              const cur=Math.round(g);if(!out.includes(cur))out.push(cur);out.sort((a,b)=>a-b);
+              return out.map(v=>`<option value="${v}" ${Math.abs(v-g)<step2/2?'selected':''}>${v} ${t('gram')}</option>`).join('')})()}</select>`)}
+      <button class="autobtn ${isAuto?'on':''}" data-auto="${k}" title="${t('autoFill')}">↺</button>
+    </div>`}).join('');
+  box.innerHTML=`
+    <div class="row" style="margin-bottom:10px">
+      <button class="btn sm ${o.mode==='pct'?'':'ghost'}" data-sm="pct">${t('byPct')}</button>
+      <button class="btn sm ${o.mode==='g'?'':'ghost'}" data-sm="g">${t('byGram')}</button>
+      <span class="fine">${K?`${r0(K)} ${t('kcal')} ${t('perDay')}`:''}</span>
+    </div>
+    <div class="splitbar">${MAC.map(([k,,col])=>`<i style="width:${o[k]}%;background:${col}">${o[k]>8?o[k]+'%':''}</i>`).join('')}</div>
+    <div class="rowsum"><span>${t('remains')}: <b style="color:var(--brand)">0 ${t('kcal')}</b></span><span style="color:var(--brand)">✓ ${t('lockedOk')}</span></div>
+    ${rowsHtml}`;
+  box.querySelectorAll('[data-sm]').forEach(b=>b.onclick=()=>{
+    const o2=getSplit();S.cycle.split={mode:b.dataset.sm,auto:o2.auto,p:o2.p,c:o2.c,f:o2.f};save();paintSplit()});
+  box.querySelectorAll('[data-mac]').forEach(sl=>sl.onchange=()=>{
+    setSplit(sl.dataset.mac,num(sl.value));paintSplit();paintCycleList()});
+  box.querySelectorAll('[data-macg]').forEach(sl=>sl.onchange=()=>{
+    const k=sl.dataset.macg,pct=num(sl.value)*S.settings.atwater[k]/K*100;
+    setSplit(k,Math.round(pct*10)/10);paintSplit();paintCycleList()});
+  box.querySelectorAll('[data-auto]').forEach(b=>b.onclick=()=>{
+    const o2=getSplit();if(b.dataset.auto===o2.auto)return;
+    S.cycle.split={mode:o2.mode,auto:b.dataset.auto,p:o2.p,c:o2.c,f:o2.f};save();paintSplit();paintCycleList()});
+}
+function paintCycleSum(){
+  const box=document.getElementById('cycle-sum');if(!box)return;
+  const cs=cycleStats(),P=cyclePlan();
+  if(!cs.used||!P.days){box.innerHTML='';return}
+  const planned=P.daily*cs.used,net=cs.inK-cs.outK,gap=planned-net;
+  box.innerHTML=`<div class="card"><div class="stats">
+    ${stat(t('plannedTotal'),r0(planned),t('kcal'),`${cs.used} ${t('days')}`)}
+    ${stat(t('loggedTotal'),r0(net),t('kcal'),`${t('inK')} ${r0(cs.inK)} · ${t('outK')} ${r0(cs.outK)}`)}
+    ${stat(t('dayDiff'),sign(gap),t('kcal'),gap>=0?t('aheadBy'):t('behindBy'),gap>=0?'hi':'warn')}
+    ${stat(t('cycleChange'),skg((net-planned)/S.settings.misc.kcalPerKgFat),t('kg'))}
+  </div></div>`;
+}
+function paintCycleList(){
+  const box=document.getElementById('cycle-days');if(!box)return;
+  const P=cyclePlan();
+  if(!S.items.length){box.innerHTML=`<div class="card"><div class="note">${t('emptyLib')}</div></div>`;return}
+  if(!P.ok||!P.days){box.innerHTML='';return}
+  const c=S.cycle,start=new Date(c.start+'T00:00:00'),tg=P.daily;
+  const shown=Math.min(P.days,c.shown||60);
+  let h='';
+  for(let i=0;i<shown;i++){
+    const d=new Date(start);d.setDate(start.getDate()+i);
+    const iso=isNaN(d)?'':d.toISOString().slice(0,10);
+    const T=dayTotals(i),rk=dayRepeatKind(i);
+    h+=`<div class="day ${rk==='week'?'repw':rk==='month'?'repm':''}" data-day="${i}">
+      <div class="dayhead" data-toggle="${i}">
+        <div class="daynum"><i>${t('dayW')}</i><b>${i+1}</b><u>${iso.slice(5)}</u></div>
+        <div class="dhinfo" id="dh-${i}">${dayHeadInfo(T,tg)}</div>
+        ${rk?`<span class="rbadge" style="background:${rk==='week'?'var(--minus-soft)':'#EADFEE'};color:${rk==='week'?'var(--minus)':'#6C3D6B'}">${rk==='week'?t('badgeW'):t('badgeM')}</span>`:''}
+        <div class="chev">✎</div></div>
+      <div id="dcard-${i}">${dayTable(i,T,tg)}</div></div>`;
+  }
+  if(shown<P.days)h+=`<div class="row" style="justify-content:center;margin:6px 0 14px">
+    <button class="btn ghost sm" id="more-days">${t('showMore')} (${P.days-shown})</button></div>`;
+  box.innerHTML=h;
+  box.querySelectorAll('[data-toggle]').forEach(el=>el.onclick=()=>openDay(+el.dataset.toggle));
+  /* السحب الأفقي للشرائح لا يفتح النافذة */
+  box.querySelectorAll('.d3').forEach(el=>{
+    let sx=0,moved=false;
+    el.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;moved=false},{passive:true});
+    el.addEventListener('touchmove',e=>{if(Math.abs(e.touches[0].clientX-sx)>8)moved=true},{passive:true});
+    el.addEventListener('click',e=>{if(moved){e.stopPropagation();moved=false}},true);
+  });
+  const mb=document.getElementById('more-days');
+  if(mb)mb.onclick=()=>{S.cycle.shown=(S.cycle.shown||60)+60;save();paintCycleList()};
+}
+/* سطر رأس البطاقة */
+function dayHeadInfo(T,tg){
+  const d=tg-T.net;
+  return`<b style="color:${diffColor(T,tg)}">${T.items?sign(d):'—'}</b>
+    <span>${T.items?`${r0(T.net)} / ${r0(tg)} ${t('kcal')}`:t('tapEdit')}</span>`;
+}
+/* أعمدة جدول اليوم */
+const COLS=[
+ ['kcal','zKcal',(it,q)=>itemKcal(it)*q*(it.t==='food'?1:-1), T=>T.net,      (tg,G,B)=>tg],
+ ['prot','zProt',(it,q)=>it.t==='food'?num(it.p)*q:0,        T=>T.p,        (tg,G)=>G?G.p:0],
+ ['carb','zCarb',(it,q)=>it.t==='food'?num(it.c)*q:0,        T=>T.c,        (tg,G)=>G?G.c:0],
+ ['fat','zFat',  (it,q)=>it.t==='food'?num(it.f)*q:0,        T=>T.f,        (tg,G)=>G?G.f:0],
+ ['fib','zFib',  (it,q)=>it.t==='food'?num(it.fb)*q:0,       T=>T.fb,       (tg,G,B)=>B.fiber],
+ ['sug','zSug',  (it,q)=>it.t==='food'?num(it.sg)*q:0,       T=>T.sg,       (tg,G,B)=>tg*B.sugarPct/100/S.settings.atwater.c],
+ ['na','zNa',    (it,q)=>it.t==='food'?num(it.na)*q:0,       T=>T.na,       (tg,G,B)=>B.sodium]];
+
+function dayTable(i,T,tg){
+  const V=S.settings.show||{},B=S.settings.band,G=splitGrams(tg);
+  const cols=COLS.filter(c=>V[c[0]]);
+  if(!cols.length)return`<div class="dayempty">${t('colsTitle')} —</div>`;
+  const sel=effSel(i),ids=Object.keys(sel);
+  if(!ids.length)return`<div class="dayempty">${t('emptyDay')} · ${t('tapEdit')}</div>`;
+
+  const cell=v=>Math.abs(v)<0.05?'—':r0(v);
+  let body=ids.map(id=>{
+    const it=S.items.find(x=>x.id===id);if(!it)return'';
+    const e=sel[id],isF=it.t==='food';
+    const rp=e.rep==='week'?t('badgeW'):e.rep==='month'?t('badgeM'):'';
+    return`<tr>
+      <td class="it"><span class="tg" style="background:${isF?'var(--plus)':'var(--minus)'}">${isF?'غ':'ر'}</span>${esc(iname(it))}${e.q!==1?` <b style="color:var(--muted)">×${e.q}</b>`:''}${rp?`<span class="rp" style="background:${e.rep==='week'?'var(--minus-soft)':'#EADFEE'};color:${e.rep==='week'?'var(--minus)':'#6C3D6B'}">${rp}</span>`:''}</td>
+      ${cols.map(c=>{const v=c[2](it,e.q);
+        return`<td style="${c[0]==='kcal'?`color:${isF?'var(--plus)':'var(--minus)'};font-weight:700`:''}">${c[0]==='kcal'&&v?(v>0?'+':'−')+r0(Math.abs(v)):cell(v)}</td>`}).join('')}
+    </tr>`}).join('');
+
+  const totals=cols.map(c=>c[3](T));
+  const targets=cols.map(c=>c[4](tg,G,B));
+  if(V.rTotal)body+=`<tr class="sumr"><td class="it">${t('rowTotal')}</td>${totals.map(v=>`<td>${cell(v)}</td>`).join('')}</tr>`;
+  if(V.rTarget)body+=`<tr class="tgtr"><td class="it">${t('rowTarget')}</td>${targets.map(v=>`<td>${cell(v)}</td>`).join('')}</tr>`;
+  if(V.rDiff)body+=`<tr class="diffr"><td class="it">${t('rowDiff')}</td>${targets.map((v,ix)=>{
+    const d=v-totals[ix];
+    return`<td style="color:${d>=0?'var(--brand)':'var(--plus)'}">${sign(d)}</td>`}).join('')}</tr>`;
+  if(V.rPct)body+=`<tr class="pctr"><td class="it">${t('rowPct')}</td>${targets.map((v,ix)=>
+    `<td>${v?r0(totals[ix]/v*100)+'%':'—'}</td>`).join('')}</tr>`;
+
+  return`<div class="dwrap"><table class="dtab"><thead><tr>
+    <th class="it">${t('colItem')}</th>${cols.map(c=>`<th>${t(c[1])}</th>`).join('')}
+  </tr></thead><tbody>${body}</tbody></table></div>`;
+}
+/* النافذة المنبثقة لتحديد أغذية ورياضات اليوم */
+function openDay(i){
+  S.cycle.open=i;dayQ='';daySelOnly=false;save();
+  renderSheet(i);
+  document.body.style.overflow='hidden';
+}
+function closeDay(){
+  S.cycle.open=null;save();
+  document.getElementById('modal').innerHTML='';
+  document.body.style.overflow='';
+}
+function renderSheet(i){
+  const P=cyclePlan(),tg=P.daily,T=dayTotals(i);
+  const d=dayDate(i),iso=isNaN(d)?'':d.toISOString().slice(0,10);
+  document.getElementById('modal').innerHTML=`
+  <div class="mask" id="mask"><div class="sheet">
+    <div class="sheethead">
+      <div><b>${t('dayW')} ${i+1}</b><span style="margin-inline-start:8px">${iso}</span></div>
+      <button id="sheet-close" title="${t('close')}">✕</button>
+    </div>
+    <div class="sheetbody">${dayBody(i,T,tg)}</div>
+  </div></div>`;
+  document.getElementById('sheet-close').onclick=closeDay;
+  document.getElementById('mask').onclick=e=>{if(e.target.id==='mask')closeDay()};
+  wireDay();
+}
+/* تحديث بطاقة يوم واحد خلف النافذة */
+function patchCard(i){
+  const T=dayTotals(i),tg=cyclePlan().daily;
+  const ch=document.getElementById('dh-'+i);if(ch)ch.innerHTML=dayHeadInfo(T,tg);
+  const ls=document.getElementById('dcard-'+i);if(ls)ls.innerHTML=dayTable(i,T,tg);
+  const card=document.querySelector(`.day[data-day="${i}"]`);
+  if(card){const rk=dayRepeatKind(i);
+    card.classList.toggle('repw',rk==='week');card.classList.toggle('repm',rk==='month');}
+}
+const diffColor=(T,tg)=>!T.items?'var(--muted)':((tg-T.net)>=0?'var(--brand)':'var(--plus)');
+/* شرائح بطاقة اليوم — يتحكم بها المستخدم من الإعدادات */
+const CHIPS=[
+ ['target','zTarget',(T,tg)=>r0(tg),''],
+ ['logged','zLogged',T=>T.items?r0(T.net):'—',''],
+ ['diff','zDiff',(T,tg)=>T.items?sign(tg-T.net):'—','mid'],
+ ['inK','zIn',T=>T.items?r0(T.inK):'—',''],
+ ['outK','zOut',T=>T.items?r0(T.outK):'—',''],
+ ['prot','zProt',T=>T.items?r0(T.p):'—',''],
+ ['carb','zCarb',T=>T.items?r0(T.c):'—',''],
+ ['fat','zFat',T=>T.items?r0(T.f):'—',''],
+ ['fib','zFib',T=>T.items?r0(T.fb):'—',''],
+ ['sug','zSug',T=>T.items?r0(T.sg):'—',''],
+ ['na','zNa',T=>T.items?r0(T.na):'—','']];
+function dayChips(T,tg){
+  const V=S.settings.show||{};
+  const on=CHIPS.filter(c=>V[c[0]]);
+  if(!on.length)return`<div class="c"><i>&nbsp;</i><b>${T.items?sign(tg-T.net):'—'}</b></div>`;
+  return on.map(([k,l,fn,cls])=>{
+    const col=k==='diff'?`color:${diffColor(T,tg)}`:'';
+    return`<div class="c ${cls}"><i>${t(l)}</i><b style="${col}">${fn(T,tg)}</b></div>`}).join('');
+}
+/* ===== نافذة اختيار اليوم: مبنية حول ما تبقّى لك من الهدف ===== */
+let dayMode='smart';
+function remainOf(T,tg){
+  const G=splitGrams(tg)||{p:0,c:0,f:0};
+  return{k:tg-T.net,p:G.p-T.p,c:G.c-T.c,f:G.f-T.f,G:G,tg:tg};
+}
+/* هل يناسب هذا المُدخل ما تبقّى؟ وكم حصة تتحمّل؟ */
+function fitOf(it,rem){
+  const k=itemKcal(it);
+  if(it.t==='ex')return{cls:'ok',max:Math.min(4,Math.max(1,Math.ceil(Math.abs(Math.min(rem.k,0))/Math.max(k,1)))),
+    txt:`${lang==='ar'?'يعيد لك':'gives back'} ${r0(k)} ${t('kcal')}`};
+  if(k<=0)return{cls:'ok',max:1,txt:'—'};
+  if(rem.k<=0)return{cls:'bad',max:0,txt:lang==='ar'?'تجاوزت الهدف':'over target'};
+  const capK=Math.floor(rem.k/k);
+  if(capK<1)return k<=rem.k*1.25
+    ?{cls:'warn',max:1,txt:lang==='ar'?'يملأ الباقي ويزيد قليلًا':'slightly over'}
+    :{cls:'bad',max:0,txt:`${lang==='ar'?'يتجاوز بـ':'over by'} ${r0(k-rem.k)}`};
+  /* أضيق قيد بين السعرات والمغذيات الثلاثة */
+  let cap=capK,bind='';
+  [['p','zProt'],['c','zCarb'],['f','zFat']].forEach(([m,lab])=>{
+    const v=num(it[m]);if(v>0){const c2=Math.floor(Math.max(rem[m],0)/v);if(c2<cap){cap=c2;bind=t(lab)}}});
+  if(cap<1)return{cls:'warn',max:1,txt:`${lang==='ar'?'يتجاوز':'exceeds'} ${bind}`};
+  cap=Math.min(cap,20);
+  return{cls:'ok',max:cap,txt:`${lang==='ar'?'حتى':'up to'} ${cap} ${lang==='ar'?'حصة':'srv'}${bind?` (${bind})`:''}`};
+}
+/* ترتيب ذكي: ما يسدّ أكبر نقص بأقل سعرات */
+function smartScore(it,rem){
+  const k=itemKcal(it);if(it.t==='ex'||k<=0)return -99;
+  const G=rem.G,gk=Math.max(rem.k,1);
+  let fill=0;
+  [['p',G.p],['c',G.c],['f',G.f]].forEach(([m,tgt])=>{
+    if(!tgt)return;
+    const gap=Math.max(rem[m],0);
+    const urgency=gap/tgt;                    /* كم أنت متأخر في هذا المغذي نسبةً لهدفه */
+    fill+=Math.min(num(it[m]),gap)/tgt*urgency;
+  });
+  return fill/((k/gk)+0.06)-(k>rem.k?3:0);
+}
+function gauge(lab,left,total,unit){
+  const used=Math.max(0,total-left),pct=total>0?Math.min(100,used/total*100):0;
+  const col=left<0?'var(--plus)':pct>85?'var(--gold)':'var(--brand)';
+  return`<div class="gz"><i>${lab}</i><b style="color:${col}">${sign(left)}</b>
+    <div class="gb"><i style="width:${pct}%;background:${col}"></i></div>
+    <u>${r0(used)}/${r0(total)} ${unit}</u></div>`;
+}
+function budgetBar(T,tg){
+  const R=remainOf(T,tg);
+  return`<div class="gzrow">
+    ${gauge(t('zKcal'),R.k,tg,t('kcal'))}
+    ${gauge(t('zProt'),R.p,R.G.p,t('gram'))}
+    ${gauge(t('zCarb'),R.c,R.G.c,t('gram'))}
+    ${gauge(t('zFat'),R.f,R.G.f,t('gram'))}</div>`;
+}
+function overBox(i,T,tg){
+  const R=remainOf(T,tg);
+  if(R.k>=0)return'';
+  const over=Math.abs(R.k),sel=effSel(i);
+  const heavy=Object.keys(sel).map(id=>{
+    const it=S.items.find(x=>x.id===id);
+    return it&&it.t==='food'?{it,q:sel[id].q,k:itemKcal(it)*sel[id].q}:null}).filter(Boolean)
+    .sort((a,b)=>b.k-a.k).slice(0,3);
+  const exs=S.items.filter(x=>x.t==='ex').map(it=>({it,k:itemKcal(it)}))
+    .filter(x=>x.k>0).map(x=>{
+      const need=over/x.k;
+      const q=SERV.reduce((a,v)=>Math.abs(v-need)<Math.abs(a-need)?v:a,SERV[0]);
+      return{it:x.it,k:x.k,q}})
+      .filter(x=>x.q<=4)
+      .sort((a,b)=>(Math.abs(a.k*a.q-over)+Math.abs(a.q-1)*60)-(Math.abs(b.k*b.q-over)+Math.abs(b.q-1)*60)).slice(0,3);
+  return`<div class="overbox">
+    <b>${lang==='ar'?`تجاوزت هدف اليوم بـ ${r0(over)} سعرة`:`Over the day target by ${r0(over)} kcal`}</b>
+    <div class="obs">${lang==='ar'?'قلّل من الأثقل:':'Cut the heaviest:'}</div>
+    <div class="obrow">${heavy.map(x=>`<button data-dec="${x.it.id}">− ${esc(iname(x.it))} <u>${r0(x.k)}</u></button>`).join('')||'—'}</div>
+    <div class="obs">${lang==='ar'?'أو عوّضها برياضة:':'Or burn it off:'}</div>
+    <div class="obrow">${exs.map(x=>
+      `<button data-addex="${x.it.id}" data-q="${x.q}">+ ${esc(iname(x.it))}${x.q!==1?` ×${x.q}`:''} <u>${r0(x.k*x.q)}</u></button>`).join('')||'—'}</div>
+  </div>`;
+}
+function pickRow(it,e,rem,g){
+  const on=!!e,q=on?e.q:1,k=itemKcal(it),isF=it.t==='food',inh=on&&!e.own;
+  const F=fitOf(it,rem),rp=on?e.rep:'once';
+  const col={ok:'var(--brand)',warn:'var(--gold)',bad:'var(--plus)'}[F.cls];
+  const bg={ok:'var(--brand-soft)',warn:'#F6EFD8',bad:'var(--plus-soft)'}[F.cls];
+  return`<div class="pick ${on?'sel':''}" id="pk-${it.id}" data-grp="${g}" data-nm="${esc((it.n+' '+(it.ne||'')).toLowerCase())}" data-on="${on?1:0}">
+    <input type="checkbox" data-chk="${it.id}" ${on?'checked':''}>
+    <div class="nm"><b>${esc(iname(it))}</b>
+      <span>${esc(it.u||'')} · ${isF?'+':'−'}${r0(k)}${isF?` · ب ${r1(num(it.p))} ك ${r1(num(it.c))} د ${r1(num(it.f))}`:''}
+      <em class="fit" id="ft-${it.id}" style="background:${bg};color:${col}">${F.txt}</em>${inh?` <em class="fit" style="background:var(--minus-soft);color:var(--minus)">${t('inherited')}</em>`:''}</span></div>
+    ${!on&&F.max>=1?`<button class="mxb" data-max="${it.id}" data-mq="${F.max}">${F.max>1?F.max:'+'}</button>`:''}
+    <select data-qty="${it.id}" ${on?'':'disabled'} style="${on?'':'display:none'}">${SERV.map(v=>`<option value="${v}" ${on&&Math.abs(v-q)<0.001?'selected':''}>${v}</option>`).join('')}</select>
+    <div class="kc" id="kc-${it.id}" style="${on?`color:${isF?'var(--plus)':'var(--minus)'}`:''}">${on?(isF?'+':'−')+r0(k*q):''}</div>
+    ${on?`<div class="rep"><span>${t('repScope')}</span>
+      ${[['once','rOnce'],['week','rWeek'],['month','rMonth']].map(([v,l])=>
+        `<button data-rep="${it.id}" data-rv="${v}" class="${rp===v?'on':''}">${t(l)}</button>`).join('')}</div>`:''}
+  </div>`;
+}
+function dayBody(i,T,tg){
+  const sel=effSel(i),rem=remainOf(T,tg);
+  let rows='';
+  if(dayMode==='smart'){
+    const foods=S.items.filter(x=>x.t==='food').map(it=>({it,s:smartScore(it,rem)}))
+      .sort((a,b)=>b.s-a.s).slice(0,24).map(x=>x.it);
+    const chosen=S.items.filter(x=>sel[x.id]);
+    const exs=S.items.filter(x=>x.t==='ex').slice(0,8);
+    const block=(title,arr,col)=>arr.length?`<div class="pickhead" data-grp="smart"><h3 style="color:${col}">${title}</h3><span class="c">${arr.length}</span></div>`
+      +arr.map(it=>pickRow(it,sel[it.id],rem,'smart')).join(''):'';
+    rows=block(lang==='ar'?'المحدد الآن':'Chosen now',chosen,'var(--ink)')
+        +block(lang==='ar'?'الأنسب لما تبقّى':'Best fit for what is left',foods.filter(f=>!sel[f.id]),'var(--plus)')
+        +block(t('exercise'),exs.filter(f=>!sel[f.id]),'var(--minus)');
+  }else{
+    const groups={};
+    S.items.forEach(it=>{const g=it.g||(it.t==='food'?'gVeg':'gDaily');(groups[g]=groups[g]||[]).push(it)});
+    const order=['gMeat','gFish','gDairy','gGrain','gLeg','gVeg','gFruit','gNut','gFast','gSweet','gCardio','gGym','gSport','gDaily'];
+    const keys=order.filter(k=>groups[k]).concat(Object.keys(groups).filter(k=>!order.includes(k)));
+    keys.forEach(g=>{
+      const arr=dayMode==='sel'?groups[g].filter(x=>sel[x.id]):groups[g];
+      if(!arr.length)return;
+      rows+=`<div class="pickhead" data-grp="${g}"><h3 style="color:${arr[0].t==='food'?'var(--plus)':'var(--minus)'}">${t(g)}</h3><span class="c">${arr.length}</span></div>`;
+      arr.forEach(it=>rows+=pickRow(it,sel[it.id],rem,g));
+    });
+  }
+  const modes=[['smart',lang==='ar'?'الأنسب الآن':'Best now'],['all',lang==='ar'?'كل المجموعات':'All groups'],['sel',lang==='ar'?'المحدد':'Chosen']];
+  return`<div class="daybody">
+    <div class="budget" id="budget-${i}">${budgetBar(T,tg)}</div>
+    <div id="over-${i}">${overBox(i,T,tg)}</div>
+    <div class="modes">${modes.map(([v,l])=>`<button data-mode="${v}" class="${dayMode===v?'on':''}">${l}</button>`).join('')}</div>
+    <div class="row"><input id="cy-q" placeholder="${t('search')}" style="flex:1;min-width:120px">
+      <button class="btn ghost sm" id="cy-clear">${t('clearDay')}</button></div>
+    <div id="picklist">${rows}</div>
+    <hr>
+    <div class="balance"><div class="bar" id="bal-${i}"></div><div class="lg" id="ballg-${i}"></div></div>
+    <div class="stats" id="dstats-${i}" style="grid-template-columns:repeat(auto-fill,minmax(104px,1fr))"></div>
+    <div class="fine" style="margin-top:10px">${lang==='ar'
+      ?'الرقم على الزر الأخضر هو أكبر عدد حصص يبقيك داخل هدف اليوم. اضغطه ليضيفها دفعة واحدة.'
+      :'The number on the green button is the largest serving count that keeps you inside the day target.'}</div></div>`;
+}
+function wireDay(){
+  const i=S.cycle.open;if(i===null||i===undefined)return;
+  if(!S.cycle.sel[i])S.cycle.sel[i]={};
+  const sel=S.cycle.sel[i];
+  const eff=effSel(i);
+  const setSel=(id,q,rp)=>{sel[id]={q:q,rep:rp||'once'}};
+  const spread=rp=>{paintCycleList();paintCycleSum();renderSheet(i)};
+  const local=()=>{patchDay(i);patchCard(i);paintCycleSum()};
+  document.querySelectorAll('[data-chk]').forEach(el=>el.onchange=()=>{
+    const id=el.dataset.chk,cur=eff[id];
+    const wasRep=cur&&cur.rep!=='once';
+    if(el.checked)setSel(id,cur&&cur.q>0?cur.q:1,cur?cur.rep:'once');
+    else if(cur&&!cur.own)setSel(id,0,'once');   /* استثناء يوم واحد من التكرار */
+    else delete sel[id];
+    save();wasRep?spread():(renderSheet(i),patchCard(i),paintCycleSum())});
+  document.querySelectorAll('[data-qty]').forEach(el=>el.onchange=()=>{
+    const id=el.dataset.qty,cur=eff[id];
+    setSel(id,num(el.value),cur?cur.rep:'once');save();
+    (cur&&cur.rep!=='once')?spread():local()});
+  document.querySelectorAll('[data-rep]').forEach(el=>el.onclick=()=>{
+    const id=el.dataset.rep,cur=eff[id];
+    setSel(id,cur?cur.q:1,el.dataset.rv);save();spread();toast(t('updated'))});
+  /* زر «أقصى ما يناسب» */
+  document.querySelectorAll('[data-max]').forEach(el=>el.onclick=()=>{
+    setSel(el.dataset.max,num(el.dataset.mq)||1,'once');save();renderSheet(i);patchCard(i);paintCycleSum()});
+  bindOver(i);
+  /* تبديل طريقة العرض */
+  document.querySelectorAll('[data-mode]').forEach(el=>el.onclick=()=>{
+    dayMode=el.dataset.mode;renderSheet(i)});
+  const q=document.getElementById('cy-q');
+  if(q){q.value=dayQ;q.addEventListener('input',()=>{dayQ=q.value;filterPicks()})}
+  const only=document.getElementById('cy-only');
+  if(only){only.checked=daySelOnly;only.onchange=()=>{daySelOnly=only.checked;filterPicks()}}
+  const cl=document.getElementById('cy-clear');
+  if(cl)cl.onclick=()=>{S.cycle.sel[i]={};save();paintCycleList();paintCycleSum();renderSheet(i);toast(t('updated'))};
+  patchDay(i);
+}
+/* أزرار «قلّل» و«عوّض برياضة» تُعاد بناؤها مع كل تحديث فتحتاج ربطًا مستقلًا */
+function bindOver(i){
+  const sel=S.cycle.sel[i]||(S.cycle.sel[i]={});
+  document.querySelectorAll('[data-dec]').forEach(el=>el.onclick=()=>{
+    const eff=effSel(i),id=el.dataset.dec,cur=eff[id];if(!cur)return;
+    const ix=SERV.findIndex(v=>v>=cur.q),nq=ix>0?SERV[ix-1]:0;
+    if(nq)sel[id]={q:nq,rep:cur.rep};
+    else if(!cur.own)sel[id]={q:0,rep:'once'};
+    else delete sel[id];
+    save();
+    if(cur.rep!=='once'){paintCycleList();paintCycleSum();renderSheet(i)}
+    else{renderSheet(i);patchCard(i);paintCycleSum()}});
+  document.querySelectorAll('[data-addex]').forEach(el=>el.onclick=()=>{
+    sel[el.dataset.addex]={q:num(el.dataset.q)||1,rep:'once'};
+    save();renderSheet(i);patchCard(i);paintCycleSum();toast(t('updated'))});
+}
+function filterPicks(){
+  const qq=dayQ.trim().toLowerCase();const seen={};
+  document.querySelectorAll('.pick').forEach(el=>{
+    const ok=(!qq||el.dataset.nm.includes(qq))&&(!daySelOnly||el.dataset.on==='1');
+    el.style.display=ok?'':'none';if(ok)seen[el.dataset.grp]=1});
+  document.querySelectorAll('.pickhead[data-grp]').forEach(el=>el.style.display=seen[el.dataset.grp]?'':'none');
+}
+function patchDay(i){
+  const T=dayTotals(i),tg=targetKcal(),tot=(T.inK+T.outK)||1;
+  const bar=document.getElementById('bal-'+i);
+  if(bar){bar.innerHTML=`<i style="width:${T.inK/tot*100}%;background:var(--plus)">${T.inK?'+'+r0(T.inK):''}</i>
+    <i style="width:${T.outK/tot*100}%;background:var(--minus)">${T.outK?'−'+r0(T.outK):''}</i>`;
+    bar.classList.remove('flash');void bar.offsetWidth;bar.classList.add('flash');}
+  const lg=document.getElementById('ballg-'+i);
+  if(lg)lg.innerHTML=`<span>${t('food')} ${r0(T.inK)}</span><b style="color:var(--ink);font-size:12.5px">${t('net')} ${sign(T.net)} ${t('kcal')}</b><span>${t('exercise')} ${r0(T.outK)}</span>`;
+  const ds=document.getElementById('dstats-'+i);
+  if(ds){const G=splitGrams(tg),B=S.settings.band;
+    ds.innerHTML=
+      (tg?stat(t('dayDiff'),sign(tg-T.net),t('kcal'),(tg-T.net)>=0?t('remain'):t('over'),(tg-T.net)>=0?'hi':'warn'):'')
+      +stat(t('fIn'),r0(T.inK),t('kcal'))+stat(t('fOut'),r0(T.outK),t('kcal'))
+      +stat(t('prot'),r0(T.p),t('gram'),G?`${t('ofTarget')} ${r0(G.p)}`:'')
+      +stat(t('carb'),r0(T.c),t('gram'),G?`${t('ofTarget')} ${r0(G.c)}`:'')
+      +stat(t('fat'),r0(T.f),t('gram'),G?`${t('ofTarget')} ${r0(G.f)}`:'')
+      +stat(t('fiber'),r0(T.fb),t('gram'),`${B.fiber}+`)
+      +stat(t('sugar'),r0(T.sg),t('gram'))+stat(t('sodium'),r0(T.na),t('mg'));}
+  patchCard(i);
+  const bg=document.getElementById('budget-'+i);
+  if(bg){bg.innerHTML=budgetBar(T,tg);bg.classList.remove('flash');void bg.offsetWidth;bg.classList.add('flash')}
+  const ov=document.getElementById('over-'+i);if(ov){ov.innerHTML=overBox(i,T,tg);bindOver(i)}
+  const sel=effSel(i),rem=remainOf(T,tg);
+  S.items.forEach(it=>{
+    const row=document.getElementById('pk-'+it.id);if(!row)return;
+    const e=sel[it.id],on=!!e,q=on?e.q:0,k=itemKcal(it);
+    row.classList.toggle('sel',on);row.dataset.on=on?'1':'0';
+    const kc=row.querySelector('.kc');
+    if(kc){kc.textContent=on?(it.t==='food'?'+':'−')+r0(k*q):'';
+      kc.style.color=on?(it.t==='food'?'var(--plus)':'var(--minus)'):''}
+    const ft=document.getElementById('ft-'+it.id);
+    if(ft){const F=fitOf(it,rem);
+      ft.textContent=F.txt;
+      ft.style.background={ok:'var(--brand-soft)',warn:'#F6EFD8',bad:'var(--plus-soft)'}[F.cls];
+      ft.style.color={ok:'var(--brand)',warn:'var(--gold)',bad:'var(--plus)'}[F.cls]}
+    const mb2=row.querySelector('[data-max]');
+    if(mb2){const F=fitOf(it,rem);mb2.dataset.mq=F.max;mb2.textContent=F.max>1?F.max:'+';
+      mb2.style.display=(!on&&F.max>=1)?'':'none'}
+  });
+  paintCycleSum();
+}
+
+/* ---------- صفحة الإعدادات ---------- */
+function cget(path){return path.split('.').reduce((o,k)=>o[k],S.settings)}
+function cset(path,v){const p=path.split('.');let o=S.settings;for(let i=0;i<p.length-1;i++)o=o[p[i]];o[p[p.length-1]]=v}
+function constField(path,label,unit){
+  const cur=cget(path),opts=OPT[path]||[];
+  const match=opts.findIndex(o=>Math.abs(o[0]-cur)<1e-9);
+  return`<div class="cf"><span>${label}${unit?` <u style="color:var(--muted);font-weight:400;text-decoration:none">· ${unit}</u>`:''}</span>
+    <div class="cin"><select data-cs="${path}">
+      ${opts.map((o,ix)=>`<option value="${ix}" ${ix===match?'selected':''}>${o[0]} — ${lang==='ar'?o[1]:(o[2]||o[1])}</option>`).join('')}
+      <option value="__c" ${match<0?'selected':''}>${t('custom')}</option></select>
+    <input type="number" inputmode="decimal" step="any" data-set="${path}" value="${cur}" placeholder="${t('custom')}"></div></div>`;
+}
+function buildSettings(){
+  const mSel=(id,label,list,cur)=>`<label class="f" style="margin-bottom:12px"><span>${label}</span>
+    <select id="${id}">${list.map(m=>`<option value="${m[0]}" ${cur===m[0]?'selected':''}>${lang==='ar'?m[1]:m[2]}</option>`).join('')}</select></label>`;
+  document.getElementById('p-settings').innerHTML=`
+  <div class="card"><h2>${t('setTitle')}</h2><div class="sub">${t('setSub')}</div>
+    <div class="note">${lang==='ar'
+      ?'اختر من القائمة قيمة معتمدة، أو اكتب قيمتك أنت في الحقل الأبيض المجاور فيتحول الاختيار تلقائيًا إلى «قيمة من عندي».'
+      :'Pick a published value from the list, or type your own in the field beside it — the selector switches to “My own value”.'}</div></div>
+
+  <div class="card"><h2>${t('mBmr')}</h2>
+    ${mSel('m-bmr',t('mBmr'),BMR_METHODS,S.settings.bmrMethod)}
+    <div class="sub" id="bmr-eq"></div>
+    <div class="grid g3">${constField('bmr.w',t('cW'))}${constField('bmr.h',t('cH'))}${constField('bmr.a',t('cA'))}
+    ${constField('bmr.male',t('cM'))}${constField('bmr.female',t('cF'))}</div>
+    <div class="fine" style="margin-top:8px">${lang==='ar'?'هذه المعاملات تُستخدم فقط عند اختيار «معادلة مخصصة».':'These coefficients apply only with the custom equation.'}</div></div>
+
+  <div class="card"><h2>${t('mIdeal')}</h2>${mSel('m-ideal',t('mIdeal'),IDEAL_METHODS,S.settings.idealMethod)}</div>
+  <div class="card"><h2>${t('mBf')}</h2>${mSel('m-bf',t('mBf'),BF_METHODS,S.settings.bfMethod)}</div>
+
+  <div class="card"><h2>${t('sAct')}</h2><div class="grid g2">
+    ${constField('act.a1',t('a1'))}${constField('act.a2',t('a2'))}${constField('act.a3',t('a3'))}
+    ${constField('act.a4',t('a4'))}${constField('act.a5',t('a5'))}</div></div>
+
+  <div class="card"><h2>${t('sAtw')}</h2><div class="grid g3">
+    ${constField('atwater.p',t('prot'))}${constField('atwater.c',t('carb'))}${constField('atwater.f',t('fat'))}</div></div>
+
+  <div class="card"><h2>${t('sBmi')}</h2><div class="grid g2">
+    ${constField('bmiT.under',t('bUnder'))}${constField('bmiT.normal',t('bNormal'))}${constField('bmiT.ob1',t('bOb1'))}
+    ${constField('bmiT.ob2',t('bOb2'))}${constField('bmiT.ob3',t('bOb3'))}</div></div>
+
+  <div class="card"><h2>${t('showTitle')}</h2><div class="sub">${t('colsSub')}</div>
+    <div class="sub" style="font-weight:700;color:var(--ink);margin-bottom:7px">${t('colsTitle')}</div>
+    <div class="grid g3">${[['kcal','zKcal'],['prot','zProt'],['carb','zCarb'],['fat','zFat'],['fib','zFib'],['sug','zSug'],['na','zNa']]
+      .map(([k,l])=>`<label class="row" style="gap:7px;cursor:pointer;background:var(--soft);border:1px solid var(--line);border-radius:9px;padding:8px 10px">
+        <input type="checkbox" data-show="${k}" ${S.settings.show[k]?'checked':''}><span style="font-size:12.5px;font-weight:600">${t(l)}</span></label>`).join('')}
+    </div>
+    <div class="sub" style="font-weight:700;color:var(--ink);margin:14px 0 7px">${t('rowsTitle')}</div>
+    <div class="grid g2">${[['rTotal','rowTotal'],['rTarget','rowTarget'],['rDiff','rowDiff'],['rPct','rowPct']]
+      .map(([k,l])=>`<label class="row" style="gap:7px;cursor:pointer;background:var(--soft);border:1px solid var(--line);border-radius:9px;padding:8px 10px">
+        <input type="checkbox" data-show="${k}" ${S.settings.show[k]?'checked':''}><span style="font-size:12.5px;font-weight:600">${t(l)}</span></label>`).join('')}
+    </div></div>
+
+  <div class="card"><h2>${t('sBands')}</h2><div class="grid g2">
+    ${constField('band.bfMlo',t('bfMlo'))}${constField('band.bfMhi',t('bfMhi'))}
+    ${constField('band.bfFlo',t('bfFlo'))}${constField('band.bfFhi',t('bfFhi'))}
+    ${constField('band.waistM',t('waistM'))}${constField('band.waistF',t('waistF'))}
+    ${constField('band.fiber',t('fibDay'))}${constField('band.sugarPct',t('sugPct'))}
+    ${constField('band.sodium',t('naDay'))}${constField('band.delta',t('deltaDefault'))}</div></div>
+
+  <div class="card"><h2>${t('sMisc')}</h2><div class="grid g2">
+    ${constField('misc.kcalPerKgFat',t('kcalKg'))}${constField('misc.waterMlPerKg',t('waterK'))}
+    ${constField('misc.minM',t('minM'))}${constField('misc.minF',t('minF'))}
+    ${constField('misc.proteinPerKg',t('protK'))}${constField('misc.fatPct',t('fatPct'))}
+    ${constField('misc.whtr',t('whtrR'))}${constField('misc.metC',t('metC'))}${constField('misc.metD',t('metD'))}</div>
+    <div class="row" style="margin-top:14px">
+      <button class="btn warn" id="s-reset">${t('resetSet')}</button>
+      <button class="btn ghost sm" id="s-export">${t('exportD')}</button>
+    </div></div>`;
+
+  document.querySelectorAll('[data-cs]').forEach(sl=>sl.onchange=()=>{
+    const path=sl.dataset.cs,inp=document.querySelector(`[data-set="${path}"]`);
+    if(sl.value==='__c'){inp.focus();inp.select();return}
+    const v=OPT[path][+sl.value][0];cset(path,v);inp.value=v;save();afterSetting(path)});
+  document.querySelectorAll('[data-set]').forEach(inp=>inp.addEventListener('input',()=>{
+    const path=inp.dataset.set;cset(path,num(inp.value));
+    const sl=document.querySelector(`[data-cs="${path}"]`);
+    const opts=OPT[path]||[];const ix=opts.findIndex(o=>Math.abs(o[0]-num(inp.value))<1e-9);
+    if(sl)sl.value=ix>=0?String(ix):'__c';
+    save();afterSetting(path,true)}));
+  document.querySelectorAll('[data-show]').forEach(cb=>cb.onchange=()=>{
+    S.settings.show[cb.dataset.show]=cb.checked?1:0;save();toast(t('updated'))});
+  /* التغيير ينعكس على أيام الدورة عند العودة إليها */
+  document.getElementById('m-bmr').onchange=e=>{S.settings.bmrMethod=e.target.value;save();eqText();toast(t('updated'))};
+  document.getElementById('m-ideal').onchange=e=>{S.settings.idealMethod=e.target.value;save();toast(t('updated'))};
+  document.getElementById('m-bf').onchange=e=>{S.settings.bfMethod=e.target.value;save();toast(t('updated'))};
+  document.getElementById('s-reset').onclick=()=>{if(!confirm(t('confirmReset')))return;
+    S.settings=JSON.parse(JSON.stringify(DEF));save();buildSettings();toast(t('savedMsg'))};
+  document.getElementById('s-export').onclick=exportData;
+  eqText();
+}
+function eqText(){
+  const el=document.getElementById('bmr-eq');if(!el)return;
+  const p=S.person,ok=has(p.age)&&has(p.height)&&has(p.weight);
+  el.innerHTML=ok?`${t('bmr')} = <b>${r0(bmrOf(p))}</b> ${t('kcal')} · ${t('tdee')} = <b>${r0(tdeeOf(p))}</b> ${t('kcal')}`:'';
+}
+let toastT;
+function afterSetting(path,quiet){
+  eqText();
+  if(S.page==='cycle'){paintPlan();paintCycleSum();paintCycleList()}
+  clearTimeout(toastT);toastT=setTimeout(()=>toast(t('updated')),400);
+}
+
+/* ======================= التشغيل ======================= */
+document.getElementById('langBtn').onclick=()=>{lang=lang==='ar'?'en':'ar';S.lang=lang;save();renderPage()};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElementById('mask'))closeDay()});
+load();renderPage();
+</script>
+</body>
+</html>
