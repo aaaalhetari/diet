@@ -691,7 +691,7 @@ const COLS=[['kcal',(i,q)=>kc(i)*q*(i.t==='food'?1:-1),T=>T.net,(tg,G)=>tg],
  ['na',(i,q)=>i.t==='food'?num(i.na)*q:0,T=>T.na,(tg,G,B)=>B.sodium]];
 const FIELDS={food:[['u','serving'],['k','cal'],['p','prot'],['c','carb'],['f','fat'],['fb','fiber'],['sg','sugar'],['na','sodium']],
               ex:[['u','sessionL'],['min','minutes'],['met','met'],['k','cal']]};
-let APP=null,GRID=null;
+let APP=null,GRID=null,EDITING=false;
 const kc=it=>APP?APP.kcalOf(it):0;
 
 createApp({
@@ -715,8 +715,13 @@ created(){APP=this;if(typeof window!=='undefined')window.__app=this},
 mounted(){document.documentElement.dir=this.lang==='ar'?'rtl':'ltr';
   this.lockScroll();
   if(this.page==='items')this.$nextTick(()=>this.buildGrid());
-  window.addEventListener('resize',()=>this.fitGrid());
-  window.addEventListener('orientationchange',()=>setTimeout(()=>this.fitGrid(),300))},
+  let lastW=window.innerWidth;
+  window.addEventListener('resize',()=>{
+    /* الكيبورد يغيّر الارتفاع فقط؛ إعادة القياس حينها تُغلق المحرّر */
+    if(Math.abs(window.innerWidth-lastW)<2)return;
+    lastW=window.innerWidth;this.fitGrid()});
+  window.addEventListener('orientationchange',()=>setTimeout(()=>{
+    lastW=window.innerWidth;this.fitGrid()},350))},
 watch:{
   S:{deep:true,handler(){this.persist()}},
   page(v){this.lockScroll();if(v==='items')this.$nextTick(()=>this.buildGrid())},
@@ -1009,17 +1014,18 @@ methods:{
       hh.addEventListener('wheel',move,{passive:true});
     };
     GRID.on('cellEditing',()=>{
+      EDITING=true;
       const h=holder();if(!h)return;
       lockX=armed?snapX:h.scrollLeft;armed=false;
-      if(h.scrollLeft!==lockX)h.scrollLeft=lockX;
-      const fix=()=>{if(lockX!==null&&h.scrollLeft!==lockX)h.scrollLeft=lockX};
+      const fix=()=>{if(lockX!==null&&Math.abs(h.scrollLeft-lockX)>4)h.scrollLeft=lockX};
+      fix();
       h.addEventListener('scroll',fix,{passive:true});
       const ids=[0,16,32,60,120,250,400].map(t=>setTimeout(fix,t));
       unhook=()=>{h.removeEventListener('scroll',fix);ids.forEach(clearTimeout)};
       setTimeout(()=>{if(unhook)unhook();unhook=null},900);
     });
-    GRID.on('cellEdited',()=>setTimeout(release,120));
-    GRID.on('cellEditCancelled',()=>setTimeout(release,120));
+    GRID.on('cellEdited',()=>{EDITING=false;setTimeout(release,120)});
+    GRID.on('cellEditCancelled',()=>{EDITING=false;setTimeout(release,120)});
     GRID.on('dataFiltered',rows=>{self.count=rows.length});
     GRID.on('tableBuilt',()=>{armGuard();self.applyFilters();self.count=GRID.getDataCount('active')});
   },
@@ -1056,7 +1062,7 @@ methods:{
     if(!el||typeof window==='undefined')return 420;
     const top=el.getBoundingClientRect().top;
     return Math.max(240,Math.round((window.innerHeight||700)-top-2))},
-  fitGrid(){if(GRID)try{GRID.setHeight(this.gridH())}catch(e){}},
+  fitGrid(){if(!GRID||EDITING)return;try{GRID.setHeight(this.gridH())}catch(e){}},
   exportCsv(){if(GRID)GRID.download('csv','mizan-'+this.itemTab+'.csv',{bom:true})},
   addRow(){const it={id:uid(),t:this.itemTab,n:'',ne:'',u:'',k:'',p:'',c:'',f:'',fb:'',sg:'',na:'',met:'',min:'',useMet:false,tags:{}};
     this.S.items.push(it);
