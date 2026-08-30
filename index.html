@@ -132,7 +132,9 @@ body.lockscroll{overflow:hidden;height:100vh;padding-bottom:0}
 .tabulator-edit-list .tabulator-edit-list-item.active{background:var(--brand)}
 .tabulator .tabulator-col-resize-handle{width:8px}
 /* شريط سحب أفقي ظاهر دائمًا */
-.tabulator .tabulator-tableholder{overflow-x:auto!important;scrollbar-width:auto}
+.tabulator .tabulator-tableholder{overflow-x:auto!important;scrollbar-width:auto;overflow-anchor:none;scroll-behavior:auto}
+.tabulator .tabulator-cell{scroll-margin:0}
+.tabulator-popup-container,.tabulator-edit-list{z-index:100!important;max-height:46vh}
 .tabulator .tabulator-tableholder::-webkit-scrollbar{height:11px;width:11px}
 .tabulator .tabulator-tableholder::-webkit-scrollbar-track{background:var(--soft);border-radius:6px}
 .tabulator .tabulator-tableholder::-webkit-scrollbar-thumb{background:#B9C7BE;border-radius:6px;border:2px solid var(--soft)}
@@ -978,6 +980,7 @@ methods:{
       textDirection:this.lang==='ar'?'rtl':'ltr',
       scrollToColumnIfVisible:false,scrollToRowIfVisible:false,
       scrollToColumnPosition:'nearest',scrollToRowPosition:'nearest',
+      popupContainer:document.body,autoResize:false,
       movableColumns:true,resizableColumnFit:false,placeholder:this.T('noItems'),
       rowHeight:40,index:'id',
       groupBy:this.stack.length?this.stack.map(id=>'tags.'+id):undefined,
@@ -992,8 +995,33 @@ methods:{
     GRID.on('cellEdited',c=>{const d=c.getRow().getData(),it=self.item(d.id);
       if(!it)return;const f=c.getField();
       if(f.startsWith('tags.'))it.tags[f.slice(5)]=c.getValue();else it[f]=c.getValue()});
+    /* أثناء التحرير: امنع أي انزلاق أفقي للجدول.
+       نلتقط موضع التمرير عند أول لمسة، فإن تحوّلت إلى سحب ألغينا الحارس. */
+    let lockX=null,unhook=null,snapX=0,armed=false;
+    const holder=()=>GRID&&GRID.element&&GRID.element.querySelector('.tabulator-tableholder');
+    const release=()=>{if(unhook){unhook();unhook=null}lockX=null};
+    const armGuard=()=>{const hh=holder();if(!hh||hh._armed)return;hh._armed=1;
+      const down=()=>{snapX=hh.scrollLeft;armed=true};
+      const move=()=>{armed=false};
+      hh.addEventListener('touchstart',down,{passive:true});
+      hh.addEventListener('mousedown',down);
+      hh.addEventListener('touchmove',move,{passive:true});
+      hh.addEventListener('wheel',move,{passive:true});
+    };
+    GRID.on('cellEditing',()=>{
+      const h=holder();if(!h)return;
+      lockX=armed?snapX:h.scrollLeft;armed=false;
+      if(h.scrollLeft!==lockX)h.scrollLeft=lockX;
+      const fix=()=>{if(lockX!==null&&h.scrollLeft!==lockX)h.scrollLeft=lockX};
+      h.addEventListener('scroll',fix,{passive:true});
+      const ids=[0,16,32,60,120,250,400].map(t=>setTimeout(fix,t));
+      unhook=()=>{h.removeEventListener('scroll',fix);ids.forEach(clearTimeout)};
+      setTimeout(()=>{if(unhook)unhook();unhook=null},900);
+    });
+    GRID.on('cellEdited',()=>setTimeout(release,120));
+    GRID.on('cellEditCancelled',()=>setTimeout(release,120));
     GRID.on('dataFiltered',rows=>{self.count=rows.length});
-    GRID.on('tableBuilt',()=>{self.applyFilters();self.count=GRID.getDataCount('active')});
+    GRID.on('tableBuilt',()=>{armGuard();self.applyFilters();self.count=GRID.getDataCount('active')});
   },
   applyFilters(){if(!GRID)return;
     const q=this.q.trim().toLowerCase();
