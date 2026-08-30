@@ -94,9 +94,10 @@ hr{border:0;border-top:1px dashed var(--line);margin:14px 0}
 .tabulator .tabulator-row.tabulator-group .glbl{display:inline-block;color:#fff;border-radius:5px;padding:1px 7px;font-size:9.5px;font-weight:800;margin-inline-end:7px;vertical-align:middle}
 .tabulator .tabulator-row.tabulator-group b{font-size:12.5px}
 .tabulator .tabulator-row.tabulator-group u{text-decoration:none;background:#fff;border:1px solid var(--line);color:var(--muted);border-radius:20px;padding:1px 8px;font-size:10.5px;margin-inline-start:7px}
-.tabulator .tabulator-row.tabulator-group.tabulator-group-level-1{background:#F8FAF7;padding-inline-start:24px}
-.tabulator .tabulator-row.tabulator-group.tabulator-group-level-2{background:#FBFCFA;padding-inline-start:40px}
-.tabulator .tabulator-row.tabulator-group.tabulator-group-level-3{background:#fff;padding-inline-start:56px}
+.tabulator .tabulator-row.tabulator-group .ghd{display:inline-flex;align-items:center;gap:2px;padding-inline-start:8px}
+.tabulator .tabulator-row.tabulator-group-level-1{background:#F8FAF7}
+.tabulator .tabulator-row.tabulator-group-level-2{background:#FBFCFA}
+.tabulator .tabulator-row.tabulator-group-level-3{background:#fff}
 /* ثيم الجدول */
 #tabgrid{border:0}
 .tabulator{background:#fff;border:0;font-family:inherit;font-size:12.5px}
@@ -810,8 +811,8 @@ computed:{
     return keep},
   rows(){return this.S.items.filter(i=>i.t===this.itemTab)},
   foodGroups(){return this.S.groups.filter(g=>this.fitsScope(g,'food'))},
-  stack(){const b=this.S.grpBy||(this.S.grpBy={food:[],ex:[]});
-    return(b[this.itemTab]||[]).filter(id=>this.grp(id))},
+  stack(){const b=this.S.grpBy;
+    return((b&&b[this.itemTab])||[]).filter(id=>this.grp(id))},
   freeGroups(){return this.S.groups.filter(g=>this.fitsScope(g,this.itemTab)&&!this.stack.includes(g.id))},
 
   /* ---------- الدورة ---------- */
@@ -965,8 +966,10 @@ methods:{
       groupBy:this.stack.length?this.stack.map(id=>'tags.'+id):undefined,
       groupHeader:this.stack.map((id,ix)=>(v,cnt)=>{
         const g=self.grp(id),o=g&&(g.opts||[]).find(x=>x.id===v);
-        return `<span class="glbl" style="background:${self.lvlColor(ix)}">${self.gname(g)}</span>`
-          +`<b>${o?self.gname(o):self.T('unclassified')}</b><u>${cnt}</u>`}),
+        return `<span class="ghd" style="margin-inline-start:${ix*18}px;border-inline-start:3px solid ${self.lvlColor(ix)}">`
+          +`<span class="glbl" style="background:${self.lvlColor(ix)}">${self.gname(g)}</span>`
+          +`<b>${o?self.gname(o):self.T('unclassified')}</b><u>${cnt}</u></span>`}),
+      groupToggleElement:'header',
       groupStartOpen:this.stack.map(()=>true),
       columnDefaults:{headerHozAlign:'center',vertAlign:'middle',resizable:true,headerFilterLiveFilter:true}});
     this.tab.on('cellEdited',c=>{const d=c.getRow().getData(),it=self.item(d.id);
@@ -984,8 +987,10 @@ methods:{
   toggleFilters(){this.showFilters=!this.showFilters;
     const el=document.getElementById('tabgrid');if(el)el.classList.toggle('hidefilters',!this.showFilters)},
   lvlColor(ix){return['#24564A','#A9500F','#1C6E8C','#6C3D6B','#9C7C22'][ix%5]},
-  setStack(arr){if(!this.S.grpBy)this.S.grpBy={food:[],ex:[]};
-    this.S.grpBy[this.itemTab]=arr;this.$nextTick(()=>this.buildGrid())},
+  setStack(arr){
+    if(!this.S.grpBy)this.S.grpBy={food:[],ex:[]};
+    this.S.grpBy=Object.assign({},this.S.grpBy,{[this.itemTab]:arr});
+    this.$nextTick(()=>this.buildGrid())},
   addLevel(id){if(this.stack.length>=4)return;this.setStack(this.stack.concat([id]))},
   dropLevel(id){this.setStack(this.stack.filter(x=>x!==id))},
   moveLevel(id,d){const a=this.stack.slice(),i=a.indexOf(id),j=i+d;
@@ -1177,6 +1182,7 @@ function fresh(){const groups=clone(SEED.groups);
 function load(){
   const base={lang:'ar',page:'person',settings:clone(SEED.DEF),
     person:{name:'أحمد',age:34,sex:'male',height:176,weight:92,act:'a2',waist:98,neck:40,hip:105,bf:'',curKcal:2900},
+    grpBy:{food:[],ex:[]},
     cycle:{delta:500,start:today(),sel:{},open:null,shown:60,order:['g_meal','g_ex','g_xt'],
       split:{mode:'pct',auto:'c',p:30,c:42,f:28}}};
   const f=fresh();
@@ -1191,6 +1197,7 @@ function load(){
       merged.settings[k]=Object.assign(clone(SEED.DEF[k]),(saved.settings||{})[k]||{}));
     merged.items.forEach(it=>{if(!it.tags)it.tags={}});
     if(!merged.cols)merged.cols=colsOf(merged.groups);
+    if(!merged.grpBy)merged.grpBy={food:[],ex:[]};
     return merged;
   }
   return base;
