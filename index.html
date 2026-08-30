@@ -65,7 +65,9 @@ hr{border:0;border-top:1px dashed var(--line);margin:14px 0}
 .ctab th{background:var(--soft);color:var(--muted);font-size:11px;font-weight:700;padding:7px 9px;text-align:start;white-space:nowrap}
 .ctab td{padding:7px 9px;border-top:1px solid var(--line);white-space:nowrap}
 /* ================= شبكة المدخلات ================= */
-.gridwrap{margin:-14px -14px -44px}
+body.lockscroll{overflow:hidden;height:100vh;padding-bottom:0}
+.gridwrap{margin:-14px -14px 0}
+.gbar{position:static!important}
 .gbar{background:#fff;border-bottom:1px solid var(--line);padding:8px 12px 9px;position:sticky;top:82px;z-index:20}
 .tsw{display:flex;gap:6px;margin-bottom:8px}
 .tsw button{flex:1;border:1px solid var(--line);background:var(--soft);color:var(--ink2);border-radius:10px;padding:9px 6px;font-size:13.5px;font-weight:800;cursor:pointer;transition:.15s}
@@ -129,6 +131,12 @@ hr{border:0;border-top:1px dashed var(--line);margin:14px 0}
 .tabulator-edit-list{border-radius:10px;font-size:12.5px}
 .tabulator-edit-list .tabulator-edit-list-item.active{background:var(--brand)}
 .tabulator .tabulator-col-resize-handle{width:8px}
+/* شريط سحب أفقي ظاهر دائمًا */
+.tabulator .tabulator-tableholder{overflow-x:auto!important;scrollbar-width:auto}
+.tabulator .tabulator-tableholder::-webkit-scrollbar{height:11px;width:11px}
+.tabulator .tabulator-tableholder::-webkit-scrollbar-track{background:var(--soft);border-radius:6px}
+.tabulator .tabulator-tableholder::-webkit-scrollbar-thumb{background:#B9C7BE;border-radius:6px;border:2px solid var(--soft)}
+.tabulator .tabulator-tableholder::-webkit-scrollbar-thumb:hover{background:var(--brand)}
 @media(max-width:620px){
   .tabulator-row .tabulator-cell{padding:6px 7px}
   .gbar{top:82px}
@@ -681,7 +689,7 @@ const COLS=[['kcal',(i,q)=>kc(i)*q*(i.t==='food'?1:-1),T=>T.net,(tg,G)=>tg],
  ['na',(i,q)=>i.t==='food'?num(i.na)*q:0,T=>T.na,(tg,G,B)=>B.sodium]];
 const FIELDS={food:[['u','serving'],['k','cal'],['p','prot'],['c','carb'],['f','fat'],['fb','fiber'],['sg','sugar'],['na','sodium']],
               ex:[['u','sessionL'],['min','minutes'],['met','met'],['k','cal']]};
-let APP=null;
+let APP=null,GRID=null;
 const kc=it=>APP?APP.kcalOf(it):0;
 
 createApp({
@@ -703,10 +711,15 @@ data(){
 },
 created(){APP=this;if(typeof window!=='undefined')window.__app=this},
 mounted(){document.documentElement.dir=this.lang==='ar'?'rtl':'ltr';
-  if(this.page==='items')this.$nextTick(()=>this.buildGrid())},
+  this.lockScroll();
+  if(this.page==='items')this.$nextTick(()=>this.buildGrid());
+  window.addEventListener('resize',()=>this.fitGrid());
+  window.addEventListener('orientationchange',()=>setTimeout(()=>this.fitGrid(),300))},
 watch:{
   S:{deep:true,handler(){this.persist()}},
-  page(v){if(v==='items')this.$nextTick(()=>this.buildGrid())},
+  page(v){this.lockScroll();if(v==='items')this.$nextTick(()=>this.buildGrid())},
+  showGroups(){this.$nextTick(()=>this.fitGrid())},
+  showFilters(){this.$nextTick(()=>this.fitGrid())},
   itemTab(){this.q='';this.$nextTick(()=>this.buildGrid())},
   q(){this.applyFilters()},
   lang(v){this.S.lang=v;document.documentElement.dir=v==='ar'?'rtl':'ltr';this.persist();
@@ -908,6 +921,7 @@ computed:{
 methods:{
   T(k){const d=this.D[k];return d?d[this.lang==='ar'?0:1]:k},
   go(p){this.page=p;this.S.page=p},
+  lockScroll(){document.body.classList.toggle('lockscroll',this.page==='items')},
   r0,r1,r2,sign,skg,num,has,
   gname(o){return o?((this.lang==='en'&&o.nameEn)?o.nameEn:o.name):''},
   iname(it){return(this.lang==='en'&&it.ne)?it.ne:it.n},
@@ -955,12 +969,15 @@ methods:{
     return out},
   buildGrid(){const el=document.getElementById('tabgrid');
     if(!el||typeof Tabulator==='undefined')return;
-    if(this.tab){this.tab.destroy();this.tab=null}
+    if(GRID){GRID.destroy();GRID=null}
     const self=this;
-    this.tab=new Tabulator(el,{
+    GRID=new Tabulator(el,{
       data:clone(this.S.items.filter(i=>i.t===this.itemTab)),
       columns:this.gcols(),
-      layout:'fitDataStretch',height:'calc(100vh - 152px)',
+      layout:'fitDataStretch',height:this.gridH(),
+      textDirection:this.lang==='ar'?'rtl':'ltr',
+      scrollToColumnIfVisible:false,scrollToRowIfVisible:false,
+      scrollToColumnPosition:'nearest',scrollToRowPosition:'nearest',
       movableColumns:true,resizableColumnFit:false,placeholder:this.T('noItems'),
       rowHeight:40,index:'id',
       groupBy:this.stack.length?this.stack.map(id=>'tags.'+id):undefined,
@@ -972,16 +989,16 @@ methods:{
       groupToggleElement:'header',
       groupStartOpen:this.stack.map(()=>true),
       columnDefaults:{headerHozAlign:'center',vertAlign:'middle',resizable:true,headerFilterLiveFilter:true}});
-    this.tab.on('cellEdited',c=>{const d=c.getRow().getData(),it=self.item(d.id);
+    GRID.on('cellEdited',c=>{const d=c.getRow().getData(),it=self.item(d.id);
       if(!it)return;const f=c.getField();
       if(f.startsWith('tags.'))it.tags[f.slice(5)]=c.getValue();else it[f]=c.getValue()});
-    this.tab.on('dataFiltered',rows=>{self.count=rows.length});
-    this.tab.on('tableBuilt',()=>{self.applyFilters();self.count=self.tab.getDataCount('active')});
+    GRID.on('dataFiltered',rows=>{self.count=rows.length});
+    GRID.on('tableBuilt',()=>{self.applyFilters();self.count=GRID.getDataCount('active')});
   },
-  applyFilters(){if(!this.tab)return;
+  applyFilters(){if(!GRID)return;
     const q=this.q.trim().toLowerCase();
-    this.tab.setFilter(q?(d=>((d.n||'')+' '+(d.ne||'')+' '+(d.u||'')).toLowerCase().includes(q)):[]);
-    this.tab.getColumns().forEach(c=>{const def=c.getDefinition();
+    GRID.setFilter(q?(d=>((d.n||'')+' '+(d.ne||'')+' '+(d.u||'')).toLowerCase().includes(q)):[]);
+    GRID.getColumns().forEach(c=>{const def=c.getDefinition();
       if(def.headerFilter)this.showFilters?c.show():null});
   },
   toggleFilters(){this.showFilters=!this.showFilters;
@@ -995,17 +1012,31 @@ methods:{
   dropLevel(id){this.setStack(this.stack.filter(x=>x!==id))},
   moveLevel(id,d){const a=this.stack.slice(),i=a.indexOf(id),j=i+d;
     if(j<0||j>=a.length)return;a.splice(i,1);a.splice(j,0,id);this.setStack(a)},
-  foldAll(open){if(!this.tab)return;
-    const walk=gs=>gs.forEach(g=>{open?g.show():g.hide();const sub=g.getSubGroups();if(sub&&sub.length)walk(sub)});
-    walk(this.tab.getGroups())},
-  exportCsv(){if(this.tab)this.tab.download('csv','mizan-'+this.itemTab+'.csv',{bom:true})},
+  /* الطيّ والفتح: المكتبة تُعيد بناء مكوّنات المجموعات بعد كل تبديل،
+     فنعيد المسح في كل خطوة بدل الاعتماد على قائمة قديمة */
+  foldAll(open){if(!GRID)return;
+    const scan=()=>{const a=[];
+      const walk=gs=>(gs||[]).forEach(g=>{a.push(g);if(g.isVisible())walk(g.getSubGroups())});
+      walk(GRID.getGroups());return a};
+    for(let i=0;i<500;i++){
+      const list=scan();
+      const t=open?list.find(g=>!g.isVisible()):list.find(g=>g.isVisible());
+      if(!t)break;
+      try{open?t.show():t.hide()}catch(e){break}
+    }},
+  gridH(){const el=document.getElementById('tabgrid');
+    if(!el||typeof window==='undefined')return 420;
+    const top=el.getBoundingClientRect().top;
+    return Math.max(240,Math.round((window.innerHeight||700)-top-2))},
+  fitGrid(){if(GRID)try{GRID.setHeight(this.gridH())}catch(e){}},
+  exportCsv(){if(GRID)GRID.download('csv','mizan-'+this.itemTab+'.csv',{bom:true})},
   addRow(){const it={id:uid(),t:this.itemTab,n:'',ne:'',u:'',k:'',p:'',c:'',f:'',fb:'',sg:'',na:'',met:'',min:'',useMet:false,tags:{}};
     this.S.items.push(it);
-    if(this.tab)this.tab.addRow(clone(it),true).then(r=>{r.getCell('n').edit()})},
+    if(GRID)GRID.addRow(clone(it),true).then(r=>{r.getCell('n').edit()})},
   delRow(id){if(!confirm(this.T('delRowQ')))return;
     this.S.items=this.S.items.filter(x=>x.id!==id);
     Object.values(this.S.cycle.sel).forEach(d=>delete d[id]);
-    if(this.tab)this.tab.deleteRow(id)},
+    if(GRID)GRID.deleteRow(id)},
   addCol(){const nm=prompt(this.T('newColQ'));if(!nm||!nm.trim())return;
     this.S.groups.push({id:'g'+uid(),name:nm.trim(),nameEn:nm.trim(),scope:this.itemTab,opts:[]});
     this.flash(this.T('savedMsg'));this.$nextTick(()=>this.buildGrid())},
