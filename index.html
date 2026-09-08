@@ -481,6 +481,7 @@
             {/* TAB 1: MEALS & LOGGING */}
             {activeBottomTab === 'meals' && (
               <div className="space-y-3">
+                {}
                 <div className="bg-white rounded-2xl p-1.5 shadow-xs border border-slate-200">
                   <div className="grid grid-cols-4 gap-1 text-center">
                     {MEAL_TABS.map((tab, idx) => (
@@ -504,10 +505,34 @@
                     <span className="text-[10px] text-emerald-600 font-bold">👈 اسحب للتنقل بين الوجبات 👉</span>
                   </div>
 
-                  {customDishes.map(dish => {
-                    const totals = getDishTotals(dish.items);
+                  {}
+                  {customDishes
+                    .filter(dish => dish.category === MEAL_TABS[activeMealIndex].title || customDishes.length <= 4)
+                    .concat(customDishes.filter(dish => dish.category !== MEAL_TABS[activeMealIndex].title && customDishes.length > 4))
+                    .map(dish => {
+                    const dt = getDishTotals(dish.items);
                     const qty = selectedLoggedMeals[dish.id] || 0;
                     const isSelected = qty > 0;
+
+                    // حساب النسب المئوية الحالية والتراكمية المستهدفة (المقياس الأقصى 140%)
+                    const MAX_SCALE = 140;
+                    const targetLineRight = (100 / MAX_SCALE) * 100; // ~71.4%
+
+                    const curCalPct = Math.round((currentTotals.calories / dailyGoals.calories) * 100);
+                    const curProPct = Math.round((currentTotals.protein / dailyGoals.protein) * 100);
+                    const curCarbPct = Math.round((currentTotals.carbs / dailyGoals.carbs) * 100);
+                    const curFatPct = Math.round((currentTotals.fat / dailyGoals.fat) * 100);
+
+                    // التوقع الاستباقي عند إضافة حصة واحدة من هذا الطبق
+                    const projCal = currentTotals.calories + dt.calories;
+                    const projPro = currentTotals.protein + dt.protein;
+                    const projCarb = currentTotals.carbs + dt.carbs;
+                    const projFat = currentTotals.fat + dt.fat;
+
+                    const projCalPct = Math.round((projCal / dailyGoals.calories) * 100);
+                    const projProPct = Math.round((projPro / dailyGoals.protein) * 100);
+                    const projCarbPct = Math.round((projCarb / dailyGoals.carbs) * 100);
+                    const projFatPct = Math.round((projFat / dailyGoals.fat) * 100);
 
                     return (
                       <div key={dish.id} className={`bg-white rounded-3xl p-4 border-2 transition-all shadow-xs ${isSelected ? 'border-emerald-500 ring-1 ring-emerald-500/20' : 'border-slate-200'}`}>
@@ -516,38 +541,88 @@
                             <span className="text-2xl p-2 bg-slate-50 rounded-2xl border border-slate-100">{dish.icon}</span>
                             <div>
                               <h3 className="font-black text-slate-900 text-sm">{dish.name}</h3>
-                              <p className="text-[10px] text-slate-400 font-semibold">{dish.items.length} مكونات داخل الطبق</p>
+                              <p className="text-[10px] text-slate-400 font-semibold">{dish.category} • {dish.items.length} مكونات داخل الطبق</p>
                             </div>
                           </div>
                           {isSelected && (
                             <span className="bg-emerald-600 text-white text-[9px] font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1">
-                              <IconCheck /> مسجل ({qty})
+                              <IconCheck /> مكرر ({qty}x)
                             </span>
                           )}
                         </div>
 
-                        {/* Dish Macro Breakdown */}
-                        <div className="grid grid-cols-4 gap-1.5 bg-slate-50 p-2.5 rounded-2xl border border-slate-100 text-[10px] text-center my-2">
-                          <div><span className="text-amber-700 font-bold block">السعرات</span><strong className="text-slate-800">{totals.calories}</strong></div>
-                          <div><span className="text-rose-700 font-bold block">البروتين</span><strong className="text-slate-800">{totals.protein}غ</strong></div>
-                          <div><span className="text-amber-900 font-bold block">الكارب</span><strong className="text-slate-800">{totals.carbs}غ</strong></div>
-                          <div><span className="text-emerald-700 font-bold block">الدهون</span><strong className="text-slate-800">{totals.fat}غ</strong></div>
+                        {/* Dish Macro Breakdown Summary */}
+                        <div className="grid grid-cols-4 gap-1.5 bg-slate-50 p-2 rounded-xl border border-slate-100 text-[10px] text-center my-2 font-bold">
+                          <div><span className="text-amber-700 block">السعرات</span><strong className="text-slate-800">{dt.calories}</strong></div>
+                          <div><span className="text-rose-700 block">البروتين</span><strong className="text-slate-800">{dt.protein}غ</strong></div>
+                          <div><span className="text-amber-900 block">الكارب</span><strong className="text-slate-800">{dt.carbs}غ</strong></div>
+                          <div><span className="text-emerald-700 block">الدهون</span><strong className="text-slate-800">{dt.fat}غ</strong></div>
                         </div>
 
-                        <div className="flex items-center justify-between pt-1 border-t border-slate-100">
-                          {isSelected ? (
-                            <div className="flex items-center bg-emerald-800 text-white rounded-xl px-2 py-1 text-xs font-bold gap-2">
-                              <button onClick={() => updateLogQty(dish.id, 1)} className="w-5 h-5 bg-emerald-700 rounded flex items-center justify-center">+</button>
-                              <span className="w-4 text-center">{qty}</span>
-                              <button onClick={() => updateLogQty(dish.id, -1)} className="w-5 h-5 bg-emerald-700 rounded flex items-center justify-center">-</button>
-                            </div>
-                          ) : (
-                            <button onClick={() => updateLogQty(dish.id, 1)} className="flex items-center gap-1 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold px-3 py-1.5 rounded-xl">
-                              <IconPlus /> <span>إضافة للوجبة</span>
-                            </button>
-                          )}
+                        {/* Cumulative Progress & Forecast Bars for this dish */}
+                        <div className="space-y-2 bg-slate-50/60 p-2.5 rounded-2xl border border-slate-200/60 my-2 text-[10px]">
+                          <div className="flex justify-between font-bold text-slate-500 border-b border-slate-200/60 pb-1 mb-1">
+                            <span>هدف 100% (الخط الأسود)</span>
+                            <span>التوقع عند إضافة الطبق:</span>
+                          </div>
 
-                          <button onClick={() => setDetailModalItem(dish)} className="text-[11px] text-slate-500 font-semibold flex items-center gap-1">
+                          {/* Calories Progress Bar */}
+                          <div>
+                            <div className="flex justify-between items-center mb-0.5 font-bold">
+                              <span className="text-amber-800">{curCalPct}% <span className="text-slate-400 font-normal">(تصبح {projCalPct}%)</span></span>
+                              <span className="text-slate-700">السعرات 🔥</span>
+                            </div>
+                            <div className="relative w-full h-2.5 bg-amber-50 rounded-full overflow-hidden border border-amber-200/60">
+                              <div className="absolute top-0 right-0 h-full bg-slate-300 transition-all duration-300" style={{ width: `${Math.min(100, (projCalPct / MAX_SCALE) * 100)}%` }} />
+                              <div className="absolute top-0 right-0 h-full bg-amber-400 transition-all duration-300" style={{ width: `${Math.min(100, (curCalPct / MAX_SCALE) * 100)}%` }} />
+                              <div className="absolute top-0 bottom-0 w-[2px] bg-slate-900 z-10" style={{ right: `${targetLineRight}%` }} />
+                            </div>
+                          </div>
+
+                          {/* Protein Progress Bar */}
+                          <div>
+                            <div className="flex justify-between items-center mb-0.5 font-bold">
+                              <span className="text-rose-800">{curProPct}% <span className="text-slate-400 font-normal">(تصبح {projProPct}%)</span></span>
+                              <span className="text-slate-700">البروتين 🍗</span>
+                            </div>
+                            <div className="relative w-full h-2.5 bg-rose-50 rounded-full overflow-hidden border border-rose-200/60">
+                              <div className="absolute top-0 right-0 h-full bg-slate-300 transition-all duration-300" style={{ width: `${Math.min(100, (projProPct / MAX_SCALE) * 100)}%` }} />
+                              <div className="absolute top-0 right-0 h-full bg-rose-500 transition-all duration-300" style={{ width: `${Math.min(100, (curProPct / MAX_SCALE) * 100)}%` }} />
+                              <div className="absolute top-0 bottom-0 w-[2px] bg-slate-900 z-10" style={{ right: `${targetLineRight}%` }} />
+                            </div>
+                          </div>
+
+                          {/* Carbs Progress Bar */}
+                          <div>
+                            <div className="flex justify-between items-center mb-0.5 font-bold">
+                              <span className="text-amber-900">{curCarbPct}% <span className="text-slate-400 font-normal">(تصبح {projCarbPct}%)</span></span>
+                              <span className="text-slate-700">الكربوهيدرات 🌾</span>
+                            </div>
+                            <div className="relative w-full h-2.5 bg-amber-50 rounded-full overflow-hidden border border-amber-200/60">
+                              <div className="absolute top-0 right-0 h-full bg-slate-300 transition-all duration-300" style={{ width: `${Math.min(100, (projCarbPct / MAX_SCALE) * 100)}%` }} />
+                              <div className="absolute top-0 right-0 h-full bg-amber-600 transition-all duration-300" style={{ width: `${Math.min(100, (curCarbPct / MAX_SCALE) * 100)}%` }} />
+                              <div className="absolute top-0 bottom-0 w-[2px] bg-slate-900 z-10" style={{ right: `${targetLineRight}%` }} />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Controls & Quantity Repeat */}
+                        <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+                          <div className="flex items-center gap-2">
+                            {isSelected ? (
+                              <div className="flex items-center bg-emerald-800 text-white rounded-xl px-2 py-1 text-xs font-bold gap-2">
+                                <button onClick={() => updateLogQty(dish.id, 1)} className="w-6 h-6 bg-emerald-700 hover:bg-emerald-600 rounded flex items-center justify-center font-black text-sm" title="تكرار الطبق">+1</button>
+                                <span className="w-5 text-center font-black text-sm">{qty}</span>
+                                <button onClick={() => updateLogQty(dish.id, -1)} className="w-6 h-6 bg-emerald-700 hover:bg-emerald-600 rounded flex items-center justify-center font-black text-sm">-1</button>
+                              </div>
+                            ) : (
+                              <button onClick={() => updateLogQty(dish.id, 1)} className="flex items-center gap-1 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold px-3 py-1.5 rounded-xl transition-all shadow-xs">
+                                <IconPlus /> <span>إضافة للوجبة</span>
+                              </button>
+                            )}
+                          </div>
+
+                          <button onClick={() => setDetailModalItem(dish)} className="text-[11px] text-slate-500 hover:text-slate-800 font-semibold flex items-center gap-1">
                             <span>مكونات الطبق</span> <IconInfo />
                           </button>
                         </div>
