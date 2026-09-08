@@ -31,7 +31,7 @@
   <div id="root"></div>
 
   <script type="text/babel">
-    const { useState, useMemo, useRef, useEffect } = React;
+    const { useState, useMemo, useRef } = React;
 
     // SVG Icon Helpers
     const IconFlame = () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/></svg>;
@@ -49,7 +49,6 @@
     const IconCheck = () => <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"/></svg>;
     const IconInfo = () => <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>;
     const IconX = () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/></svg>;
-    const IconTrash = () => <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>;
 
     const INITIAL_INGREDIENTS = [
       // دواجن ولحوم وأسماك
@@ -420,6 +419,13 @@
         });
       };
 
+      const updateWater = (delta) => {
+        setPatientVitals(prev => ({
+          ...prev,
+          waterGlasses: Math.max(0, Math.min(12, prev.waterGlasses + delta))
+        }));
+      };
+
       // Swipe Listeners
       const handleTouchStart = (e) => { touchStartX.current = e.targetTouches[0].clientX; };
       const handleTouchMove = (e) => { touchEndX.current = e.targetTouches[0].clientX; };
@@ -434,6 +440,7 @@
       return (
         <div className="min-h-screen bg-slate-100 text-slate-800 pb-28 selection:bg-emerald-500">
           
+          {/* Header */}
           <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs">
             <div className="max-w-md mx-auto px-4 py-2.5">
               <div className="flex items-center justify-between mb-2">
@@ -481,7 +488,6 @@
             {/* TAB 1: MEALS & LOGGING */}
             {activeBottomTab === 'meals' && (
               <div className="space-y-3">
-                {}
                 <div className="bg-white rounded-2xl p-1.5 shadow-xs border border-slate-200">
                   <div className="grid grid-cols-4 gap-1 text-center">
                     {MEAL_TABS.map((tab, idx) => (
@@ -505,7 +511,6 @@
                     <span className="text-[10px] text-emerald-600 font-bold">👈 اسحب للتنقل بين الوجبات 👉</span>
                   </div>
 
-                  {}
                   {customDishes
                     .filter(dish => dish.category === MEAL_TABS[activeMealIndex].title || customDishes.length <= 4)
                     .concat(customDishes.filter(dish => dish.category !== MEAL_TABS[activeMealIndex].title && customDishes.length > 4))
@@ -514,25 +519,22 @@
                     const qty = selectedLoggedMeals[dish.id] || 0;
                     const isSelected = qty > 0;
 
-                    // حساب النسب المئوية الحالية والتراكمية المستهدفة (المقياس الأقصى 140%)
+                    // Target line 100% fixed for RTL layout
                     const MAX_SCALE = 140;
                     const targetLineRight = (100 / MAX_SCALE) * 100; // ~71.4%
 
                     const curCalPct = Math.round((currentTotals.calories / dailyGoals.calories) * 100);
                     const curProPct = Math.round((currentTotals.protein / dailyGoals.protein) * 100);
                     const curCarbPct = Math.round((currentTotals.carbs / dailyGoals.carbs) * 100);
-                    const curFatPct = Math.round((currentTotals.fat / dailyGoals.fat) * 100);
 
-                    // التوقع الاستباقي عند إضافة حصة واحدة من هذا الطبق
+                    // Forecast values when adding 1 serving of this dish
                     const projCal = currentTotals.calories + dt.calories;
                     const projPro = currentTotals.protein + dt.protein;
                     const projCarb = currentTotals.carbs + dt.carbs;
-                    const projFat = currentTotals.fat + dt.fat;
 
                     const projCalPct = Math.round((projCal / dailyGoals.calories) * 100);
                     const projProPct = Math.round((projPro / dailyGoals.protein) * 100);
                     const projCarbPct = Math.round((projCarb / dailyGoals.carbs) * 100);
-                    const projFatPct = Math.round((projFat / dailyGoals.fat) * 100);
 
                     return (
                       <div key={dish.id} className={`bg-white rounded-3xl p-4 border-2 transition-all shadow-xs ${isSelected ? 'border-emerald-500 ring-1 ring-emerald-500/20' : 'border-slate-200'}`}>
@@ -559,14 +561,14 @@
                           <div><span className="text-emerald-700 block">الدهون</span><strong className="text-slate-800">{dt.fat}غ</strong></div>
                         </div>
 
-                        {/* Cumulative Progress & Forecast Bars for this dish */}
+                        {/* Progress & Forecast Bars */}
                         <div className="space-y-2 bg-slate-50/60 p-2.5 rounded-2xl border border-slate-200/60 my-2 text-[10px]">
                           <div className="flex justify-between font-bold text-slate-500 border-b border-slate-200/60 pb-1 mb-1">
                             <span>هدف 100% (الخط الأسود)</span>
                             <span>التوقع عند إضافة الطبق:</span>
                           </div>
 
-                          {/* Calories Progress Bar */}
+                          {/* Calories Bar */}
                           <div>
                             <div className="flex justify-between items-center mb-0.5 font-bold">
                               <span className="text-amber-800">{curCalPct}% <span className="text-slate-400 font-normal">(تصبح {projCalPct}%)</span></span>
@@ -579,7 +581,7 @@
                             </div>
                           </div>
 
-                          {/* Protein Progress Bar */}
+                          {/* Protein Bar */}
                           <div>
                             <div className="flex justify-between items-center mb-0.5 font-bold">
                               <span className="text-rose-800">{curProPct}% <span className="text-slate-400 font-normal">(تصبح {projProPct}%)</span></span>
@@ -592,7 +594,7 @@
                             </div>
                           </div>
 
-                          {/* Carbs Progress Bar */}
+                          {/* Carbs Bar */}
                           <div>
                             <div className="flex justify-between items-center mb-0.5 font-bold">
                               <span className="text-amber-900">{curCarbPct}% <span className="text-slate-400 font-normal">(تصبح {projCarbPct}%)</span></span>
@@ -633,7 +635,7 @@
               </div>
             )}
 
-            {/* TAB 2: INGREDIENTS MANAGER (مدخلات المكونات) */}
+            {/* TAB 2: INGREDIENTS MANAGER */}
             {activeBottomTab === 'ingredients' && (
               <div className="space-y-4">
                 <div className="bg-white rounded-3xl p-4 border border-slate-200 shadow-xs space-y-3">
@@ -674,7 +676,7 @@
               </div>
             )}
 
-            {/* TAB 3: DISH / RECIPE BUILDER (منشئ الأطباق) */}
+            {/* TAB 3: DISH BUILDER */}
             {activeBottomTab === 'recipes' && (
               <div className="space-y-4">
                 <div className="bg-white rounded-3xl p-4 border border-slate-200 shadow-xs space-y-3">
@@ -750,12 +752,38 @@
                     </div>
                   </div>
                 </div>
+
+                {/* Water Tracker */}
+                <div className="bg-white rounded-3xl p-4 shadow-xs border border-slate-200 space-y-3">
+                  <div className="flex justify-between items-center">
+                    <h3 className="font-black text-sm text-slate-800">تتبع شرب الماء 💧</h3>
+                    <span className="text-xs font-bold text-sky-600 bg-sky-50 px-2.5 py-1 rounded-full border border-sky-100">
+                      {patientVitals.waterGlasses} / {patientVitals.waterTarget} أكواب
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-4 gap-2 pt-1">
+                    {Array.from({ length: patientVitals.waterTarget }).map((_, idx) => {
+                      const isFilled = idx < patientVitals.waterGlasses;
+                      return (
+                        <button
+                          key={idx}
+                          onClick={() => updateWater(isFilled ? -1 : 1)}
+                          className={`p-2.5 rounded-2xl border transition-all flex flex-col items-center justify-center gap-1 ${
+                            isFilled ? 'bg-sky-500 text-white border-sky-500 shadow-xs' : 'bg-slate-50 text-slate-400 border-slate-200'
+                          }`}
+                        >
+                          <IconDroplets />
+                          <span className="text-[10px] font-bold">كوب {idx + 1}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
             )}
 
           </main>
 
-          {}
           {/* BOTTOM HOME BAR (4 TABS) */}
           <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-lg">
             <div className="max-w-md mx-auto grid grid-cols-4 gap-1 p-2 text-center text-xs">
@@ -779,12 +807,165 @@
             </div>
           </nav>
 
-          {/* ... existing modals code ... */}
+          {/* MODAL 1: DISH DETAILS MODAL */}
+          {detailModalItem && (
+            <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+              <div className="bg-white w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-3 max-h-[85vh] overflow-y-auto">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                  <h3 className="font-black text-slate-900 text-sm">{detailModalItem.name}</h3>
+                  <button onClick={() => setDetailModalItem(null)} className="text-slate-400 hover:text-slate-600 p-1">
+                    <IconX />
+                  </button>
                 </div>
-
-                <button onClick={() => setDetailModalItem(null)} className="w-full py-2 bg-slate-900 text-white font-bold text-xs rounded-xl">
+                <div className="space-y-2 text-xs">
+                  <div className="bg-slate-50 p-2 rounded-xl text-center font-bold text-slate-700">
+                    <span>التصنيف: {detailModalItem.category}</span>
+                  </div>
+                  <div className="space-y-1.5 pt-1">
+                    <span className="font-bold text-slate-800 block">مكونات الطبق بالجرامات:</span>
+                    {detailModalItem.items.map((it, idx) => {
+                      const ing = ingredients.find(i => i.id === it.ingredientId);
+                      return ing ? (
+                        <div key={idx} className="flex justify-between items-center bg-slate-50 p-2 rounded-lg text-[11px]">
+                          <span className="font-bold text-slate-700">{ing.icon} {ing.name}</span>
+                          <span className="text-slate-500">{it.qtyMultiplier * ing.baseQty} {ing.unit}</span>
+                        </div>
+                      ) : null;
+                    })}
+                  </div>
+                </div>
+                <button onClick={() => setDetailModalItem(null)} className="w-full py-2 bg-slate-900 text-white font-bold text-xs rounded-xl hover:bg-slate-800">
                   إغلاق
                 </button>
+              </div>
+            </div>
+          )}
+
+          {/* MODAL 2: ADD INGREDIENT MODAL */}
+          {showAddIngredientModal && (
+            <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+              <div className="bg-white w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-3 max-h-[90vh] overflow-y-auto">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                  <h3 className="font-black text-slate-900 text-sm">إضافة مكون خام جديد</h3>
+                  <button onClick={() => setShowAddIngredientModal(false)} className="text-slate-400 hover:text-slate-600 p-1">
+                    <IconX />
+                  </button>
+                </div>
+                <form onSubmit={handleSaveIngredient} className="space-y-3 text-xs">
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">اسم المكون</label>
+                    <input type="text" required value={newIng.name} onChange={e => setNewIng({...newIng, name: e.target.value})} placeholder="مثال: صدر دجاج طازج" className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="block font-bold text-slate-700 mb-1">الكمية الأساسية</label>
+                      <input type="number" required value={newIng.baseQty} onChange={e => setNewIng({...newIng, baseQty: e.target.value})} className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl" />
+                    </div>
+                    <div>
+                      <label className="block font-bold text-slate-700 mb-1">وحدة القياس</label>
+                      <select value={newIng.unit} onChange={e => setNewIng({...newIng, unit: e.target.value})} className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl">
+                        <option value="جرام">جرام</option>
+                        <option value="حبة">حبة</option>
+                        <option value="ملعقة">ملعقة</option>
+                        <option value="علبة">علبة</option>
+                        <option value="سكوب">سكوب</option>
+                        <option value="كوب">كوب</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="block font-bold text-slate-700 mb-1">البروتين (غ)</label>
+                      <input type="number" step="0.1" value={newIng.protein} onChange={e => setNewIng({...newIng, protein: e.target.value})} className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl" />
+                    </div>
+                    <div>
+                      <label className="block font-bold text-slate-700 mb-1">الكارب (غ)</label>
+                      <input type="number" step="0.1" value={newIng.carbs} onChange={e => setNewIng({...newIng, carbs: e.target.value})} className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl" />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="block font-bold text-slate-700 mb-1">الدهون (غ)</label>
+                      <input type="number" step="0.1" value={newIng.fat} onChange={e => setNewIng({...newIng, fat: e.target.value})} className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl" />
+                    </div>
+                    <div>
+                      <label className="block font-bold text-slate-700 mb-1">الألياف (غ)</label>
+                      <input type="number" step="0.1" value={newIng.fiber} onChange={e => setNewIng({...newIng, fiber: e.target.value})} className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl" />
+                    </div>
+                  </div>
+                  <div className="bg-emerald-50 p-2.5 rounded-xl border border-emerald-200 text-center">
+                    <span className="text-emerald-800 font-bold block text-[11px]">السعرات المحسوبة آلياً:</span>
+                    <span className="text-emerald-900 font-black text-sm">{calculatedNewIngCalories} سعرة</span>
+                  </div>
+                  <div className="flex gap-2 pt-2">
+                    <button type="submit" className="flex-1 py-2 bg-emerald-600 text-white font-bold rounded-xl hover:bg-emerald-700">حفظ المكون</button>
+                    <button type="button" onClick={() => setShowAddIngredientModal(false)} className="py-2 px-4 bg-slate-100 text-slate-700 font-bold rounded-xl">إلغاء</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+
+          {/* MODAL 3: ADD DISH MODAL */}
+          {showAddDishModal && (
+            <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+              <div className="bg-white w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-3 max-h-[90vh] overflow-y-auto">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                  <h3 className="font-black text-slate-900 text-sm">ابتكار طبق جديد</h3>
+                  <button onClick={() => setShowAddDishModal(false)} className="text-slate-400 hover:text-slate-600 p-1">
+                    <IconX />
+                  </button>
+                </div>
+                <form onSubmit={handleSaveDish} className="space-y-3 text-xs">
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">اسم الطبق</label>
+                    <input type="text" required value={newDish.name} onChange={e => setNewDish({...newDish, name: e.target.value})} placeholder="مثال: مجبوس دجاج دايت" className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="block font-bold text-slate-700 mb-1">الوجبة/الفئة</label>
+                      <select value={newDish.category} onChange={e => setNewDish({...newDish, category: e.target.value})} className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl">
+                        <option value="فطور">فطور</option>
+                        <option value="غداء">غداء</option>
+                        <option value="عشاء">عشاء</option>
+                        <option value="سناك">سناك</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block font-bold text-slate-700 mb-1">رمز الطبق (الأيقونة)</label>
+                      <input type="text" value={newDish.icon} onChange={e => setNewDish({...newDish, icon: e.target.value})} placeholder="🍲" className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl text-center" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">اختر المكونات والكميات للطبق:</label>
+                    <div className="space-y-1.5 max-h-48 overflow-y-auto no-scrollbar border border-slate-200 rounded-xl p-2 bg-slate-50">
+                      {ingredients.map(ing => {
+                        const selected = newDish.selectedItems.find(i => i.ingredientId === ing.id);
+                        return (
+                          <div key={ing.id} className={`p-2 rounded-lg border transition-all flex items-center justify-between ${selected ? 'bg-emerald-50 border-emerald-300' : 'bg-white border-slate-200'}`}>
+                            <button type="button" onClick={() => toggleIngredientInNewDish(ing.id)} className="flex items-center gap-1.5 text-right flex-1 font-bold text-[11px] text-slate-800">
+                              <span className="text-sm">{ing.icon}</span>
+                              <span>{ing.name}</span>
+                            </button>
+                            {selected && (
+                              <div className="flex items-center gap-1 bg-white px-2 py-0.5 rounded border border-emerald-200">
+                                <button type="button" onClick={() => updateNewDishItemMultiplier(ing.id, selected.qtyMultiplier - 0.2)} className="w-4 h-4 bg-slate-100 rounded font-bold flex items-center justify-center">-</button>
+                                <span className="text-[10px] font-bold text-slate-700 w-12 text-center">{Math.round(selected.qtyMultiplier * ing.baseQty)} {ing.unit}</span>
+                                <button type="button" onClick={() => updateNewDishItemMultiplier(ing.id, selected.qtyMultiplier + 0.2)} className="w-4 h-4 bg-slate-100 rounded font-bold flex items-center justify-center">+</button>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2 pt-2">
+                    <button type="submit" disabled={newDish.selectedItems.length === 0} className="flex-1 py-2 bg-emerald-600 disabled:bg-slate-300 text-white font-bold rounded-xl hover:bg-emerald-700">حفظ الطبق الجديد</button>
+                    <button type="button" onClick={() => setShowAddDishModal(false)} className="py-2 px-4 bg-slate-100 text-slate-700 font-bold rounded-xl">إلغاء</button>
+                  </div>
+                </form>
               </div>
             </div>
           )}
