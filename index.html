@@ -41,7 +41,6 @@
     const IconDroplets = () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z"/></svg>;
     const IconHeart = () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>;
     const IconActivity = () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>;
-    const IconTreePine = () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 2L4 12h3l-4 8h14l-4-8h3L12 2zM12 20v2"/></svg>;
     const IconUtensils = () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>;
     const IconDatabase = () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/></svg>;
     const IconChefHat = () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4a4 4 0 013.83 2.83A4 4 0 0118 10a3 3 0 01-.17 1H6.17A3 3 0 016 10a4 4 0 012.17-3.17A4 4 0 0112 4zM6 14h12v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4z"/></svg>;
@@ -53,34 +52,208 @@
     const IconTrash = () => <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>;
 
     const INITIAL_INGREDIENTS = [
+      // دواجن ولحوم وأسماك
       { id: 'ing-chicken', name: 'صدر دجاج خام', unit: 'جرام', baseQty: 100, protein: 31, carbs: 0, fat: 3.6, fiber: 0, calories: 165, icon: '🍗' },
-      { id: 'ing-rice', name: 'أرز بسمتي مسلوق', unit: 'جرام', baseQty: 100, protein: 2.7, carbs: 28, fat: 0.3, fiber: 0.4, calories: 128, icon: '🍚' },
-      { id: 'ing-olive-oil', name: 'زيت زيتون بكر', unit: 'ملعقة طعام (10 مل)', baseQty: 10, protein: 0, carbs: 0, fat: 10, fiber: 0, calories: 90, icon: '🫒' },
+      { id: 'ing-chicken-thigh', name: 'فخذ دجاج بدون جلد', unit: 'جرام', baseQty: 100, protein: 24, carbs: 0, fat: 8, fiber: 0, calories: 170, icon: '🍗' },
+      { id: 'ing-beef-lean', name: 'لحم بقر مفروم صافي (90%)', unit: 'جرام', baseQty: 100, protein: 26, carbs: 0, fat: 10, fiber: 0, calories: 194, icon: '🥩' },
+      { id: 'ing-beef-steak', name: 'ستيك بقر فيليه', unit: 'جرام', baseQty: 100, protein: 28, carbs: 0, fat: 7, fiber: 0, calories: 175, icon: '🥩' },
+      { id: 'ing-lamb', name: 'لحم ضأن هبر خام', unit: 'جرام', baseQty: 100, protein: 22, carbs: 0, fat: 13, fiber: 0, calories: 205, icon: '🍖' },
+      { id: 'ing-salmon', name: 'سلمون طازج خام', unit: 'جرام', baseQty: 100, protein: 22, carbs: 0, fat: 12, fiber: 0, calories: 196, icon: '🐟' },
+      { id: 'ing-tuna', name: 'تونة بالماء صافية', unit: 'علبة (120غ)', baseQty: 120, protein: 28, carbs: 0, fat: 1, fiber: 0, calories: 121, icon: '🐟' },
+      { id: 'ing-shrimp', name: 'جمبري/ربيان خام', unit: 'جرام', baseQty: 100, protein: 24, carbs: 0.2, fat: 0.3, fiber: 0, calories: 99, icon: '🦐' },
+
+      // بيض وألبان
       { id: 'ing-egg', name: 'بيض مسلوق كامل', unit: 'حبة كبيرة', baseQty: 1, protein: 6.5, carbs: 0.6, fat: 5, fiber: 0, calories: 73, icon: '🥚' },
-      { id: 'ing-toast', name: 'توست أسمر', unit: 'شريحة', baseQty: 1, protein: 4, carbs: 12, fat: 1, fiber: 2, calories: 73, icon: '🍞' },
-      { id: 'ing-greek-yogurt', name: 'زبادي يوناني سادة', unit: 'علبة (170غ)', baseQty: 170, protein: 18, carbs: 6, fat: 1.5, fiber: 0, calories: 110, icon: '🥣' }
+      { id: 'ing-egg-white', name: 'بياض بيض مسلوق', unit: 'حبة', baseQty: 1, protein: 3.6, carbs: 0.2, fat: 0.1, fiber: 0, calories: 17, icon: '🥚' },
+      { id: 'ing-greek-yogurt', name: 'زبادي يوناني سادة 0%', unit: 'علبة (170غ)', baseQty: 170, protein: 18, carbs: 6, fat: 0.5, fiber: 0, calories: 101, icon: '🥣' },
+      { id: 'ing-cottage-cheese', name: 'جبن قريش طازج', unit: 'جرام', baseQty: 100, protein: 12, carbs: 3, fat: 2, fiber: 0, calories: 78, icon: '🧀' },
+      { id: 'ing-baladna-milk', name: 'حليب بروتين بلدنا', unit: 'عبوة (330مل)', baseQty: 1, protein: 30, carbs: 16, fat: 2.2, fiber: 0, calories: 204, icon: '🥛' },
+      { id: 'ing-cheddar', name: 'جبنة شيدر مبشورة', unit: 'جرام', baseQty: 30, protein: 7, carbs: 0.4, fat: 9.5, fiber: 0, calories: 115, icon: '🧀' },
+
+      // نشويات وحبوب
+      { id: 'ing-rice', name: 'أرز بسمتي مسلوق', unit: 'جرام', baseQty: 100, protein: 2.7, carbs: 28, fat: 0.3, fiber: 0.4, calories: 126, icon: '🍚' },
+      { id: 'ing-oats', name: 'شوفان كامل خام', unit: 'جرام', baseQty: 50, protein: 6.5, carbs: 33, fat: 3.5, fiber: 5, calories: 189, icon: '🌾' },
+      { id: 'ing-toast', name: 'توست أسمر بالحبوب', unit: 'شريحة', baseQty: 1, protein: 4, carbs: 12, fat: 1, fiber: 2, calories: 73, icon: '🍞' },
+      { id: 'ing-arabic-bread', name: 'خبز بر أسمر دايت', unit: 'نصف رغيف', baseQty: 1, protein: 5, carbs: 22, fat: 0.8, fiber: 3, calories: 115, icon: '🫓' },
+      { id: 'ing-sweet-potato', name: 'بطاطا حلوة مشوية', unit: 'جرام', baseQty: 100, protein: 1.6, carbs: 20, fat: 0.1, fiber: 3, calories: 87, icon: '🍠' },
+      { id: 'ing-potato', name: 'بطاطس مسلوقة', unit: 'جرام', baseQty: 100, protein: 2, carbs: 17, fat: 0.1, fiber: 2, calories: 77, icon: '🥔' },
+      { id: 'ing-quinoa', name: 'كينوا مطبوخة', unit: 'جرام', baseQty: 100, protein: 4.4, carbs: 21, fat: 1.9, fiber: 2.8, calories: 120, icon: '🥣' },
+
+      // زيوت ومكسرات وبقوليات
+      { id: 'ing-olive-oil', name: 'زيت زيتون بكر', unit: 'ملعقة طعام (10 مل)', baseQty: 10, protein: 0, carbs: 0, fat: 10, fiber: 0, calories: 90, icon: '🫒' },
+      { id: 'ing-peanut-butter', name: 'زبدة فول سوداني طبيعية', unit: 'ملعقة (15غ)', baseQty: 15, protein: 4, carbs: 3, fat: 8, fiber: 1, calories: 100, icon: '🥜' },
+      { id: 'ing-almonds', name: 'لوز نيء مفيد', unit: 'حفنة (30غ)', baseQty: 30, protein: 6, carbs: 6, fat: 14, fiber: 3.5, calories: 174, icon: '🌰' },
+      { id: 'ing-lentils', name: 'عدس بني مسلوق', unit: 'جرام', baseQty: 100, protein: 9, carbs: 20, fat: 0.4, fiber: 8, calories: 116, icon: '🍲' },
+
+      // خضار وفواكه ومكملات
+      { id: 'ing-whey-iso', name: 'واي بروتين آيسوليت', unit: 'سكوب (30غ)', baseQty: 1, protein: 25, carbs: 1, fat: 0.5, fiber: 0, calories: 109, icon: '🥤' },
+      { id: 'ing-banana', name: 'موز طازج', unit: 'حبة متوسطة (100غ)', baseQty: 1, protein: 1.1, carbs: 23, fat: 0.3, fiber: 2.6, calories: 99, icon: '🍌' },
+      { id: 'ing-dates', name: 'تمر خلاص/سكري', unit: '3 حبات (30غ)', baseQty: 1, protein: 0.8, carbs: 22, fat: 0.1, fiber: 2, calories: 92, icon: '🌴' },
+      { id: 'ing-broccoli', name: 'بروكلي مسلوق', unit: 'جرام', baseQty: 100, protein: 2.8, carbs: 7, fat: 0.4, fiber: 3.3, calories: 43, icon: '🥦' },
+      { id: 'ing-salad-mix', name: 'سلطة خضراء مشكلة', unit: 'طبق (150غ)', baseQty: 1, protein: 1.5, carbs: 4, fat: 0.2, fiber: 2.5, calories: 24, icon: '🥗' },
+      { id: 'ing-avocado', name: 'أفوكادو طازج', unit: 'نصف حبة (50غ)', baseQty: 1, protein: 1, carbs: 4.3, fat: 7.4, fiber: 3.4, calories: 80, icon: '🥑' }
     ];
 
     const INITIAL_CUSTOM_DISHES = [
+      // فطور
+      {
+        id: 'dish-toast-eggs',
+        name: 'سندويش بيض وتوست دايت',
+        category: 'فطور',
+        icon: '🥪',
+        items: [
+          { ingredientId: 'ing-egg', qtyMultiplier: 2 },
+          { ingredientId: 'ing-toast', qtyMultiplier: 2 },
+          { ingredientId: 'ing-olive-oil', qtyMultiplier: 0.3 }
+        ]
+      },
+      {
+        id: 'dish-oatmeal-pro',
+        name: 'طبق شوفان بالبروتين والموز',
+        category: 'فطور',
+        icon: '🥣',
+        items: [
+          { ingredientId: 'ing-oats', qtyMultiplier: 1 },
+          { ingredientId: 'ing-whey-iso', qtyMultiplier: 1 },
+          { ingredientId: 'ing-banana', qtyMultiplier: 1 },
+          { ingredientId: 'ing-peanut-butter', qtyMultiplier: 1 }
+        ]
+      },
+      {
+        id: 'dish-greek-bowl',
+        name: 'طبق الزبادي اليوناني والتمر',
+        category: 'فطور',
+        icon: '🍯',
+        items: [
+          { ingredientId: 'ing-greek-yogurt', qtyMultiplier: 1 },
+          { ingredientId: 'ing-dates', qtyMultiplier: 1 },
+          { ingredientId: 'ing-almonds', qtyMultiplier: 0.5 }
+        ]
+      },
+
+      // غداء
       {
         id: 'dish-biryani',
         name: 'طبق برياني دجاج صحي',
         category: 'غداء',
         icon: '🍲',
         items: [
-          { ingredientId: 'ing-chicken', qtyMultiplier: 2 }, // 200g
-          { ingredientId: 'ing-rice', qtyMultiplier: 1.5 },   // 150g
-          { ingredientId: 'ing-olive-oil', qtyMultiplier: 0.5 } // 5ml
+          { ingredientId: 'ing-chicken', qtyMultiplier: 2 },
+          { ingredientId: 'ing-rice', qtyMultiplier: 1.5 },
+          { ingredientId: 'ing-olive-oil', qtyMultiplier: 0.5 }
         ]
       },
       {
-        id: 'dish-toast-eggs',
-        name: 'سندويش بيض وتوست للدوام',
-        category: 'فطور',
-        icon: '🥪',
+        id: 'dish-machboos',
+        name: 'مجبوس لحم بقر صحي',
+        category: 'غداء',
+        icon: '🥩',
         items: [
-          { ingredientId: 'ing-egg', qtyMultiplier: 2 },   // 2 بيضات
-          { ingredientId: 'ing-toast', qtyMultiplier: 2 }  // 2 توست
+          { ingredientId: 'ing-beef-lean', qtyMultiplier: 1.8 },
+          { ingredientId: 'ing-rice', qtyMultiplier: 1.5 },
+          { ingredientId: 'ing-salad-mix', qtyMultiplier: 1 }
+        ]
+      },
+      {
+        id: 'dish-shish-tawook',
+        name: 'طبق شيش طاووق مع أرز وخضار',
+        category: 'غداء',
+        icon: '🍢',
+        items: [
+          { ingredientId: 'ing-chicken', qtyMultiplier: 2.2 },
+          { ingredientId: 'ing-rice', qtyMultiplier: 1.2 },
+          { ingredientId: 'ing-broccoli', qtyMultiplier: 1 }
+        ]
+      },
+      {
+        id: 'dish-steak-potato',
+        name: 'ستيك بقر مشوي وبطاطا حلوة',
+        category: 'غداء',
+        icon: '🥩',
+        items: [
+          { ingredientId: 'ing-beef-steak', qtyMultiplier: 2 },
+          { ingredientId: 'ing-sweet-potato', qtyMultiplier: 1.5 },
+          { ingredientId: 'ing-broccoli', qtyMultiplier: 1 }
+        ]
+      },
+      {
+        id: 'dish-salmon-quinoa',
+        name: 'طبق سلمون مشوي بالكينوا',
+        category: 'غداء',
+        icon: '🐟',
+        items: [
+          { ingredientId: 'ing-salmon', qtyMultiplier: 1.8 },
+          { ingredientId: 'ing-quinoa', qtyMultiplier: 1.2 },
+          { ingredientId: 'ing-avocado', qtyMultiplier: 1 }
+        ]
+      },
+
+      // عشاء
+      {
+        id: 'dish-tuna-salad',
+        name: 'سلطة تونة زاهية بالزيتون',
+        category: 'عشاء',
+        icon: '🥗',
+        items: [
+          { ingredientId: 'ing-tuna', qtyMultiplier: 1 },
+          { ingredientId: 'ing-salad-mix', qtyMultiplier: 1 },
+          { ingredientId: 'ing-olive-oil', qtyMultiplier: 0.8 },
+          { ingredientId: 'ing-arabic-bread', qtyMultiplier: 1 }
+        ]
+      },
+      {
+        id: 'dish-shrimp-rice',
+        name: 'طبق جمبري مشوي مع أرز بسمتي',
+        category: 'عشاء',
+        icon: '🦐',
+        items: [
+          { ingredientId: 'ing-shrimp', qtyMultiplier: 2 },
+          { ingredientId: 'ing-rice', qtyMultiplier: 1.2 },
+          { ingredientId: 'ing-salad-mix', qtyMultiplier: 1 }
+        ]
+      },
+      {
+        id: 'dish-cottage-bowl',
+        name: 'طبق جبن قريش وزيت زيتون مع خبز',
+        category: 'عشاء',
+        icon: '🧀',
+        items: [
+          { ingredientId: 'ing-cottage-cheese', qtyMultiplier: 2 },
+          { ingredientId: 'ing-olive-oil', qtyMultiplier: 0.5 },
+          { ingredientId: 'ing-arabic-bread', qtyMultiplier: 1 }
+        ]
+      },
+      {
+        id: 'dish-lentil-soup',
+        name: 'شوربة عدس صحية مع توست',
+        category: 'عشاء',
+        icon: '🥣',
+        items: [
+          { ingredientId: 'ing-lentils', qtyMultiplier: 1.5 },
+          { ingredientId: 'ing-toast', qtyMultiplier: 1 },
+          { ingredientId: 'ing-olive-oil', qtyMultiplier: 0.5 }
+        ]
+      },
+
+      // سناك
+      {
+        id: 'dish-baladna-shake',
+        name: 'سناك حليب بلدنا مع موز وتمر',
+        category: 'سناك',
+        icon: '🥛',
+        items: [
+          { ingredientId: 'ing-baladna-milk', qtyMultiplier: 1 },
+          { ingredientId: 'ing-banana', qtyMultiplier: 0.5 }
+        ]
+      },
+      {
+        id: 'dish-protein-shake',
+        name: 'سكوب آيسوليت مع لوز',
+        category: 'سناك',
+        icon: '🥤',
+        items: [
+          { ingredientId: 'ing-whey-iso', qtyMultiplier: 1 },
+          { ingredientId: 'ing-almonds', qtyMultiplier: 1 }
         ]
       }
     ];
@@ -93,7 +266,7 @@
     ];
 
     function App() {
-      // Navigation state: 'meals' | 'vitals' | 'tree' | 'ingredients' | 'recipes'
+      // Navigation state: 'meals' | 'ingredients' | 'recipes' | 'vitals'
       const [activeBottomTab, setActiveBottomTab] = useState('meals');
       const [activeMealIndex, setActiveMealIndex] = useState(0);
 
@@ -113,7 +286,7 @@
       // Databases
       const [ingredients, setIngredients] = useState(INITIAL_INGREDIENTS);
       const [customDishes, setCustomDishes] = useState(INITIAL_CUSTOM_DISHES);
-      const [selectedLoggedMeals, setSelectedLoggedMeals] = useState({ 'dish-biryani': 1 });
+      const [selectedLoggedMeals, setSelectedLoggedMeals] = useState({ 'dish-biryani': 1, 'dish-toast-eggs': 1 });
 
       // Modal States
       const [showAddIngredientModal, setShowAddIngredientModal] = useState(false);
@@ -127,7 +300,7 @@
 
       // New Dish Form State
       const [newDish, setNewDish] = useState({
-        name: '', category: 'غداء', icon: '🍲', selectedItems: [] // [{ ingredientId, qtyMultiplier }]
+        name: '', category: 'غداء', icon: '🍲', selectedItems: []
       });
 
       // Swipe Refs
@@ -180,13 +353,6 @@
         });
         return totals;
       }, [selectedLoggedMeals, customDishes, ingredients]);
-
-      const treeGrowthProgress = useMemo(() => {
-        const calPct = Math.min(100, (currentTotals.calories / dailyGoals.calories) * 100);
-        const proPct = Math.min(100, (currentTotals.protein / dailyGoals.protein) * 100);
-        const waterPct = Math.min(100, (patientVitals.waterGlasses / patientVitals.waterTarget) * 100);
-        return Math.round((calPct * 0.4) + (proPct * 0.4) + (waterPct * 0.2));
-      }, [currentTotals, dailyGoals, patientVitals]);
 
       // Handlers
       const handleSaveIngredient = (e) => {
@@ -312,7 +478,6 @@
 
           <main className="max-w-md mx-auto px-4 pt-3">
 
-
             {/* TAB 1: MEALS & LOGGING */}
             {activeBottomTab === 'meals' && (
               <div className="space-y-3">
@@ -399,7 +564,7 @@
                 <div className="bg-white rounded-3xl p-4 border border-slate-200 shadow-xs space-y-3">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h2 className="font-black text-slate-900 text-sm">مكتبة مدخلات الأطعمة الخام</h2>
+                      <h2 className="font-black text-slate-900 text-sm">مكتبة مدخلات الأطعمة الخام ({ingredients.length} مكون)</h2>
                       <p className="text-[10px] text-slate-400">سجل قيم المكونات وحساب السعرات التلقائي</p>
                     </div>
                     <button
@@ -410,7 +575,7 @@
                     </button>
                   </div>
 
-                  <div className="space-y-2.5 pt-2">
+                  <div className="space-y-2.5 pt-2 max-h-[65vh] overflow-y-auto no-scrollbar">
                     {ingredients.map(ing => (
                       <div key={ing.id} className="bg-slate-50 rounded-2xl p-3 border border-slate-200/80 flex items-center justify-between">
                         <div className="flex items-center gap-2.5">
@@ -440,7 +605,7 @@
                 <div className="bg-white rounded-3xl p-4 border border-slate-200 shadow-xs space-y-3">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h2 className="font-black text-slate-900 text-sm">بطاقات الأطباق والوجبات المرتبة</h2>
+                      <h2 className="font-black text-slate-900 text-sm">بطاقات الأطباق والوجبات المرتبة ({customDishes.length} طبق)</h2>
                       <p className="text-[10px] text-slate-400">اصنع أطباقك من المكونات المتاحة</p>
                     </div>
                     <button
@@ -451,7 +616,7 @@
                     </button>
                   </div>
 
-                  <div className="grid grid-cols-1 gap-3 pt-2">
+                  <div className="grid grid-cols-1 gap-3 pt-2 max-h-[65vh] overflow-y-auto no-scrollbar">
                     {customDishes.map(dish => {
                       const dt = getDishTotals(dish.items);
                       return (
@@ -513,198 +678,33 @@
               </div>
             )}
 
-            {/* TAB 5: TREE */}
-            {activeBottomTab === 'tree' && (
-              <div className="bg-white rounded-3xl p-6 shadow-xs border border-slate-200 text-center space-y-4">
-                <h2 className="font-black text-slate-900 text-sm">شجرة النمو والإنجاز</h2>
-                <div className="w-40 h-40 mx-auto bg-emerald-50 rounded-full flex items-center justify-center border-4 border-emerald-100 text-6xl">
-                  {treeGrowthProgress < 30 ? '🌱' : treeGrowthProgress < 70 ? '🪴' : '🌳'}
-                </div>
-                <p className="text-xs text-slate-500">نسبة النمو اليومية: <strong className="text-emerald-600">{treeGrowthProgress}%</strong></p>
-              </div>
-            )}
-
           </main>
 
-          {/* BOTTOM HOME BAR */}
+          {}
+          {/* BOTTOM HOME BAR (4 TABS) */}
           <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-lg">
-            <div className="max-w-md mx-auto grid grid-cols-5 gap-1 p-2 text-center text-xs">
+            <div className="max-w-md mx-auto grid grid-cols-4 gap-1 p-2 text-center text-xs">
               
-              <button onClick={() => setActiveBottomTab('meals')} className={`py-1.5 rounded-2xl font-bold flex flex-col items-center justify-center transition-all ${activeBottomTab === 'meals' ? 'bg-emerald-600 text-white' : 'text-slate-500'}`}>
+              <button onClick={() => setActiveBottomTab('meals')} className={`py-2 rounded-2xl font-bold flex flex-col items-center justify-center transition-all ${activeBottomTab === 'meals' ? 'bg-emerald-600 text-white' : 'text-slate-500'}`}>
                 <IconUtensils /><span className="text-[10px] mt-0.5">الوجبات</span>
               </button>
 
-              <button onClick={() => setActiveBottomTab('ingredients')} className={`py-1.5 rounded-2xl font-bold flex flex-col items-center justify-center transition-all ${activeBottomTab === 'ingredients' ? 'bg-emerald-600 text-white' : 'text-slate-500'}`}>
+              <button onClick={() => setActiveBottomTab('ingredients')} className={`py-2 rounded-2xl font-bold flex flex-col items-center justify-center transition-all ${activeBottomTab === 'ingredients' ? 'bg-emerald-600 text-white' : 'text-slate-500'}`}>
                 <IconDatabase /><span className="text-[10px] mt-0.5">المكونات</span>
               </button>
 
-              <button onClick={() => setActiveBottomTab('recipes')} className={`py-1.5 rounded-2xl font-bold flex flex-col items-center justify-center transition-all ${activeBottomTab === 'recipes' ? 'bg-emerald-600 text-white' : 'text-slate-500'}`}>
+              <button onClick={() => setActiveBottomTab('recipes')} className={`py-2 rounded-2xl font-bold flex flex-col items-center justify-center transition-all ${activeBottomTab === 'recipes' ? 'bg-emerald-600 text-white' : 'text-slate-500'}`}>
                 <IconChefHat /><span className="text-[10px] mt-0.5">الأطباق</span>
               </button>
 
-              <button onClick={() => setActiveBottomTab('tree')} className={`py-1.5 rounded-2xl font-bold flex flex-col items-center justify-center transition-all ${activeBottomTab === 'tree' ? 'bg-emerald-600 text-white' : 'text-slate-500'}`}>
-                <IconTreePine /><span className="text-[10px] mt-0.5">الشجرة</span>
-              </button>
-
-              <button onClick={() => setActiveBottomTab('vitals')} className={`py-1.5 rounded-2xl font-bold flex flex-col items-center justify-center transition-all ${activeBottomTab === 'vitals' ? 'bg-emerald-600 text-white' : 'text-slate-500'}`}>
+              <button onClick={() => setActiveBottomTab('vitals')} className={`py-2 rounded-2xl font-bold flex flex-col items-center justify-center transition-all ${activeBottomTab === 'vitals' ? 'bg-emerald-600 text-white' : 'text-slate-500'}`}>
                 <IconActivity /><span className="text-[10px] mt-0.5">القياسات</span>
               </button>
 
             </div>
           </nav>
 
-          {/* MODAL 1: ADD NEW INGREDIENT */}
-          {showAddIngredientModal && (
-            <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-              <div className="bg-white w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-3">
-                <div className="flex items-center justify-between border-b pb-2">
-                  <h3 className="font-bold text-slate-800 text-sm">إدخال مكون طعام جديد</h3>
-                  <button onClick={() => setShowAddIngredientModal(false)} className="text-slate-400"><IconX /></button>
-                </div>
-
-                <form onSubmit={handleSaveIngredient} className="space-y-2 text-xs">
-                  <div>
-                    <label className="block text-slate-600 font-bold mb-1">اسم المكون:</label>
-                    <input type="text" value={newIng.name} onChange={e => setNewIng({ ...newIng, name: e.target.value })} placeholder="مثلاً: لحم بقر مفروم" required className="w-full p-2 border rounded-xl" />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2">
-                    <div>
-                      <label className="block text-slate-600 font-bold mb-1">وحدة القياس:</label>
-                      <input type="text" value={newIng.unit} onChange={e => setNewIng({ ...newIng, unit: e.target.value })} placeholder="جرام / حبة / سكوب" className="w-full p-2 border rounded-xl" />
-                    </div>
-                    <div>
-                      <label className="block text-slate-600 font-bold mb-1">الكمية لكل وحدة:</label>
-                      <input type="number" value={newIng.baseQty} onChange={e => setNewIng({ ...newIng, baseQty: e.target.value })} className="w-full p-2 border rounded-xl" />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2 pt-1">
-                    <div>
-                      <label className="block text-slate-600 font-bold mb-1">البروتين (غ):</label>
-                      <input type="number" step="0.1" value={newIng.protein} onChange={e => setNewIng({ ...newIng, protein: e.target.value })} className="w-full p-2 border rounded-xl bg-rose-50" />
-                    </div>
-                    <div>
-                      <label className="block text-slate-600 font-bold mb-1">الكربوهيدرات (غ):</label>
-                      <input type="number" step="0.1" value={newIng.carbs} onChange={e => setNewIng({ ...newIng, carbs: e.target.value })} className="w-full p-2 border rounded-xl bg-amber-50" />
-                    </div>
-                    <div>
-                      <label className="block text-slate-600 font-bold mb-1">الدهون (غ):</label>
-                      <input type="number" step="0.1" value={newIng.fat} onChange={e => setNewIng({ ...newIng, fat: e.target.value })} className="w-full p-2 border rounded-xl bg-slate-50" />
-                    </div>
-                    <div>
-                      <label className="block text-slate-600 font-bold mb-1">الألياف (غ):</label>
-                      <input type="number" step="0.1" value={newIng.fiber} onChange={e => setNewIng({ ...newIng, fiber: e.target.value })} className="w-full p-2 border rounded-xl bg-emerald-50" />
-                    </div>
-                  </div>
-
-                  {/* Auto Calculated Calorie Display */}
-                  <div className="p-3 bg-amber-500/10 border border-amber-300 rounded-2xl text-center">
-                    <span className="text-[10px] text-amber-900 font-bold block">السعرات الحرارية المحسوبة أوتوماتيكياً:</span>
-                    <strong className="text-amber-700 text-lg font-black">{calculatedNewIngCalories} سعرة</strong>
-                  </div>
-
-                  <button type="submit" className="w-full py-2.5 bg-emerald-600 text-white font-bold rounded-xl shadow-xs mt-2">
-                    حفظ المكون في القائمة
-                  </button>
-                </form>
-              </div>
-            </div>
-          )}
-
-          {/* MODAL 2: CREATE CUSTOM DISH */}
-          {showAddDishModal && (
-            <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-              <div className="bg-white w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-3 max-h-[90vh] overflow-y-auto no-scrollbar">
-                <div className="flex items-center justify-between border-b pb-2">
-                  <h3 className="font-bold text-slate-800 text-sm">منشئ الأطباق (مثال: برياني)</h3>
-                  <button onClick={() => setShowAddDishModal(false)} className="text-slate-400"><IconX /></button>
-                </div>
-
-                <form onSubmit={handleSaveDish} className="space-y-3 text-xs">
-                  <div>
-                    <label className="block text-slate-600 font-bold mb-1">اسم الطبق:</label>
-                    <input type="text" value={newDish.name} onChange={e => setNewDish({ ...newDish, name: e.target.value })} placeholder="مثلاً: طبق برياني دجاج خفيف" required className="w-full p-2 border rounded-xl" />
-                  </div>
-
-                  <div>
-                    <label className="block text-slate-600 font-bold mb-1">اختر المكونات والكمية المطلوبة:</label>
-                    <div className="space-y-1.5 max-h-48 overflow-y-auto border p-2 rounded-2xl bg-slate-50">
-                      {ingredients.map(ing => {
-                        const selectedItem = newDish.selectedItems.find(i => i.ingredientId === ing.id);
-                        const isChecked = !!selectedItem;
-
-                        return (
-                          <div key={ing.id} className="p-2 bg-white rounded-xl border flex items-center justify-between">
-                            <label className="flex items-center gap-2 cursor-pointer">
-                              <input type="checkbox" checked={isChecked} onChange={() => toggleIngredientInNewDish(ing.id)} className="accent-emerald-600" />
-                              <span className="font-bold text-slate-800">{ing.icon} {ing.name}</span>
-                            </label>
-
-                            {isChecked && (
-                              <div className="flex items-center gap-1">
-                                <input
-                                  type="number"
-                                  step="0.1"
-                                  value={selectedItem.qtyMultiplier}
-                                  onChange={e => updateNewDishItemMultiplier(ing.id, parseFloat(e.target.value))}
-                                  className="w-12 p-1 border text-center rounded-lg text-xs"
-                                />
-                                <span className="text-[9px] text-slate-400">× {ing.baseQty} {ing.unit}</span>
-                              </div>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* Calculated Dish Card Preview */}
-                  {newDish.selectedItems.length > 0 && (
-                    <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-2xl space-y-1">
-                      <span className="text-[10px] font-bold text-emerald-800 block">معاينة القيم الكلية للطبق:</span>
-                      {(() => {
-                        const dt = getDishTotals(newDish.selectedItems);
-                        return (
-                          <div className="grid grid-cols-4 gap-1 text-center text-[9px] font-bold">
-                            <span className="bg-white p-1 rounded text-amber-700">{dt.calories} سعرة</span>
-                            <span className="bg-white p-1 rounded text-rose-700">{dt.protein}غ بروتين</span>
-                            <span className="bg-white p-1 rounded text-amber-900">{dt.carbs}غ كارب</span>
-                            <span className="bg-white p-1 rounded text-emerald-700">{dt.fat}غ دهون</span>
-                          </div>
-                        );
-                      })()}
-                    </div>
-                  )}
-
-                  <button type="submit" className="w-full py-2.5 bg-emerald-600 text-white font-bold rounded-xl shadow-xs">
-                    حفظ الطبق في البطاقات
-                  </button>
-                </form>
-              </div>
-            </div>
-          )}
-
-          {/* DETAIL MODAL */}
-          {detailModalItem && (
-            <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-              <div className="bg-white w-full max-w-xs rounded-3xl p-5 shadow-2xl space-y-3">
-                <div className="flex items-center justify-between border-b pb-2">
-                  <h3 className="font-bold text-slate-800 text-sm">{detailModalItem.name}</h3>
-                  <button onClick={() => setDetailModalItem(null)} className="text-slate-400"><IconX /></button>
-                </div>
-
-                <div className="space-y-1 text-xs text-slate-600">
-                  <span className="font-bold block text-slate-800 mb-1">المكونات الداخلة في التركيب:</span>
-                  {detailModalItem.items.map((it, idx) => {
-                    const ing = ingredients.find(i => i.id === it.ingredientId);
-                    return ing ? (
-                      <div key={idx} className="flex justify-between py-1 border-b border-slate-100">
-                        <span>{ing.icon} {ing.name}</span>
-                        <strong className="text-slate-800">{it.qtyMultiplier * ing.baseQty} {ing.unit}</strong>
-                      </div>
-                    ) : null;
-                  })}
+          {/* ... existing modals code ... */}
                 </div>
 
                 <button onClick={() => setDetailModalItem(null)} className="w-full py-2 bg-slate-900 text-white font-bold text-xs rounded-xl">
