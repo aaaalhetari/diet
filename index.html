@@ -2,8 +2,8 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>تطبيق تتبع التغذية والأطباق المخصصة</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>تطبيق تتبع التغذية والماكروز الذكي</title>
   
   <!-- Tailwind CSS & React Dependencies -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -15,623 +15,420 @@
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
 
   <style>
-    * {
-      font-family: 'Tajawal', system-ui, -apple-system, sans-serif;
-    }
-    .no-scrollbar::-webkit-scrollbar {
-      display: none;
-    }
-    .no-scrollbar {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
-    .touch-action-none {
-      touch-action: none;
-    }
+    * { font-family: 'Tajawal', system-ui, -apple-system, sans-serif; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    /* منع تحديث الصفحة عند سحب الأشرطة */
+    .touch-none { touch-action: none; }
   </style>
 </head>
-<body class="bg-slate-100 text-slate-800 antialiased selection:bg-emerald-500 selection:text-white">
+<body class="bg-slate-50 text-slate-800 antialiased selection:bg-emerald-500 selection:text-white pb-24">
   
   <div id="root"></div>
 
   <script type="text/babel">
     const { useState, useMemo, useRef, useEffect } = React;
 
-    // --- Clean Inline SVG Icon Components ---
-    const IconFlame = () => (<svg className="w-4 h-4 text-amber-500 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>);
-    const IconDrumstick = () => (<svg className="w-4 h-4 text-rose-500 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 14l9-9-3-3-9 9m0 0l-3 3a2.828 2.828 0 11-4-4l3-3m4 4L9 11"/></svg>);
-    const IconWheat = () => (<svg className="w-4 h-4 text-amber-600 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 3v18m0-18l-4 4m4-4l4 4m-4 5l-4 4m4-4l4 4m-4 5l-4 4m4-4l4 4"/></svg>);
-    const IconSalad = () => (<svg className="w-4 h-4 text-emerald-600 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>);
-    const IconOil = () => (<svg className="w-4 h-4 text-amber-700 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L5.59 15.12a2 2 0 00-1.282.26L3 16v3a2 2 0 002 2h14a2 2 0 002-2v-3.572l-1.572-.999z"/></svg>);
-    const IconPlus = () => (<svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 6v12m6-6H6"/></svg>);
-    const IconMinus = () => (<svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M18 12H6"/></svg>);
-    const IconX = () => (<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/></svg>);
-    const IconFilter = () => (<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>);
-    const IconRotate = () => (<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>);
+    const IconFlame = () => <svg className="w-4 h-4 text-amber-500 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>;
+    const IconDrumstick = () => <svg className="w-4 h-4 text-rose-500 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 14l9-9-3-3-9 9m0 0l-3 3a2.828 2.828 0 11-4-4l3-3m4 4L9 11"/></svg>;
+    const IconWheat = () => <svg className="w-4 h-4 text-amber-600 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 3v18m0-18l-4 4m4-4l4 4m-4 5l-4 4m4-4l4 4m-4 5l-4 4m4-4l4 4"/></svg>;
+    const IconSalad = () => <svg className="w-4 h-4 text-emerald-600 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>;
+    const IconOil = () => <svg className="w-4 h-4 text-amber-700 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L5.59 15.12a2 2 0 00-1.282.26L3 16v3a2 2 0 002 2h14a2 2 0 002-2v-3.572l-1.572-.999z"/></svg>;
+    const IconPlus = () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 6v12m6-6H6"/></svg>;
+    const IconMinus = () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M18 12H6"/></svg>;
+    const IconX = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/></svg>;
+    const IconFilter = () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>;
 
     const INITIAL_INGREDIENTS = [
       { id: 'ing-1', name: 'صدر دجاج طازج', unit: 'جرام', baseQty: 100, protein: 31, carbs: 0, fat: 3.6, fiber: 0, calories: 165, icon: '🍗' },
       { id: 'ing-2', name: 'أرز بسمتي أبيض', unit: 'جرام', baseQty: 100, protein: 2.7, carbs: 28, fat: 0.3, fiber: 0.4, calories: 130, icon: '🍚' },
       { id: 'ing-3', name: 'زيت زيتون بكر', unit: 'ملعقة', baseQty: 10, protein: 0, carbs: 0, fat: 10, fiber: 0, calories: 88, icon: '🫒' },
       { id: 'ing-4', name: 'بيض كامل', unit: 'حبة', baseQty: 1, protein: 6, carbs: 0.5, fat: 5, fiber: 0, calories: 72, icon: '🥚' },
-      { id: 'ing-5', name: 'بياض بيض', unit: 'حبة', baseQty: 1, protein: 3.6, carbs: 0.2, fat: 0.1, fiber: 0, calories: 17, icon: '🍳' },
       { id: 'ing-6', name: 'بطاطا حلوة مسلوقة', unit: 'جرام', baseQty: 100, protein: 1.6, carbs: 20, fat: 0.1, fiber: 3, calories: 86, icon: '🍠' },
       { id: 'ing-7', name: 'سلمون طازج', unit: 'جرام', baseQty: 100, protein: 20, carbs: 0, fat: 13, fiber: 0, calories: 206, icon: '🐟' },
       { id: 'ing-8', name: 'حليب بروتين بلدنا', unit: 'علبة', baseQty: 1, protein: 30, carbs: 16, fat: 2.2, fiber: 0, calories: 205, icon: '🥛' },
-      { id: 'ing-9', name: 'زبادي يوناني بلدنا', unit: 'علبة', baseQty: 1, protein: 18, carbs: 6, fat: 1.5, fiber: 0, calories: 120, icon: '🥣' },
-      { id: 'ing-10', name: 'سكوب آيسوليت بروتين', unit: 'سكوب', baseQty: 1, protein: 25, carbs: 1, fat: 0.5, fiber: 0, calories: 110, icon: '🥤' },
+      { id: 'ing-9', name: 'زبادي يوناني سادة', unit: 'علبة', baseQty: 1, protein: 18, carbs: 6, fat: 1.5, fiber: 0, calories: 120, icon: '🥣' },
       { id: 'ing-11', name: 'شوفان كامل الحبة', unit: 'جرام', baseQty: 100, protein: 13, carbs: 67, fat: 7, fiber: 10, calories: 389, icon: '🌾' },
-      { id: 'ing-12', name: 'خيار وطماطم طازجة', unit: 'جرام', baseQty: 100, protein: 0.8, carbs: 3.5, fat: 0.2, fiber: 1.2, calories: 18, icon: '🥗' },
-      { id: 'ing-13', name: 'لحم بقر مفروم قليل الدسم', unit: 'جرام', baseQty: 100, protein: 26, carbs: 0, fat: 10, fiber: 0, calories: 194, icon: '🥩' },
+      { id: 'ing-12', name: 'سلطة خضراء مشكلة', unit: 'جرام', baseQty: 100, protein: 1, carbs: 4, fat: 0.2, fiber: 2, calories: 20, icon: '🥗' },
       { id: 'ing-14', name: 'خبز توست أسمر', unit: 'شريحة', baseQty: 1, protein: 4, carbs: 12, fat: 1, fiber: 2, calories: 70, icon: '🍞' }
     ];
 
+    // الأطباق لم تعد تحتوي على تصنيف وجبة أو مجموعة. فقط اسم ومقادير.
     const INITIAL_DISHES = [
       {
-        id: 'dish-1',
-        groupId: 'group-1',
-        name: 'كبسة دجاج دايت مع أرز بسمتي',
-        category: 'غداء',
-        icon: '🍲',
-        items: [
-          { ingredientId: 'ing-1', qtyMultiplier: 1.5 }, // 150g chicken
-          { ingredientId: 'ing-2', qtyMultiplier: 1.5 }, // 150g rice
-          { ingredientId: 'ing-3', qtyMultiplier: 0.5 }  // 5ml olive oil
-        ]
+        id: 'dish-1', name: 'دجاج مع أرز بسمتي', icon: '🍲',
+        items: [{ ingredientId: 'ing-1', qtyMultiplier: 1.5 }, { ingredientId: 'ing-2', qtyMultiplier: 1.5 }, { ingredientId: 'ing-3', qtyMultiplier: 0.5 }]
       },
       {
-        id: 'dish-2',
-        groupId: 'group-1',
-        name: 'سندويش بيض مسلوق بالتوست الأسمر',
-        category: 'فطور',
-        icon: '🥪',
-        items: [
-          { ingredientId: 'ing-4', qtyMultiplier: 2 },   // 2 eggs
-          { ingredientId: 'ing-14', qtyMultiplier: 2 }  // 2 toast slices
-        ]
+        id: 'dish-2', name: 'سندويش بيض بالتوست الأسمر', icon: '🥪',
+        items: [{ ingredientId: 'ing-4', qtyMultiplier: 2 }, { ingredientId: 'ing-14', qtyMultiplier: 2 }]
       },
       {
-        id: 'dish-3',
-        groupId: 'group-2',
-        name: 'سلمون مشوي مع البطاطا الحلوة',
-        category: 'عشاء',
-        icon: '🍱',
-        items: [
-          { ingredientId: 'ing-7', qtyMultiplier: 1.5 }, // 150g salmon
-          { ingredientId: 'ing-6', qtyMultiplier: 1.5 }, // 150g sweet potato
-          { ingredientId: 'ing-12', qtyMultiplier: 1 }   // 100g salad
-        ]
+        id: 'dish-3', name: 'سلمون مع البطاطا الحلوة', icon: '🍱',
+        items: [{ ingredientId: 'ing-7', qtyMultiplier: 1.5 }, { ingredientId: 'ing-6', qtyMultiplier: 1.5 }, { ingredientId: 'ing-12', qtyMultiplier: 1 }]
       },
       {
-        id: 'dish-4',
-        groupId: 'group-2',
-        name: 'وجبة البروتين السريعة بلدنا',
-        category: 'سناك',
-        icon: '🥤',
-        items: [
-          { ingredientId: 'ing-8', qtyMultiplier: 1 },   // 1 protein milk
-          { ingredientId: 'ing-9', qtyMultiplier: 1 }    // 1 greek yogurt
-        ]
-      },
-      {
-        id: 'dish-5',
-        groupId: 'group-3',
-        name: 'شوفان بالبروتين والزبادي اليوناني',
-        category: 'فطور',
-        icon: '🥣',
-        items: [
-          { ingredientId: 'ing-11', qtyMultiplier: 0.5 },// 50g oats
-          { ingredientId: 'ing-10', qtyMultiplier: 1 },  // 1 scoop protein
-          { ingredientId: 'ing-9', qtyMultiplier: 1 }    // 1 greek yogurt
-        ]
-      },
-      {
-        id: 'dish-6',
-        groupId: 'group-3',
-        name: 'ستيك لحم بقر مع أرز وسلطة',
-        category: 'غداء',
-        icon: '🥩',
-        items: [
-          { ingredientId: 'ing-13', qtyMultiplier: 1.8 },// 180g beef
-          { ingredientId: 'ing-2', qtyMultiplier: 1.2 }, // 120g rice
-          { ingredientId: 'ing-12', qtyMultiplier: 1 }   // 100g salad
-        ]
+        id: 'dish-4', name: 'شوفان بالزبادي اليوناني', icon: '🥣',
+        items: [{ ingredientId: 'ing-11', qtyMultiplier: 0.5 }, { ingredientId: 'ing-9', qtyMultiplier: 1 }]
       }
     ];
 
-    const DISH_GROUPS = [
-      { id: 'all', label: 'الكل 🍽️' },
-      { id: 'group-1', label: 'المجموعة 1' },
-      { id: 'group-2', label: 'المجموعة 2' },
-      { id: 'group-3', label: 'المجموعة 3' },
-      { id: 'group-4', label: 'المجموعة 4' },
-      { id: 'group-5', label: 'المجموعة 5' },
-      { id: 'group-6', label: 'المجموعة 6' }
-    ];
+    const MEAL_TYPES = ['فطور', 'غداء', 'عشاء', 'سناك'];
+    const MAX_SCALE_PERCENT = 140; // لإتاحة مساحة للفائض في أشرطة التوقع
 
-    const MEAL_TYPES = [
-      { id: 'فطور', label: 'فطور 🌅' },
-      { id: 'غداء', label: 'غداء ☀️' },
-      { id: 'عشاء', label: 'عشاء 🌙' },
-      { id: 'سناك', label: 'سناك 🍎' }
-    ];
+    // مكون شريط السحب التفاعلي السلس (يدعم الـ RTL)
+    const DraggableBar = ({ values, onChange, colors, labels }) => {
+      const containerRef = useRef(null);
 
-    function App() {
-      // Navigation State
-      const [activeBottomTab, setActiveBottomTab] = useState('meals'); // 'meals' | 'ingredients' | 'recipes' | 'vitals'
-      const [activeMealCategory, setActiveMealCategory] = useState('غداء');
+      // حساب التراكميات لمعرفة موقع المقابض
+      const cumuls = [];
+      let sum = 0;
+      for (let i = 0; i < values.length - 1; i++) {
+        sum += values[i];
+        cumuls.push(sum);
+      }
 
-      // Calorie Target State
-      const [targetCalories, setTargetCalories] = useState(1500);
-
-      // Meal Segments Allocations (percentages: split into 4 meals summing up to 100%)
-      const [mealAllocations, setMealAllocations] = useState({
-        'فطور': 25,
-        'غداء': 35,
-        'عشاء': 25,
-        'سناك': 15
-      });
-
-      // Meal Sub-Macro Percentages (for each meal, P/C/F/Fib sum up to 100% of calorie energy split)
-      const [mealMacroAllocations, setMealMacroAllocations] = useState({
-        'فطور': { protein: 35, carbs: 40, fat: 15, fiber: 10 },
-        'غداء': { protein: 40, carbs: 35, fat: 15, fiber: 10 },
-        'عشاء': { protein: 45, carbs: 25, fat: 20, fiber: 10 },
-        'سناك': { protein: 50, carbs: 30, fat: 10, fiber: 10 }
-      });
-
-      // Data States
-      const [ingredients, setIngredients] = useState(INITIAL_INGREDIENTS);
-      const [customDishes, setCustomDishes] = useState(INITIAL_DISHES);
-
-      // Active Filter States in Meals Page
-      const [activeGroupFilter, setActiveGroupFilter] = useState('all');
-      const [openFilters, setOpenFilters] = useState({
-        calories: 'الكل',
-        protein: 'الكل',
-        carbs: 'الكل',
-        fat: 'الكل',
-        fiber: 'الكل'
-      });
-
-      // Selected Dishes for Daily Meal Logging { dishId: quantity }
-      const [selectedLoggedMeals, setSelectedLoggedMeals] = useState({
-        'dish-1': 1,
-        'dish-2': 1,
-        'dish-4': 1
-      });
-
-      // Vitals State
-      const [patientVitals, setPatientVitals] = useState({
-        startWeight: 85,
-        currentWeight: 81.2,
-        targetWeight: 65,
-        waterGlasses: 6,
-        waterTarget: 8
-      });
-
-      // Modals
-      const [showAddIngredientModal, setShowAddIngredientModal] = useState(false);
-      const [showAddDishModal, setShowAddDishModal] = useState(false);
-      const [editingIngId, setEditingIngId] = useState(null);
-      const [editingDishId, setEditingDishId] = useState(null);
-      const [detailModalItem, setDetailModalItem] = useState(null);
-
-      // Forms State
-      const [newIng, setNewIng] = useState({ name: '', unit: 'جرام', baseQty: 100, protein: 0, carbs: 0, fat: 0, fiber: 0, icon: '🥦' });
-      const [newDish, setNewDish] = useState({ name: '', category: 'غداء', groupId: 'group-1', icon: '🍲', selectedItems: [] });
-
-      const csvFileInputRef = useRef(null);
-
-      // Calculate calories automatically for raw ingredient form
-      const calculatedNewIngCalories = useMemo(() => {
-        const p = parseFloat(newIng.protein) || 0;
-        const c = parseFloat(newIng.carbs) || 0;
-        const f = parseFloat(newIng.fat) || 0;
-        return Math.round((p * 4) + (c * 4) + (f * 9));
-      }, [newIng.protein, newIng.carbs, newIng.fat]);
-
-      const handleExportCSV = () => {
-        let csvContent = "\uFEFF"; // UTF-8 BOM for Arabic support
-        csvContent += "# SECTION: INGREDIENTS\n";
-        csvContent += "id,name,unit,baseQty,protein,carbs,fat,fiber,calories,icon\n";
-        ingredients.forEach(ing => {
-          const nameQuoted = `"${ing.name.replace(/"/g, '""')}"`;
-          csvContent += `${ing.id},${nameQuoted},${ing.unit},${ing.baseQty},${ing.protein},${ing.carbs},${ing.fat},${ing.fiber},${ing.calories},${ing.icon}\n`;
-        });
-
-        csvContent += "\n# SECTION: DISHES\n";
-        csvContent += "dishId,groupId,dishName,category,icon,ingredientId,qtyMultiplier\n";
-        customDishes.forEach(dish => {
-          const dishNameQuoted = `"${dish.name.replace(/"/g, '""')}"`;
-          dish.items.forEach(item => {
-            csvContent += `${dish.id},${dish.groupId || 'group-1'},${dishNameQuoted},${dish.category},${dish.icon || '🍲'},${item.ingredientId},${item.qtyMultiplier}\n`;
-          });
-        });
-
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', `nutrition_database_${new Date().toISOString().slice(0,10)}.csv`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      };
-
-      const handleImportCSV = (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          try {
-            const text = event.target.result;
-            const lines = text.split(/\r?\n/);
-            let currentSection = '';
-            const importedIngredients = [];
-            const dishMap = {};
-
-            lines.forEach(line => {
-              const trimmed = line.trim();
-              if (!trimmed) return;
-              if (trimmed.startsWith('# SECTION: INGREDIENTS')) { currentSection = 'INGREDIENTS'; return; }
-              if (trimmed.startsWith('# SECTION: DISHES')) { currentSection = 'DISHES'; return; }
-
-              const values = trimmed.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || trimmed.split(',');
-              const cleanValues = values.map(v => v.replace(/^"|"$/g, '').replace(/""/g, '"').trim());
-
-              if (currentSection === 'INGREDIENTS') {
-                if (cleanValues[0] === 'id' || cleanValues.length < 10) return;
-                importedIngredients.push({
-                  id: cleanValues[0],
-                  name: cleanValues[1],
-                  unit: cleanValues[2],
-                  baseQty: parseFloat(cleanValues[3]) || 100,
-                  protein: parseFloat(cleanValues[4]) || 0,
-                  carbs: parseFloat(cleanValues[5]) || 0,
-                  fat: parseFloat(cleanValues[6]) || 0,
-                  fiber: parseFloat(cleanValues[7]) || 0,
-                  calories: parseFloat(cleanValues[8]) || 0,
-                  icon: cleanValues[9] || '🥦'
-                });
-              } else if (currentSection === 'DISHES') {
-                if (cleanValues[0] === 'dishId' || cleanValues.length < 7) return;
-                const dishId = cleanValues[0];
-                if (!dishMap[dishId]) {
-                  dishMap[dishId] = {
-                    id: dishId,
-                    groupId: cleanValues[1] || 'group-1',
-                    name: cleanValues[2],
-                    category: cleanValues[3],
-                    icon: cleanValues[4] || '🍲',
-                    items: []
-                  };
-                }
-                dishMap[dishId].items.push({ ingredientId: cleanValues[5], qtyMultiplier: parseFloat(cleanValues[6]) || 1 });
-              }
-            });
-
-            if (importedIngredients.length > 0) setIngredients(importedIngredients);
-            const importedDishes = Object.values(dishMap);
-            if (importedDishes.length > 0) setCustomDishes(importedDishes);
-
-            alert('تم استيراد قاعدة البيانات والمكونات بنجاح! 🎉');
-          } catch (err) {
-            alert('حدث خطأ في قراءة ملف CSV، يرجى التأكد من الصيغة.');
-          }
-          if (csvFileInputRef.current) csvFileInputRef.current.value = '';
-        };
-        reader.readAsText(file, 'UTF-8');
-      };
-
-      // Helper: Calculate Totals for a Dish
-      const getDishTotals = (dishItems) => {
-        let totals = { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 };
-        dishItems.forEach(item => {
-          const ing = ingredients.find(i => i.id === item.ingredientId);
-          if (ing) {
-            const mult = item.qtyMultiplier || 1;
-            totals.calories += Math.round(ing.calories * mult);
-            totals.protein += Math.round((ing.protein * mult) * 10) / 10;
-            totals.carbs += Math.round((ing.carbs * mult) * 10) / 10;
-            totals.fat += Math.round((ing.fat * mult) * 10) / 10;
-            totals.fiber += Math.round((ing.fiber * mult) * 10) / 10;
-          }
-        });
-        return totals;
-      };
-
-      const currentLoggedTotals = useMemo(() => {
-        let totals = { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 };
-        Object.entries(selectedLoggedMeals).forEach(([dishId, qty]) => {
-          const dish = customDishes.find(d => d.id === dishId);
-          if (dish && qty > 0) {
-            const dt = getDishTotals(dish.items);
-            totals.calories += dt.calories * qty;
-            totals.protein += dt.protein * qty;
-            totals.carbs += dt.carbs * qty;
-            totals.fat += dt.fat * qty;
-            totals.fiber += dt.fiber * qty;
-          }
-        });
-        return totals;
-      }, [selectedLoggedMeals, customDishes, ingredients]);
-
-      // Calculate Target Nutrients per Meal
-      const getMealTargetNutrients = (mealName) => {
-        const mealCalPercent = mealAllocations[mealName] || 25;
-        const mealCaloriesTarget = Math.round((targetCalories * mealCalPercent) / 100);
-        const macros = mealMacroAllocations[mealName] || { protein: 40, carbs: 35, fat: 15, fiber: 10 };
-
-        // Convert percentage of meal energy to grams
-        const proteinGrams = Math.round(((mealCaloriesTarget * (macros.protein / 100)) / 4));
-        const carbsGrams = Math.round(((mealCaloriesTarget * (macros.carbs / 100)) / 4));
-        const fatGrams = Math.round(((mealCaloriesTarget * (macros.fat / 100)) / 9));
-        const fiberGrams = Math.round(((mealCaloriesTarget * (macros.fiber / 100)) / 4));
-
-        return {
-          calories: mealCaloriesTarget,
-          protein: proteinGrams,
-          carbs: carbsGrams,
-          fat: fatGrams,
-          fiber: fiberGrams
-        };
-      };
-
-      const filteredDishes = useMemo(() => {
-        return customDishes.filter(dish => {
-          // 1. Category Filter (فطور/غداء/عشاء/سناك)
-          if (dish.category !== activeMealCategory) return false;
-
-          // 2. Exclusive Group Filter
-          if (activeGroupFilter !== 'all' && dish.groupId !== activeGroupFilter) return false;
-
-          // 3. Open Multi-Nutrient Classification Filters
-          const dt = getDishTotals(dish.items);
-          
-          const checkTier = (val, lowThreshold, highThreshold, setting) => {
-            if (setting === 'الكل') return true;
-            if (setting === 'منخفض' && val <= lowThreshold) return true;
-            if (setting === 'متوسط' && val > lowThreshold && val < highThreshold) return true;
-            if (setting === 'عالي' && val >= highThreshold) return true;
-            return false;
-          };
-
-          const calOk = checkTier(dt.calories, 200, 450, openFilters.calories);
-          const proOk = checkTier(dt.protein, 15, 35, openFilters.protein);
-          const carbOk = checkTier(dt.carbs, 15, 40, openFilters.carbs);
-          const fatOk = checkTier(dt.fat, 5, 15, openFilters.fat);
-          const fibOk = checkTier(dt.fiber, 2, 6, openFilters.fiber);
-
-          return calOk && proOk && carbOk && fatOk && fibOk;
-        });
-      }, [customDishes, activeMealCategory, activeGroupFilter, openFilters, ingredients]);
-
-      // Logging quantity handlers
-      const updateLoggedMealQty = (dishId, delta) => {
-        setSelectedLoggedMeals(prev => {
-          const current = prev[dishId] || 0;
-          const next = Math.max(0, current + delta);
-          const updated = { ...prev };
-          if (next === 0) delete updated[dishId];
-          else updated[dishId] = next;
-          return updated;
-        });
-      };
-
-      // Ingredient Save Handler
-      const handleSaveIngredient = (e) => {
-        e.preventDefault();
-        if (!newIng.name) return;
-        if (editingIngId) {
-          setIngredients(prev => prev.map(ing => ing.id === editingIngId ? {
-            ...ing,
-            name: newIng.name,
-            unit: newIng.unit,
-            baseQty: parseFloat(newIng.baseQty) || 100,
-            protein: parseFloat(newIng.protein) || 0,
-            carbs: parseFloat(newIng.carbs) || 0,
-            fat: parseFloat(newIng.fat) || 0,
-            fiber: parseFloat(newIng.fiber) || 0,
-            calories: calculatedNewIngCalories,
-            icon: newIng.icon || '🥦'
-          } : ing));
-          setEditingIngId(null);
-        } else {
-          const item = {
-            id: 'ing-' + Date.now(),
-            name: newIng.name,
-            unit: newIng.unit,
-            baseQty: parseFloat(newIng.baseQty) || 100,
-            protein: parseFloat(newIng.protein) || 0,
-            carbs: parseFloat(newIng.carbs) || 0,
-            fat: parseFloat(newIng.fat) || 0,
-            fiber: parseFloat(newIng.fiber) || 0,
-            calories: calculatedNewIngCalories,
-            icon: newIng.icon || '🥦'
-          };
-          setIngredients(prev => [...prev, item]);
+      const handlePointerMove = (e, idx) => {
+        if (!containerRef.current) return;
+        const rect = containerRef.current.getBoundingClientRect();
+        // الحسبة للغة العربية RTL (من اليمين لليسار)
+        let percent = ((rect.right - e.clientX) / rect.width) * 100;
+        
+        // قيود السحب لعدم تداخل المقابض (الحد الأدنى 5% لكل قسم)
+        const min = idx === 0 ? 5 : cumuls[idx - 1] + 5;
+        const max = idx === cumuls.length - 1 ? 95 : cumuls[idx + 1] - 5;
+        percent = Math.max(min, Math.min(max, Math.round(percent)));
+        
+        const newCumuls = [...cumuls];
+        newCumuls[idx] = percent;
+        
+        const newValues = [];
+        newValues[0] = newCumuls[0];
+        for (let i = 1; i < newCumuls.length; i++) {
+          newValues[i] = newCumuls[i] - newCumuls[i-1];
         }
-        setNewIng({ name: '', unit: 'جرام', baseQty: 100, protein: 0, carbs: 0, fat: 0, fiber: 0, icon: '🥦' });
-        setShowAddIngredientModal(false);
-      };
-
-      // Dish Save Handler
-      const handleSaveDish = (e) => {
-        e.preventDefault();
-        if (!newDish.name || newDish.selectedItems.length === 0) return;
-        if (editingDishId) {
-          setCustomDishes(prev => prev.map(d => d.id === editingDishId ? {
-            ...d,
-            name: newDish.name,
-            category: newDish.category,
-            groupId: newDish.groupId || 'group-1',
-            icon: newDish.icon || '🍲',
-            items: newDish.selectedItems
-          } : d));
-          setEditingDishId(null);
-        } else {
-          const dish = {
-            id: 'dish-' + Date.now(),
-            name: newDish.name,
-            category: newDish.category,
-            groupId: newDish.groupId || 'group-1',
-            icon: newDish.icon || '🍲',
-            items: newDish.selectedItems
-          };
-          setCustomDishes(prev => [...prev, dish]);
-        }
-        setNewDish({ name: '', category: 'غداء', groupId: 'group-1', icon: '🍲', selectedItems: [] });
-        setShowAddDishModal(false);
-      };
-
-      const toggleIngredientInNewDish = (ingId) => {
-        setNewDish(prev => {
-          const exists = prev.selectedItems.find(i => i.ingredientId === ingId);
-          if (exists) {
-            return { ...prev, selectedItems: prev.selectedItems.filter(i => i.ingredientId !== ingId) };
-          } else {
-            return { ...prev, selectedItems: [...prev.selectedItems, { ingredientId: ingId, qtyMultiplier: 1 }] };
-          }
-        });
-      };
-
-      const updateNewDishItemMultiplier = (ingId, mult) => {
-        setNewDish(prev => ({
-          ...prev,
-          selectedItems: prev.selectedItems.map(i => i.ingredientId === ingId ? { ...i, qtyMultiplier: Math.max(0.1, mult) } : i)
-        }));
-      };
-
-      // Assign dish group directly
-      const handleAssignDishGroup = (dishId, newGroupId) => {
-        setCustomDishes(prev => prev.map(d => d.id === dishId ? { ...d, groupId: newGroupId } : d));
+        newValues[values.length - 1] = 100 - newCumuls[newCumuls.length - 1];
+        
+        onChange(newValues);
       };
 
       return (
-        <div className="min-h-screen pb-24 text-slate-800 dir-rtl">
+        <div className="relative h-8 rounded-xl flex touch-none border border-slate-200 overflow-visible bg-slate-100" ref={containerRef}>
+          {values.map((v, i) => (
+            <div key={i} style={{ width: `${v}%` }} className={`h-full ${colors[i]} flex flex-col items-center justify-center overflow-hidden transition-colors`}>
+              {v > 12 && <span className="text-[10px] text-white font-black drop-shadow-md leading-none">{labels[i]}</span>}
+              {v > 12 && <span className="text-[9px] text-white/90 font-bold leading-none mt-0.5">{v}%</span>}
+            </div>
+          ))}
           
-          {/* Main Body Content Container */}
-          <main className="max-w-md mx-auto px-3 pt-3 space-y-4">
+          {cumuls.map((c, i) => (
+            <div 
+              key={i}
+              className="absolute top-1/2 -translate-y-1/2 w-7 h-10 bg-white border-2 border-slate-300 rounded-full cursor-ew-resize shadow-lg flex items-center justify-center z-10 active:scale-110 active:border-emerald-500 transition-transform touch-none"
+              style={{ right: `calc(${c}% - 14px)` }}
+              onPointerDown={(e) => {
+                e.target.setPointerCapture(e.pointerId);
+                e.target.onpointermove = (ev) => handlePointerMove(ev, i);
+              }}
+              onPointerUp={(e) => {
+                e.target.releasePointerCapture(e.pointerId);
+                e.target.onpointermove = null;
+              }}
+              onPointerCancel={(e) => {
+                e.target.releasePointerCapture(e.pointerId);
+                e.target.onpointermove = null;
+              }}
+            >
+              <div className="flex gap-0.5">
+                <div className="w-[2px] h-4 bg-slate-400 rounded-full"></div>
+                <div className="w-[2px] h-4 bg-slate-400 rounded-full"></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    };
+
+    function App() {
+      // Navigation
+      const [activeTab, setActiveTab] = useState('meals'); // meals, ingredients, recipes, vitals
+      
+      // Target Goals & Splitting
+      const [targetCalories, setTargetCalories] = useState(1500);
+      const [showPlanSettings, setShowPlanSettings] = useState(false); // Toggle for macro plan
+
+      // Master Bar: Meals Distribution [Breakfast, Lunch, Dinner, Snack]
+      const [mealRatios, setMealRatios] = useState([25, 35, 25, 15]);
+
+      // Sub Bars: Macro Distribution per meal [Protein, Carbs, Fat, Fiber]
+      const [macroRatios, setMacroRatios] = useState({
+        'فطور': [35, 40, 15, 10],
+        'غداء': [40, 35, 15, 10],
+        'عشاء': [45, 25, 20, 10],
+        'سناك': [50, 30, 10, 10]
+      });
+
+      // Data Arrays
+      const [ingredients, setIngredients] = useState(INITIAL_INGREDIENTS);
+      const [dishes, setDishes] = useState(INITIAL_DISHES);
+
+      // Logged Meals Data Structure
+      // Record format: { 'فطور': { 'dish-1': 2 }, 'غداء': { 'dish-2': 1 } ... }
+      const [loggedMeals, setLoggedMeals] = useState({
+        'فطور': {}, 'غداء': {}, 'عشاء': {}, 'سناك': {}
+      });
+      const [activeMealTab, setActiveMealTab] = useState('غداء');
+
+      // Modals & Forms
+      const [showIngModal, setShowIngModal] = useState(false);
+      const [editingIngId, setEditingIngId] = useState(null);
+      const [ingForm, setIngForm] = useState({ name: '', unit: 'جرام', baseQty: 100, protein: 0, carbs: 0, fat: 0, fiber: 0, icon: '🥦' });
+
+      const [showDishModal, setShowDishModal] = useState(false);
+      const [editingDishId, setEditingDishId] = useState(null);
+      const [dishForm, setDishForm] = useState({ name: '', icon: '🍲', items: [] });
+
+      const csvInputRef = useRef(null);
+
+      // Multi-Nutrient Open Filters
+      const [filters, setFilters] = useState({ calories: 'الكل', protein: 'الكل', carbs: 'الكل', fat: 'الكل', fiber: 'الكل' });
+
+      // Calculate single dish macros
+      const getDishTotals = (items) => {
+        let t = { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 };
+        items.forEach(it => {
+          const ing = ingredients.find(i => i.id === it.ingredientId);
+          if (ing) {
+            const m = it.qtyMultiplier || 1;
+            t.calories += Math.round(ing.calories * m);
+            t.protein += (ing.protein * m);
+            t.carbs += (ing.carbs * m);
+            t.fat += (ing.fat * m);
+            t.fiber += (ing.fiber * m);
+          }
+        });
+        return {
+          calories: t.calories,
+          protein: Math.round(t.protein * 10) / 10,
+          carbs: Math.round(t.carbs * 10) / 10,
+          fat: Math.round(t.fat * 10) / 10,
+          fiber: Math.round(t.fiber * 10) / 10
+        };
+      };
+
+      // Calculate total macros logged for the entire day
+      const getDailyLoggedTotals = () => {
+        let t = { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 };
+        MEAL_TYPES.forEach(meal => {
+          const mealLog = loggedMeals[meal] || {};
+          Object.entries(mealLog).forEach(([dishId, qty]) => {
+            const dish = dishes.find(d => d.id === dishId);
+            if (dish && qty > 0) {
+              const dt = getDishTotals(dish.items);
+              t.calories += dt.calories * qty;
+              t.protein += dt.protein * qty;
+              t.carbs += dt.carbs * qty;
+              t.fat += dt.fat * qty;
+              t.fiber += dt.fiber * qty;
+            }
+          });
+        });
+        return t;
+      };
+
+      const dailyTotals = getDailyLoggedTotals();
+
+      // Get target grams for the whole day based on total 1500 and average macro splits
+      // For precision, we calculate each meal's target and sum them up.
+      const getDailyTargets = () => {
+        let t = { calories: targetCalories, protein: 0, carbs: 0, fat: 0, fiber: 0 };
+        MEAL_TYPES.forEach((meal, idx) => {
+          const mealCals = (targetCalories * mealRatios[idx]) / 100;
+          const mRatios = macroRatios[meal];
+          t.protein += (mealCals * (mRatios[0] / 100)) / 4;
+          t.carbs += (mealCals * (mRatios[1] / 100)) / 4;
+          t.fat += (mealCals * (mRatios[2] / 100)) / 9;
+          t.fiber += (mealCals * (mRatios[3] / 100)) / 4; // Approx 4 cals per g of fiber
+        });
+        return {
+          calories: t.calories,
+          protein: Math.round(t.protein),
+          carbs: Math.round(t.carbs),
+          fat: Math.round(t.fat),
+          fiber: Math.round(t.fiber)
+        };
+      };
+      const dailyTargets = getDailyTargets();
+
+      // Filtering Dishes logic
+      const filteredDishes = useMemo(() => {
+        return dishes.filter(dish => {
+          const dt = getDishTotals(dish.items);
+          
+          const check = (val, low, high, filterType) => {
+            if (filterType === 'الكل') return true;
+            if (filterType === 'منخفض') return val <= low;
+            if (filterType === 'متوسط') return val > low && val < high;
+            if (filterType === 'عالي') return val >= high;
+            return false;
+          };
+
+          const calOk = check(dt.calories, 200, 450, filters.calories);
+          const proOk = check(dt.protein, 15, 35, filters.protein);
+          const carbOk = check(dt.carbs, 15, 40, filters.carbs);
+          const fatOk = check(dt.fat, 5, 15, filters.fat);
+          const fibOk = check(dt.fiber, 2, 6, filters.fiber);
+
+          return calOk && proOk && carbOk && fatOk && fibOk;
+        });
+      }, [dishes, ingredients, filters]);
+
+      const handleUpdateLog = (dishId, delta) => {
+        setLoggedMeals(prev => {
+          const mealLog = { ...(prev[activeMealTab] || {}) };
+          const current = mealLog[dishId] || 0;
+          const next = Math.max(0, current + delta);
+          if (next === 0) delete mealLog[dishId];
+          else mealLog[dishId] = next;
+          return { ...prev, [activeMealTab]: mealLog };
+        });
+      };
+
+      const handleSaveDish = (e) => {
+        e.preventDefault();
+        if (!dishForm.name || dishForm.items.length === 0) return;
+        if (editingDishId) {
+          setDishes(prev => prev.map(d => d.id === editingDishId ? { ...d, name: dishForm.name, icon: dishForm.icon, items: dishForm.items } : d));
+        } else {
+          setDishes(prev => [...prev, { id: 'dish-' + Date.now(), name: dishForm.name, icon: dishForm.icon || '🍲', items: dishForm.items }]);
+        }
+        setShowDishModal(false);
+      };
+
+      const toggleIngInDish = (ingId) => {
+        setDishForm(prev => {
+          const exists = prev.items.find(i => i.ingredientId === ingId);
+          if (exists) return { ...prev, items: prev.items.filter(i => i.ingredientId !== ingId) };
+          return { ...prev, items: [...prev.items, { ingredientId: ingId, qtyMultiplier: 1 }] };
+        });
+      };
+
+      const exportCSV = () => {
+        let csv = "\uFEFF# SECTION: INGREDIENTS\nid,name,unit,baseQty,protein,carbs,fat,fiber,calories,icon\n";
+        ingredients.forEach(i => csv += `${i.id},"${i.name}",${i.unit},${i.baseQty},${i.protein},${i.carbs},${i.fat},${i.fiber},${i.calories},${i.icon}\n`);
+        csv += "\n# SECTION: DISHES\ndishId,dishName,icon,ingredientId,qtyMultiplier\n";
+        dishes.forEach(d => {
+          d.items.forEach(it => csv += `${d.id},"${d.name}",${d.icon},${it.ingredientId},${it.qtyMultiplier}\n`);
+        });
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `nutrition_data_${Date.now()}.csv`;
+        link.click();
+      };
+
+      return (
+        <div className="max-w-md mx-auto">
+          
+          {/* TOP HEADER - GLOBAL PROGRESS */}
+          <div className="bg-white p-4 rounded-b-3xl shadow-sm border-b border-slate-200 sticky top-0 z-30">
+            <div className="flex items-center justify-between mb-3">
+              <h1 className="font-black text-slate-900 text-lg">يومياتي التغذوية</h1>
+              <div className="flex items-center gap-1.5 bg-slate-100 px-2 py-1 rounded-xl">
+                <span className="text-[10px] font-bold text-slate-500">الهدف:</span>
+                <input 
+                  type="number" 
+                  value={targetCalories} 
+                  onChange={e => setTargetCalories(Number(e.target.value) || 1500)}
+                  className="w-14 bg-white text-center font-black text-emerald-600 rounded text-xs border border-slate-200"
+                />
+              </div>
+            </div>
             
-            {/* ==================== TAB 1: MEALS & PLAN ==================== */}
-            {activeBottomTab === 'meals' && (
-              <div className="space-y-3">
+            <div className="grid grid-cols-4 gap-1.5 text-center">
+              <div className="bg-amber-50 p-1.5 rounded-xl border border-amber-200/50">
+                <span className="text-[9px] font-bold text-amber-800 block">سعرات</span>
+                <span className="text-xs font-black block">{dailyTotals.calories}</span>
+                <span className="text-[8px] text-slate-400">من {dailyTargets.calories}</span>
+              </div>
+              <div className="bg-rose-50 p-1.5 rounded-xl border border-rose-200/50">
+                <span className="text-[9px] font-bold text-rose-800 block">بروتين</span>
+                <span className="text-xs font-black block">{Math.round(dailyTotals.protein)}g</span>
+                <span className="text-[8px] text-slate-400">من {dailyTargets.protein}g</span>
+              </div>
+              <div className="bg-amber-50 p-1.5 rounded-xl border border-amber-200/50">
+                <span className="text-[9px] font-bold text-amber-900 block">كارب</span>
+                <span className="text-xs font-black block">{Math.round(dailyTotals.carbs)}g</span>
+                <span className="text-[8px] text-slate-400">من {dailyTargets.carbs}g</span>
+              </div>
+              <div className="bg-emerald-50 p-1.5 rounded-xl border border-emerald-200/50">
+                <span className="text-[9px] font-bold text-emerald-800 block">ألياف</span>
+                <span className="text-xs font-black block">{Math.round(dailyTotals.fiber)}g</span>
+                <span className="text-[8px] text-slate-400">من {dailyTargets.fiber}g</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-3 space-y-4">
+            
+            {/* TAB 1: MEALS & PLAN */}
+            {activeTab === 'meals' && (
+              <div className="space-y-4 animate-in fade-in duration-200">
                 
-                {/* CALORIE TARGET INPUT & MEAL ALLOCATION SLIDER */}
-                <div className="bg-white rounded-3xl p-4 border border-slate-200 shadow-xs space-y-3">
-                  
-                  {/* Calorie Target Input */}
-                  <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
-                    <div>
-                      <h1 className="font-black text-slate-900 text-sm">مخطط السعرات والماكروز اليومي</h1>
-                      <p className="text-[10px] text-slate-400">حدد هدف السعرات اليومي وقسّم الحصص</p>
-                    </div>
-
-                    <div className="flex items-center gap-1.5 bg-amber-50 px-2.5 py-1 rounded-xl border border-amber-200">
-                      <IconFlame />
-                      <span className="text-[10px] font-bold text-amber-800">الهدف:</span>
-                      <input
-                        type="number"
-                        value={targetCalories}
-                        onChange={(e) => setTargetCalories(Math.max(500, parseInt(e.target.value) || 0))}
-                        className="w-16 p-0.5 bg-white border border-amber-300 rounded-lg text-center font-black text-xs text-amber-900 focus:outline-none focus:ring-1 focus:ring-amber-500"
-                      />
-                      <span className="text-[10px] text-amber-700 font-bold">سعرة</span>
-                    </div>
+                {/* INTERACTIVE PLAN BARS SETTINGS */}
+                <div className="bg-white rounded-3xl p-4 shadow-sm border border-slate-200">
+                  <div className="flex items-center justify-between mb-3">
+                    <h2 className="font-black text-sm text-slate-800">مخطط السعرات والماكروز</h2>
+                    <button 
+                      onClick={() => setShowPlanSettings(!showPlanSettings)}
+                      className="text-[10px] bg-slate-100 px-3 py-1.5 rounded-xl font-bold hover:bg-slate-200"
+                    >
+                      {showPlanSettings ? 'إخفاء الأشرطة ⬆️' : 'تعديل الأشرطة ⚙️'}
+                    </button>
                   </div>
 
-                  {/* 1. Main Calorie Allocation Segment Bar */}
-                  <div className="space-y-1.5">
-                    <div className="flex justify-between items-center text-[10px] font-bold text-slate-600">
-                      <span>توزيع السعرات بين الوجبات (100%):</span>
-                      <span className="text-emerald-600">{targetCalories} سعرة مقسّمة</span>
-                    </div>
-
-                    <div className="grid grid-cols-4 gap-1 text-[10px] font-bold text-center">
-                      {MEAL_TYPES.map(meal => (
-                        <div key={meal.id} className="bg-slate-50 p-1.5 rounded-xl border border-slate-200">
-                          <span className="block text-slate-500 text-[9px]">{meal.label}</span>
-                          <strong className="text-slate-800 block text-xs">{mealAllocations[meal.id]}%</strong>
-                          <span className="text-emerald-600 text-[9px] block">
-                            {Math.round((targetCalories * mealAllocations[meal.id]) / 100)} سعرة
-                          </span>
+                  {showPlanSettings && (
+                    <div className="space-y-5 pt-2 border-t border-slate-100">
+                      {/* Main Meals Split Bar */}
+                      <div>
+                        <div className="flex justify-between text-[10px] font-bold text-slate-600 mb-1.5">
+                          <span>1. توزيع السعرات على الوجبات:</span>
                         </div>
-                      ))}
-                    </div>
-                  </div>
+                        <DraggableBar 
+                          values={mealRatios} 
+                          onChange={setMealRatios} 
+                          colors={['bg-amber-400', 'bg-emerald-400', 'bg-indigo-400', 'bg-rose-400']}
+                          labels={MEAL_TYPES}
+                        />
+                      </div>
 
-                  {/* 2. Sub-Macro Allocations per Meal */}
-                  <div className="bg-slate-50 p-2.5 rounded-2xl border border-slate-200 space-y-2">
-                    <div className="flex items-center justify-between text-[11px] font-bold text-slate-700">
-                      <span>تحديد ماكروز <strong className="text-emerald-700">{activeMealCategory}</strong>:</span>
-                      <span className="text-[10px] text-slate-400">حصة الوجبة: {getMealTargetNutrients(activeMealCategory).calories} سعرة</span>
-                    </div>
-
-                    <div className="grid grid-cols-4 gap-1.5 text-center text-[10px]">
-                      <div className="bg-white p-1.5 rounded-xl border border-rose-200">
-                        <span className="text-rose-700 font-bold block">بروتين 🍗</span>
-                        <strong className="text-slate-900 text-xs block">{getMealTargetNutrients(activeMealCategory).protein}غ</strong>
-                        <span className="text-slate-400 text-[9px] block">{mealMacroAllocations[activeMealCategory]?.protein}%</span>
-                      </div>
-                      <div className="bg-white p-1.5 rounded-xl border border-amber-200">
-                        <span className="text-amber-800 font-bold block">كارب 🌾</span>
-                        <strong className="text-slate-900 text-xs block">{getMealTargetNutrients(activeMealCategory).carbs}غ</strong>
-                        <span className="text-slate-400 text-[9px] block">{mealMacroAllocations[activeMealCategory]?.carbs}%</span>
-                      </div>
-                      <div className="bg-white p-1.5 rounded-xl border border-amber-200">
-                        <span className="text-amber-900 font-bold block">دهون 🫒</span>
-                        <strong className="text-slate-900 text-xs block">{getMealTargetNutrients(activeMealCategory).fat}غ</strong>
-                        <span className="text-slate-400 text-[9px] block">{mealMacroAllocations[activeMealCategory]?.fat}%</span>
-                      </div>
-                      <div className="bg-white p-1.5 rounded-xl border border-emerald-200">
-                        <span className="text-emerald-800 font-bold block">ألياف 🥗</span>
-                        <strong className="text-slate-900 text-xs block">{getMealTargetNutrients(activeMealCategory).fiber}غ</strong>
-                        <span className="text-slate-400 text-[9px] block">{mealMacroAllocations[activeMealCategory]?.fiber}%</span>
+                      {/* Macro Split Sub-Bars for Each Meal */}
+                      <div className="space-y-3 bg-slate-50 p-3 rounded-2xl border border-slate-200">
+                        <span className="text-[10px] font-bold text-slate-600 block">2. توزيع الماكروز داخل كل وجبة (بروتين/كارب/دهون/ألياف):</span>
+                        {MEAL_TYPES.map((meal, idx) => (
+                          <div key={meal}>
+                            <div className="flex justify-between text-[10px] font-bold mb-1">
+                              <span className="text-slate-800">{meal} ({mealRatios[idx]}%)</span>
+                            </div>
+                            <DraggableBar 
+                              values={macroRatios[meal]}
+                              onChange={(newVals) => setMacroRatios(prev => ({...prev, [meal]: newVals}))}
+                              colors={['bg-rose-400', 'bg-amber-500', 'bg-amber-700', 'bg-emerald-500']}
+                              labels={['بروتين', 'كارب', 'دهون', 'ألياف']}
+                            />
+                          </div>
+                        ))}
                       </div>
                     </div>
-                  </div>
-
+                  )}
                 </div>
 
-                {}
-                <div className="bg-white rounded-2xl p-2 border border-slate-200 shadow-xs space-y-1.5">
-                  <span className="text-[10px] font-bold text-slate-400 block px-1">المجموعات الـ 7 لتقسيم الأطباق (حصري):</span>
-                  <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar text-[11px]">
-                    {DISH_GROUPS.map(grp => (
-                      <button
-                        key={grp.id}
-                        onClick={() => setActiveGroupFilter(grp.id)}
-                        className={`px-3 py-1.5 rounded-xl font-bold whitespace-nowrap transition-all ${
-                          activeGroupFilter === grp.id
-                            ? 'bg-emerald-600 text-white shadow-xs scale-102'
-                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                        }`}
-                      >
-                        {grp.label}
-                      </button>
-                    ))}
+                {/* FILTERS */}
+                <div className="bg-white rounded-2xl p-3 shadow-sm border border-slate-200 space-y-2">
+                  <div className="flex justify-between items-center border-b border-slate-100 pb-1.5">
+                    <span className="text-xs font-black flex items-center gap-1"><IconFilter /> فلاتر المغذيات المفتوحة:</span>
+                    <button onClick={() => setFilters({ calories:'الكل', protein:'الكل', carbs:'الكل', fat:'الكل', fiber:'الكل' })} className="text-[10px] text-rose-500 font-bold">إعادة ضبط</button>
                   </div>
-                </div>
-
-                {}
-                <div className="bg-white rounded-2xl p-3 border border-slate-200 shadow-xs space-y-2">
-                  <div className="flex items-center justify-between border-b border-slate-100 pb-1.5">
-                    <span className="text-xs font-black text-slate-800 flex items-center gap-1">
-                      <IconFilter /> <span>فلاتر المغذيات المفتوحة المدمجة:</span>
-                    </span>
-                    {(openFilters.calories !== 'الكل' || openFilters.protein !== 'الكل' || openFilters.carbs !== 'الكل') && (
-                      <button
-                        onClick={() => setOpenFilters({ calories: 'الكل', protein: 'الكل', carbs: 'الكل', fat: 'الكل', fiber: 'الكل' })}
-                        className="text-[10px] font-bold text-rose-600 hover:underline flex items-center gap-0.5"
-                      >
-                        <IconRotate /> <span>إعادة ضبط</span>
-                      </button>
-                    )}
-                  </div>
-
-                  {/* Multi-nutrient row selectors */}
                   <div className="space-y-1.5 text-[10px]">
                     {[
                       { key: 'calories', label: '🔥 السعرات' },
@@ -641,17 +438,13 @@
                       { key: 'fiber', label: '🥗 الألياف' }
                     ].map(nut => (
                       <div key={nut.key} className="flex items-center justify-between bg-slate-50 p-1 rounded-xl">
-                        <span className="font-bold text-slate-700 w-20">{nut.label}</span>
+                        <span className="font-bold text-slate-700 w-16">{nut.label}</span>
                         <div className="flex gap-1">
                           {['الكل', 'منخفض', 'متوسط', 'عالي'].map(lvl => (
                             <button
                               key={lvl}
-                              onClick={() => setOpenFilters(prev => ({ ...prev, [nut.key]: lvl }))}
-                              className={`px-2 py-0.5 rounded-lg font-bold transition-all ${
-                                openFilters[nut.key] === lvl
-                                  ? 'bg-slate-900 text-white shadow-xs'
-                                  : 'bg-white text-slate-500 border border-slate-200 hover:bg-slate-100'
-                              }`}
+                              onClick={() => setFilters(prev => ({ ...prev, [nut.key]: lvl }))}
+                              className={`px-2 py-0.5 rounded-lg font-bold transition-all ${filters[nut.key] === lvl ? 'bg-slate-900 text-white' : 'bg-white text-slate-500 border border-slate-200'}`}
                             >
                               {lvl}
                             </button>
@@ -662,623 +455,209 @@
                   </div>
                 </div>
 
-                {/* MEAL CATEGORY TAB SWITCHER (فطور / غداء / عشاء / سناك) */}
-                <div className="grid grid-cols-4 gap-1 bg-white p-1.5 rounded-2xl border border-slate-200 text-center text-xs font-bold">
+                {/* MEAL TABS */}
+                <div className="grid grid-cols-4 gap-1 bg-white p-1.5 rounded-2xl border border-slate-200">
                   {MEAL_TYPES.map(m => (
                     <button
-                      key={m.id}
-                      onClick={() => setActiveMealCategory(m.id)}
-                      className={`py-2 rounded-xl transition-all ${
-                        activeMealCategory === m.id
-                          ? 'bg-slate-900 text-white shadow-xs'
-                          : 'text-slate-600 hover:bg-slate-100'
-                      }`}
+                      key={m}
+                      onClick={() => setActiveMealTab(m)}
+                      className={`py-2 text-xs font-bold rounded-xl transition-all ${activeMealTab === m ? 'bg-emerald-600 text-white shadow-sm' : 'text-slate-500'}`}
                     >
-                      {m.label}
+                      {m}
                     </button>
                   ))}
                 </div>
 
-                {}
+                {/* DISH CARDS WITH FORECAST BARS */}
                 <div className="space-y-3">
                   {filteredDishes.length === 0 ? (
-                    <div className="bg-white rounded-3xl p-8 text-center text-slate-400 space-y-2 border border-slate-200">
-                      <span className="text-3xl block">🥗</span>
-                      <p className="text-xs font-bold">لا توجد أطباق تطابق هذا الفلتر والمجموعة حالياً</p>
-                    </div>
+                    <div className="text-center p-8 bg-white rounded-3xl border border-slate-200 text-slate-400 font-bold text-xs">لا توجد أطباق تطابق الفلاتر</div>
                   ) : (
                     filteredDishes.map(dish => {
                       const dt = getDishTotals(dish.items);
-                      const currentQty = selectedLoggedMeals[dish.id] || 0;
-                      const isSelected = currentQty > 0;
-                      const targetNutrients = getMealTargetNutrients(activeMealCategory);
+                      const currentQty = loggedMeals[activeMealTab][dish.id] || 0;
+                      
+                      // Progress Math for Card vs Daily Target
+                      const getPct = (currentVal, targetVal) => Math.min(100, (currentVal / targetVal) * 100);
+                      
+                      const calPct = getPct(dailyTotals.calories, dailyTargets.calories);
+                      const proPct = getPct(dailyTotals.protein, dailyTargets.protein);
+                      const carbPct = getPct(dailyTotals.carbs, dailyTargets.carbs);
+                      const fatPct = getPct(dailyTotals.fat, dailyTargets.fat);
+                      const fibPct = getPct(dailyTotals.fiber, dailyTargets.fiber);
 
-                      // Calculate live percentages relative to targets
-                      const calPct = Math.round((dt.calories / targetNutrients.calories) * 100);
-                      const proPct = Math.round((dt.protein / targetNutrients.protein) * 100);
-                      const carbPct = Math.round((dt.carbs / targetNutrients.carbs) * 100);
-                      const fatPct = Math.round((dt.fat / targetNutrients.fat) * 100);
-                      const fibPct = Math.round((dt.fiber / targetNutrients.fiber) * 100);
+                      const calFore = getPct(dailyTotals.calories + dt.calories, dailyTargets.calories);
+                      const proFore = getPct(dailyTotals.protein + dt.protein, dailyTargets.protein);
+                      const carbFore = getPct(dailyTotals.carbs + dt.carbs, dailyTargets.carbs);
+                      const fatFore = getPct(dailyTotals.fat + dt.fat, dailyTargets.fat);
+                      const fibFore = getPct(dailyTotals.fiber + dt.fiber, dailyTargets.fiber);
 
-                      // Target line position from right (0% origin on right in RTL)
-                      const MAX_SCALE = 140;
-                      const targetLineRight = (100 / MAX_SCALE) * 100; // ~71.4%
+                      const targetLineRight = (100 / MAX_SCALE_PERCENT) * 100;
+
+                      const ProgressTrack = ({ color, currPct, forePct, label, icon }) => (
+                        <div>
+                          <div className="flex justify-between items-center text-[9px] font-bold mb-0.5">
+                            <span className="text-slate-700 flex items-center gap-1">{label} {icon}</span>
+                            <span>الحالي: {Math.round(currPct)}% <span className="text-slate-400 font-normal">(بالإضافة: {Math.round(forePct)}%)</span></span>
+                          </div>
+                          <div className="relative w-full h-2.5 bg-slate-100 rounded-full border border-slate-200/50">
+                            {/* Forecast */}
+                            <div className="absolute top-0 right-0 h-full bg-slate-300 transition-all" style={{ width: `${Math.min(100, (forePct/MAX_SCALE_PERCENT)*100)}%` }} />
+                            {/* Current */}
+                            <div className={`absolute top-0 right-0 h-full ${color} transition-all`} style={{ width: `${Math.min(100, (currPct/MAX_SCALE_PERCENT)*100)}%` }} />
+                            {/* 100% Target Fix for RTL */}
+                            <div className="absolute top-0 bottom-0 w-[2px] bg-slate-900 z-10" style={{ right: `${targetLineRight}%` }} />
+                          </div>
+                        </div>
+                      );
 
                       return (
-                        <div
-                          key={dish.id}
-                          className={`bg-white rounded-3xl p-4 shadow-xs border-2 transition-all space-y-3 ${
-                            isSelected ? 'border-emerald-500 ring-1 ring-emerald-500/20' : 'border-slate-200/80'
-                          }`}
-                        >
-                          {/* Card Header */}
-                          <div className="flex items-start justify-between border-b border-slate-100 pb-2">
-                            <div className="flex items-center gap-2">
-                              <span className="text-2xl p-2 bg-slate-50 rounded-2xl border border-slate-200">{dish.icon}</span>
+                        <div key={dish.id} className={`bg-white rounded-3xl p-4 shadow-sm transition-all border-2 ${currentQty > 0 ? 'border-emerald-500' : 'border-slate-200'}`}>
+                          <div className="flex justify-between items-start mb-3 border-b border-slate-100 pb-2">
+                            <div className="flex gap-2.5 items-center">
+                              <span className="text-2xl bg-slate-50 p-2 rounded-2xl border border-slate-100">{dish.icon}</span>
                               <div>
-                                <h3 className="font-black text-xs sm:text-sm text-slate-900">{dish.name}</h3>
-                                <div className="flex items-center gap-1.5 mt-0.5">
-                                  {/* Exclusive Group Selector Badge */}
-                                  <select
-                                    value={dish.groupId || 'group-1'}
-                                    onChange={(e) => handleAssignDishGroup(dish.id, e.target.value)}
-                                    className="bg-emerald-50 text-emerald-800 text-[9px] font-bold px-1.5 py-0.5 rounded-md border border-emerald-200 focus:outline-none"
-                                  >
-                                    {DISH_GROUPS.filter(g => g.id !== 'all').map(g => (
-                                      <option key={g.id} value={g.id}>{g.label}</option>
-                                    ))}
-                                  </select>
-                                  <span className="text-[10px] text-slate-400 font-bold">{dish.category}</span>
-                                </div>
+                                <h3 className="font-black text-sm text-slate-800">{dish.name}</h3>
+                                <span className="text-[10px] text-slate-400 font-bold">{dish.items.length} مكونات</span>
                               </div>
                             </div>
-
-                            {isSelected && (
-                              <span className="bg-emerald-600 text-white text-[9px] font-bold px-2 py-0.5 rounded-full">
-                                مضاف {currentQty}x
-                              </span>
-                            )}
+                            <div className="text-left text-[10px] font-black text-slate-500">
+                              <span className="block text-amber-600">{dt.calories}🔥</span>
+                              <span className="block text-rose-600">{dt.protein}g🍗</span>
+                            </div>
                           </div>
 
-                          {/* 5 NUTRIENT BARS (Calories, Protein, Carbs, Fat, Fiber) */}
-                          <div className="space-y-2 text-[10px]">
-                            
-                            {/* Calories */}
-                            <div>
-                              <div className="flex justify-between items-center mb-0.5 font-bold">
-                                <span className="text-slate-700">🔥 السعرات: <strong>{dt.calories}</strong> / {targetNutrients.calories} سعرة</span>
-                                <span className="text-amber-600 font-black">{calPct}%</span>
-                              </div>
-                              <div className="relative w-full h-2.5 bg-amber-50 rounded-full overflow-hidden border border-amber-200/60">
-                                <div className="absolute top-0 right-0 h-full bg-amber-400" style={{ width: `${Math.min(100, (calPct / MAX_SCALE) * 100)}%` }} />
-                                <div className="absolute top-0 bottom-0 w-[2px] bg-slate-900 z-10" style={{ right: `${targetLineRight}%` }} />
-                              </div>
-                            </div>
-
-                            {/* Protein */}
-                            <div>
-                              <div className="flex justify-between items-center mb-0.5 font-bold">
-                                <span className="text-slate-700">🍗 البروتين: <strong>{dt.protein}غ</strong> / {targetNutrients.protein}غ</span>
-                                <span className="text-rose-600 font-black">{proPct}%</span>
-                              </div>
-                              <div className="relative w-full h-2.5 bg-amber-50 rounded-full overflow-hidden border border-amber-200/60">
-                                <div className="absolute top-0 right-0 h-full bg-rose-400" style={{ width: `${Math.min(100, (proPct / MAX_SCALE) * 100)}%` }} />
-                                <div className="absolute top-0 bottom-0 w-[2px] bg-slate-900 z-10" style={{ right: `${targetLineRight}%` }} />
-                              </div>
-                            </div>
-
-                            {/* Carbs */}
-                            <div>
-                              <div className="flex justify-between items-center mb-0.5 font-bold">
-                                <span className="text-slate-700">🌾 الكارب: <strong>{dt.carbs}غ</strong> / {targetNutrients.carbs}غ</span>
-                                <span className="text-amber-700 font-black">{carbPct}%</span>
-                              </div>
-                              <div className="relative w-full h-2.5 bg-amber-50 rounded-full overflow-hidden border border-amber-200/60">
-                                <div className="absolute top-0 right-0 h-full bg-amber-500" style={{ width: `${Math.min(100, (carbPct / MAX_SCALE) * 100)}%` }} />
-                                <div className="absolute top-0 bottom-0 w-[2px] bg-slate-900 z-10" style={{ right: `${targetLineRight}%` }} />
-                              </div>
-                            </div>
-
-                            {/* Fat */}
-                            <div>
-                              <div className="flex justify-between items-center mb-0.5 font-bold">
-                                <span className="text-slate-700">🫒 الدهون: <strong>{dt.fat}غ</strong> / {targetNutrients.fat}غ</span>
-                                <span className="text-amber-800 font-black">{fatPct}%</span>
-                              </div>
-                              <div className="relative w-full h-2.5 bg-amber-50 rounded-full overflow-hidden border border-amber-200/60">
-                                <div className="absolute top-0 right-0 h-full bg-amber-600" style={{ width: `${Math.min(100, (fatPct / MAX_SCALE) * 100)}%` }} />
-                                <div className="absolute top-0 bottom-0 w-[2px] bg-slate-900 z-10" style={{ right: `${targetLineRight}%` }} />
-                              </div>
-                            </div>
-
-                            {/* Fiber */}
-                            <div>
-                              <div className="flex justify-between items-center mb-0.5 font-bold">
-                                <span className="text-slate-700">🥗 الألياف: <strong>{dt.fiber}غ</strong> / {targetNutrients.fiber}غ</span>
-                                <span className="text-emerald-700 font-black">{fibPct}%</span>
-                              </div>
-                              <div className="relative w-full h-2.5 bg-amber-50 rounded-full overflow-hidden border border-amber-200/60">
-                                <div className="absolute top-0 right-0 h-full bg-emerald-500" style={{ width: `${Math.min(100, (fibPct / MAX_SCALE) * 100)}%` }} />
-                                <div className="absolute top-0 bottom-0 w-[2px] bg-slate-900 z-10" style={{ right: `${targetLineRight}%` }} />
-                              </div>
-                            </div>
-
+                          <div className="space-y-2.5 pb-3">
+                            <ProgressTrack color="bg-amber-400" currPct={calPct} forePct={calFore} label="السعرات" icon="🔥" />
+                            <ProgressTrack color="bg-rose-400" currPct={proPct} forePct={proFore} label="البروتين" icon="🍗" />
+                            <ProgressTrack color="bg-amber-500" currPct={carbPct} forePct={carbFore} label="الكارب" icon="🌾" />
+                            <ProgressTrack color="bg-amber-700" currPct={fatPct} forePct={fatFore} label="الدهون" icon="🫒" />
+                            <ProgressTrack color="bg-emerald-500" currPct={fibPct} forePct={fibFore} label="الألياف" icon="🥗" />
                           </div>
 
-                          {/* Card Quantity Controls */}
-                          <div className="flex items-center justify-between pt-2 border-t border-slate-100">
-                            {isSelected ? (
-                              <div className="flex items-center bg-emerald-800 text-white rounded-xl px-2.5 py-1 text-xs font-bold gap-2">
-                                <button onClick={() => updateLoggedMealQty(dish.id, 1)} className="p-0.5 hover:bg-emerald-700 rounded"><IconPlus /></button>
-                                <span>{currentQty}</span>
-                                <button onClick={() => updateLoggedMealQty(dish.id, -1)} className="p-0.5 hover:bg-emerald-700 rounded"><IconMinus /></button>
+                          <div className="flex justify-between items-center pt-2 border-t border-slate-100">
+                            {currentQty > 0 ? (
+                              <div className="flex items-center gap-3 bg-emerald-800 text-white rounded-xl px-2 py-1 shadow-sm">
+                                <button onClick={() => handleUpdateLog(dish.id, 1)} className="p-1 hover:bg-emerald-600 rounded"><IconPlus /></button>
+                                <span className="text-xs font-black">{currentQty}</span>
+                                <button onClick={() => handleUpdateLog(dish.id, -1)} className="p-1 hover:bg-emerald-600 rounded"><IconMinus /></button>
                               </div>
                             ) : (
-                              <button
-                                onClick={() => updateLoggedMealQty(dish.id, 1)}
-                                className="flex items-center gap-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-xl transition-all shadow-xs"
-                              >
-                                <IconPlus /> <span>إضافة للوجبة</span>
+                              <button onClick={() => handleUpdateLog(dish.id, 1)} className="flex items-center gap-1 bg-emerald-600 text-white px-3 py-1.5 rounded-xl text-xs font-bold hover:bg-emerald-700 shadow-sm">
+                                <IconPlus /> إضافة للـ {activeMealTab}
                               </button>
                             )}
-
-                            <span className="text-[10px] text-slate-400 font-bold">
-                              المكونات: {dish.items.length} عنصر
-                            </span>
                           </div>
-
                         </div>
                       );
                     })
                   )}
                 </div>
-
               </div>
             )}
 
-            {}
-            {activeBottomTab === 'ingredients' && (
-              <div className="space-y-4">
-                <input type="file" ref={csvFileInputRef} onChange={handleImportCSV} accept=".csv" className="hidden" />
-
-                <div className="bg-white rounded-3xl p-4 border border-slate-200 shadow-xs space-y-3">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-2.5">
-                    <div>
-                      <h2 className="font-black text-slate-900 text-sm">مكتبة مدخلات الأطعمة الخام ({ingredients.length} مكون)</h2>
-                      <p className="text-[10px] text-slate-400">سجل قيم المكونات وتصدير/استيراد البيانات</p>
+            {/* TAB 2: RECIPES (أطباقي) */}
+            {activeTab === 'recipes' && (
+              <div className="space-y-4 animate-in fade-in">
+                <div className="bg-white rounded-3xl p-4 shadow-sm border border-slate-200">
+                  <div className="flex justify-between items-center mb-3">
+                    <h2 className="font-black text-sm text-slate-800">أطباقي ووصفاتي</h2>
+                    <div className="flex gap-2">
+                      <button onClick={exportCSV} className="text-[10px] font-bold bg-slate-100 px-2 py-1 rounded-lg">تصدير CSV</button>
+                      <button onClick={() => { setEditingDishId(null); setDishForm({name:'', icon:'🍲', items:[]}); setShowDishModal(true); }} className="text-[10px] font-bold bg-emerald-600 text-white px-2 py-1 rounded-lg">إنشاء طبق ➕</button>
                     </div>
-
-                    <div className="flex items-center gap-1.5 flex-wrap">
-                      <button
-                        onClick={handleExportCSV}
-                        className="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-2.5 py-1.5 rounded-xl flex items-center gap-1 border border-slate-200"
-                        title="تصدير كملف CSV"
-                      >
-                        📥 تصدير CSV
-                      </button>
-                      <button
-                        onClick={() => csvFileInputRef.current && csvFileInputRef.current.click()}
-                        className="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-2.5 py-1.5 rounded-xl flex items-center gap-1 border border-slate-200"
-                        title="استيراد من ملف CSV"
-                      >
-                        📤 استيراد CSV
-                      </button>
-                      <button
-                        onClick={() => {
-                          setEditingIngId(null);
-                          setNewIng({ name: '', unit: 'جرام', baseQty: 100, protein: 0, carbs: 0, fat: 0, fiber: 0, icon: '🥦' });
-                          setShowAddIngredientModal(true);
-                        }}
-                        className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-xl flex items-center gap-1 shadow-xs"
-                      >
-                        <IconPlus /> <span>إضافة مكون</span>
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2.5 pt-1 max-h-[65vh] overflow-y-auto no-scrollbar">
-                    {ingredients.map(ing => (
-                      <div key={ing.id} className="bg-slate-50 rounded-2xl p-3 border border-slate-200/80 flex items-center justify-between">
-                        <div className="flex items-center gap-2.5">
-                          <span className="text-2xl p-1.5 bg-white rounded-xl border border-slate-200">{ing.icon}</span>
-                          <div>
-                            <h3 className="font-black text-xs text-slate-800">{ing.name}</h3>
-                            <p className="text-[10px] text-slate-400">الوحدة: {ing.baseQty} {ing.unit}</p>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          <div className="text-left">
-                            <span className="font-black text-amber-600 text-xs block">{ing.calories} سعرة</span>
-                            <span className="text-[9px] text-slate-500 font-bold block">
-                              بروتين: {ing.protein}غ | كارب: {ing.carbs}غ | دهون: {ing.fat}غ
-                            </span>
-                          </div>
-
-                          <div className="flex items-center gap-1 pr-1 border-r border-slate-200">
-                            <button
-                              onClick={() => {
-                                setEditingIngId(ing.id);
-                                setNewIng({ name: ing.name, unit: ing.unit, baseQty: ing.baseQty, protein: ing.protein, carbs: ing.carbs, fat: ing.fat, fiber: ing.fiber, icon: ing.icon });
-                                setShowAddIngredientModal(true);
-                              }}
-                              className="p-1.5 bg-white hover:bg-slate-200 rounded-lg text-slate-600 text-[10px] font-bold border border-slate-200"
-                              title="تعديل المكون"
-                            >
-                              ✏️
-                            </button>
-                            <button
-                              onClick={() => setIngredients(prev => prev.filter(i => i.id !== ing.id))}
-                              className="p-1.5 bg-rose-50 hover:bg-rose-100 rounded-lg text-rose-600 text-[10px] font-bold border border-rose-200"
-                              title="حذف المكون"
-                            >
-                              🗑️
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {}
-            {activeBottomTab === 'recipes' && (
-              <div className="space-y-4">
-                <div className="bg-white rounded-3xl p-4 border border-slate-200 shadow-xs space-y-3">
-                  <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                    <div>
-                      <h2 className="font-black text-slate-900 text-sm">بطاقات الأطباق والوجبات ({customDishes.length} طبق)</h2>
-                      <p className="text-[10px] text-slate-400">ابتكر وتعديل أطباقك المخصصة وتصديرها</p>
-                    </div>
-
-                    <div className="flex items-center gap-1.5">
-                      <button
-                        onClick={handleExportCSV}
-                        className="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-2.5 py-1.5 rounded-xl border border-slate-200"
-                      >
-                        📥 تصدير
-                      </button>
-                      <button
-                        onClick={() => {
-                          setEditingDishId(null);
-                          setNewDish({ name: '', category: 'غداء', groupId: 'group-1', icon: '🍲', selectedItems: [] });
-                          setShowAddDishModal(true);
-                        }}
-                        className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-xl flex items-center gap-1 shadow-xs"
-                      >
-                        <IconPlus /> <span>طبق جديد</span>
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 gap-3 pt-1 max-h-[65vh] overflow-y-auto no-scrollbar">
-                    {customDishes.map(dish => {
-                      const dt = getDishTotals(dish.items);
-                      const grpObj = DISH_GROUPS.find(g => g.id === (dish.groupId || 'group-1')) || DISH_GROUPS[1];
-
-                      return (
-                        <div key={dish.id} className="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-3xl p-4 space-y-3 shadow-md">
-                          <div className="flex items-center justify-between border-b border-slate-700/80 pb-2">
-                            <div className="flex items-center gap-2">
-                              <span className="text-2xl">{dish.icon}</span>
-                              <div>
-                                <h3 className="font-black text-sm">{dish.name}</h3>
-                                <span className="text-[9px] text-emerald-400 font-bold block">{grpObj.label}</span>
-                              </div>
-                            </div>
-
-                            <div className="flex items-center gap-2">
-                              <span className="bg-emerald-500/20 text-emerald-300 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-500/30">
-                                {dish.category}
-                              </span>
-
-                              <button
-                                onClick={() => {
-                                  setEditingDishId(dish.id);
-                                  setNewDish({ name: dish.name, category: dish.category, groupId: dish.groupId || 'group-1', icon: dish.icon || '🍲', selectedItems: dish.items.map(it => ({ ...it })) });
-                                  setShowAddDishModal(true);
-                                }}
-                                className="px-2 py-0.5 bg-slate-700 hover:bg-slate-600 text-white text-[10px] font-bold rounded-lg border border-slate-600"
-                              >
-                                ✏️ تعديل
-                              </button>
-                              <button
-                                onClick={() => setCustomDishes(prev => prev.filter(d => d.id !== dish.id))}
-                                className="px-2 py-0.5 bg-rose-500/20 hover:bg-rose-500/40 text-rose-300 text-[10px] font-bold rounded-lg border border-rose-500/30"
-                              >
-                                🗑️ حذف
-                              </button>
-                            </div>
-                          </div>
-
-                          <div className="grid grid-cols-5 gap-1 text-center text-[9px] bg-slate-800/90 p-2 rounded-2xl border border-slate-700">
-                            <div><span className="text-amber-400 block font-bold">السعرات</span><strong className="text-white text-xs">{dt.calories}</strong></div>
-                            <div><span className="text-rose-400 block font-bold">البروتين</span><strong className="text-white text-xs">{dt.protein}غ</strong></div>
-                            <div><span className="text-amber-300 block font-bold">الكارب</span><strong className="text-white text-xs">{dt.carbs}غ</strong></div>
-                            <div><span className="text-emerald-400 block font-bold">الدهون</span><strong className="text-white text-xs">{dt.fat}غ</strong></div>
-                            <div><span className="text-sky-300 block font-bold">الألياف</span><strong className="text-white text-xs">{dt.fiber}غ</strong></div>
-                          </div>
-
-                          <div className="text-[10px] text-slate-400 space-y-0.5 pt-1">
-                            <span className="font-bold text-slate-300 block">المكونات الداخلة بالجرامات:</span>
-                            {dish.items.map((it, idx) => {
-                              const ing = ingredients.find(i => i.id === it.ingredientId);
-                              return ing ? (
-                                <span key={idx} className="inline-block bg-slate-700/60 px-2 py-0.5 rounded-md ml-1 mb-1">
-                                  {ing.name} ({it.qtyMultiplier * ing.baseQty} {ing.unit})
-                                </span>
-                              ) : null;
-                            })}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {}
-            {activeBottomTab === 'vitals' && (
-              <div className="space-y-4">
-                <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-3xl p-5 shadow-lg space-y-4">
-                  <div className="flex items-center justify-between border-b border-slate-700 pb-2">
-                    <h3 className="font-black text-sm">رحلة نزول الوزن والقياسات الحيوية</h3>
-                    <span className="text-[10px] bg-emerald-500/20 text-emerald-300 px-2.5 py-0.5 rounded-full border border-emerald-500/30 font-bold">
-                      خطة حازمة
-                    </span>
                   </div>
 
                   <div className="space-y-2">
-                    <div className="flex justify-between text-xs">
-                      <span>الوزن الحالي: <strong className="text-white text-sm">{patientVitals.currentWeight} كجم</strong></span>
-                      <span className="text-emerald-400 font-bold">الهدف: {patientVitals.targetWeight} كجم 🎯</span>
-                    </div>
-
-                    <div className="relative w-full h-3.5 bg-slate-700/80 rounded-full overflow-hidden p-0.5 border border-slate-600">
-                      <div
-                        className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full transition-all duration-500"
-                        style={{
-                          width: `${Math.min(
-                            100,
-                            ((patientVitals.startWeight - patientVitals.currentWeight) /
-                              (patientVitals.startWeight - patientVitals.targetWeight)) *
-                              100
-                          )}%`
-                        }}
-                      />
-                    </div>
-
-                    <div className="flex justify-between text-[10px] text-slate-400">
-                      <span>البداية: {patientVitals.startWeight} كجم</span>
-                      <span>تم خسارة: {(patientVitals.startWeight - patientVitals.currentWeight).toFixed(1)} كجم 🎉</span>
-                      <span>متبقي: {(patientVitals.currentWeight - patientVitals.targetWeight).toFixed(1)} كجم</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Water Tracker */}
-                <div className="bg-white rounded-3xl p-4 border border-slate-200 shadow-xs space-y-3">
-                  <div className="flex items-center justify-between">
-                    <h3 className="font-black text-slate-900 text-xs sm:text-sm">متابعة شرب الماء اليومي 💧</h3>
-                    <span className="text-xs font-bold text-sky-600 bg-sky-50 px-2.5 py-0.5 rounded-full border border-sky-100">
-                      {patientVitals.waterGlasses} / {patientVitals.waterTarget} أكواب
-                    </span>
-                  </div>
-
-                  <div className="grid grid-cols-4 gap-2">
-                    {Array.from({ length: patientVitals.waterTarget }).map((_, idx) => {
-                      const isFilled = idx < patientVitals.waterGlasses;
+                    {dishes.map(d => {
+                      const dt = getDishTotals(d.items);
                       return (
-                        <button
-                          key={idx}
-                          onClick={() => setPatientVitals(prev => ({ ...prev, waterGlasses: Math.max(0, isFilled ? prev.waterGlasses - 1 : prev.waterGlasses + 1) }))}
-                          className={`p-2 rounded-2xl border text-center transition-all ${
-                            isFilled ? 'bg-sky-500 text-white border-sky-500 scale-102' : 'bg-slate-50 text-slate-300 border-slate-200'
-                          }`}
-                        >
-                          <span className="text-base block">💧</span>
-                          <span className="text-[9px] font-bold block mt-0.5">كوب {idx + 1}</span>
-                        </button>
-                      );
+                        <div key={d.id} className="bg-slate-50 p-3 rounded-2xl border border-slate-200 flex justify-between items-center">
+                          <div className="flex gap-2 items-center">
+                            <span className="text-xl">{d.icon}</span>
+                            <div>
+                              <h4 className="font-bold text-xs">{d.name}</h4>
+                              <span className="text-[9px] text-slate-500 block">{dt.calories}c | {dt.protein}p | {dt.carbs}c | {dt.fat}f | {dt.fiber}fb</span>
+                            </div>
+                          </div>
+                          <button onClick={() => { setEditingDishId(d.id); setDishForm({name:d.name, icon:d.icon, items:[...d.items]}); setShowDishModal(true); }} className="text-[10px] text-slate-500 bg-white px-2 py-1 rounded border">تعديل</button>
+                        </div>
+                      )
                     })}
                   </div>
                 </div>
               </div>
             )}
 
-          </main>
-
-          {}
-          {/* ADD / EDIT INGREDIENT MODAL */}
-          {showAddIngredientModal && (
-            <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-              <div className="bg-white w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-3 max-h-[90vh] overflow-y-auto">
-                <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                  <h3 className="font-black text-slate-900 text-sm">
-                    {editingIngId ? 'تعديل بيانات المكون الخام' : 'إضافة مكون خام جديد'}
-                  </h3>
-                  <button onClick={() => { setShowAddIngredientModal(false); setEditingIngId(null); }} className="text-slate-400 hover:text-slate-600 p-1">
-                    <IconX />
-                  </button>
+            {/* TAB 3: INGREDIENTS */}
+            {activeTab === 'ingredients' && (
+              <div className="bg-white rounded-3xl p-4 shadow-sm border border-slate-200">
+                <h2 className="font-black text-sm mb-3">مكتبة المكونات الخام</h2>
+                <div className="space-y-2 max-h-[60vh] overflow-y-auto">
+                  {ingredients.map(ing => (
+                    <div key={ing.id} className="bg-slate-50 p-2.5 rounded-xl border border-slate-200 flex justify-between items-center">
+                      <div className="flex gap-2 items-center">
+                        <span>{ing.icon}</span>
+                        <div>
+                          <span className="font-bold text-xs block">{ing.name}</span>
+                          <span className="text-[9px] text-slate-500">لكل {ing.baseQty}{ing.unit}</span>
+                        </div>
+                      </div>
+                      <div className="text-left text-[9px] font-bold text-slate-600">
+                        <span className="block text-amber-600">{ing.calories} Cal</span>
+                        <span className="block text-rose-600">{ing.protein} Pro</span>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                <form onSubmit={handleSaveIngredient} className="space-y-3 text-xs">
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">اسم المكون</label>
-                    <input type="text" required value={newIng.name} onChange={e => setNewIng({...newIng, name: e.target.value})} placeholder="مثال: صدر دجاج طازج" className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl" />
-                  </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div>
-                      <label className="block font-bold text-slate-700 mb-1">الكمية الأساسية</label>
-                      <input type="number" required value={newIng.baseQty} onChange={e => setNewIng({...newIng, baseQty: e.target.value})} className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl" />
-                    </div>
-                    <div>
-                      <label className="block font-bold text-slate-700 mb-1">وحدة القياس</label>
-                      <select value={newIng.unit} onChange={e => setNewIng({...newIng, unit: e.target.value})} className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl">
-                        <option value="جرام">جرام</option>
-                        <option value="حبة">حبة</option>
-                        <option value="ملعقة">ملعقة</option>
-                        <option value="علبة">علبة</option>
-                        <option value="سكوب">سكوب</option>
-                        <option value="كوب">كوب</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div>
-                      <label className="block font-bold text-slate-700 mb-1">البروتين (غ)</label>
-                      <input type="number" step="0.1" value={newIng.protein} onChange={e => setNewIng({...newIng, protein: e.target.value})} className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl" />
-                    </div>
-                    <div>
-                      <label className="block font-bold text-slate-700 mb-1">الكارب (غ)</label>
-                      <input type="number" step="0.1" value={newIng.carbs} onChange={e => setNewIng({...newIng, carbs: e.target.value})} className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl" />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div>
-                      <label className="block font-bold text-slate-700 mb-1">الدهون (غ)</label>
-                      <input type="number" step="0.1" value={newIng.fat} onChange={e => setNewIng({...newIng, fat: e.target.value})} className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl" />
-                    </div>
-                    <div>
-                      <label className="block font-bold text-slate-700 mb-1">الألياف (غ)</label>
-                      <input type="number" step="0.1" value={newIng.fiber} onChange={e => setNewIng({...newIng, fiber: e.target.value})} className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl" />
-                    </div>
-                  </div>
-                  <div className="bg-emerald-50 p-2.5 rounded-xl border border-emerald-200 text-center">
-                    <span className="text-emerald-800 font-bold block text-[11px]">السعرات المحسوبة آلياً:</span>
-                    <span className="text-emerald-900 font-black text-sm">{calculatedNewIngCalories} سعرة</span>
-                  </div>
-                  <div className="flex gap-2 pt-2">
-                    <button type="submit" className="flex-1 py-2 bg-emerald-600 text-white font-bold rounded-xl hover:bg-emerald-700">
-                      {editingIngId ? 'تحديث وتعديل المكون' : 'حفظ المكون'}
-                    </button>
-                    <button type="button" onClick={() => { setShowAddIngredientModal(false); setEditingIngId(null); }} className="py-2 px-4 bg-slate-100 text-slate-700 font-bold rounded-xl">إلغاء</button>
-                  </div>
-                </form>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* ADD / EDIT DISH MODAL */}
-          {showAddDishModal && (
-            <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-              <div className="bg-white w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-3 max-h-[90vh] overflow-y-auto">
-                <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                  <h3 className="font-black text-slate-900 text-sm">
-                    {editingDishId ? 'تعديل بيانات الطبق' : 'ابتكار طبق جديد'}
-                  </h3>
-                  <button onClick={() => { setShowAddDishModal(false); setEditingDishId(null); }} className="text-slate-400 hover:text-slate-600 p-1">
-                    <IconX />
-                  </button>
-                </div>
-                <form onSubmit={handleSaveDish} className="space-y-3 text-xs">
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">اسم الطبق</label>
-                    <input type="text" required value={newDish.name} onChange={e => setNewDish({...newDish, name: e.target.value})} placeholder="مثال: مجبوس دجاج دايت" className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl" />
-                  </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div>
-                      <label className="block font-bold text-slate-700 mb-1">الوجبة/الفئة</label>
-                      <select value={newDish.category} onChange={e => setNewDish({...newDish, category: e.target.value})} className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl">
-                        <option value="فطور">فطور</option>
-                        <option value="غداء">غداء</option>
-                        <option value="عشاء">عشاء</option>
-                        <option value="سناك">سناك</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block font-bold text-slate-700 mb-1">المجموعة التابعة</label>
-                      <select value={newDish.groupId} onChange={e => setNewDish({...newDish, groupId: e.target.value})} className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl font-bold">
-                        {DISH_GROUPS.filter(g => g.id !== 'all').map(grp => (
-                          <option key={grp.id} value={grp.id}>{grp.label}</option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
+          </div>
 
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">اختر المكونات والكميات للطبق:</label>
-                    <div className="space-y-1.5 max-h-48 overflow-y-auto no-scrollbar border border-slate-200 rounded-xl p-2 bg-slate-50">
-                      {ingredients.map(ing => {
-                        const selected = newDish.selectedItems.find(i => i.ingredientId === ing.id);
-                        return (
-                          <div key={ing.id} className={`p-2 rounded-lg border transition-all flex items-center justify-between ${selected ? 'bg-emerald-50 border-emerald-300' : 'bg-white border-slate-200'}`}>
-                            <button type="button" onClick={() => toggleIngredientInNewDish(ing.id)} className="flex items-center gap-1.5 text-right flex-1 font-bold text-[11px] text-slate-800">
-                              <span className="text-sm">{ing.icon}</span>
-                              <span>{ing.name}</span>
-                            </button>
-                            {selected && (
-                              <div className="flex items-center gap-1 bg-white px-2 py-0.5 rounded border border-emerald-200">
-                                <button type="button" onClick={() => updateNewDishItemMultiplier(ing.id, selected.qtyMultiplier - 0.2)} className="w-4 h-4 bg-slate-100 rounded font-bold flex items-center justify-center">-</button>
-                                <span className="text-[10px] font-bold text-slate-700 w-12 text-center">{Math.round(selected.qtyMultiplier * ing.baseQty)} {ing.unit}</span>
-                                <button type="button" onClick={() => updateNewDishItemMultiplier(ing.id, selected.qtyMultiplier + 0.2)} className="w-4 h-4 bg-slate-100 rounded font-bold flex items-center justify-center">+</button>
-                              </div>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  <div className="flex gap-2 pt-2">
-                    <button type="submit" disabled={newDish.selectedItems.length === 0} className="flex-1 py-2 bg-emerald-600 disabled:bg-slate-300 text-white font-bold rounded-xl hover:bg-emerald-700">
-                      {editingDishId ? 'تحديث وتعديل الطبق' : 'حفظ الطبق الجديد'}
-                    </button>
-                    <button type="button" onClick={() => { setShowAddDishModal(false); setEditingDishId(null); }} className="py-2 px-4 bg-slate-100 text-slate-700 font-bold rounded-xl">إلغاء</button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          )}
-
-          {}
-          <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-lg">
-            <div className="max-w-md mx-auto grid grid-cols-4 gap-1 p-2 text-center text-xs">
-              
-              <button
-                onClick={() => setActiveBottomTab('meals')}
-                className={`py-2 rounded-2xl font-bold flex flex-col items-center justify-center gap-0.5 transition-all ${
-                  activeBottomTab === 'meals' ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-500 hover:text-slate-900'
-                }`}
-              >
-                <span className="text-base">🍽️</span>
-                <span className="text-[10px]">الوجبات</span>
-              </button>
-
-              <button
-                onClick={() => setActiveBottomTab('ingredients')}
-                className={`py-2 rounded-2xl font-bold flex flex-col items-center justify-center gap-0.5 transition-all ${
-                  activeBottomTab === 'ingredients' ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-500 hover:text-slate-900'
-                }`}
-              >
-                <span className="text-base">🥦</span>
-                <span className="text-[10px]">المكونات</span>
-              </button>
-
-              <button
-                onClick={() => setActiveBottomTab('recipes')}
-                className={`py-2 rounded-2xl font-bold flex flex-col items-center justify-center gap-0.5 transition-all ${
-                  activeBottomTab === 'recipes' ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-500 hover:text-slate-900'
-                }`}
-              >
-                <span className="text-base">🍲</span>
-                <span className="text-[10px]">الأطباق</span>
-              </button>
-
-              <button
-                onClick={() => setActiveBottomTab('vitals')}
-                className={`py-2 rounded-2xl font-bold flex flex-col items-center justify-center gap-0.5 transition-all ${
-                  activeBottomTab === 'vitals' ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-500 hover:text-slate-900'
-                }`}
-              >
-                <span className="text-base">📊</span>
-                <span className="text-[10px]">القياسات</span>
-              </button>
-
+          {/* BOTTOM NAVIGATION */}
+          <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-200 shadow-[0_-5px_15px_-5px_rgba(0,0,0,0.1)] pb-safe">
+            <div className="max-w-md mx-auto grid grid-cols-4 text-center p-2 text-[10px] font-bold text-slate-500">
+              <button onClick={() => setActiveTab('vitals')} className={`p-2 flex flex-col items-center gap-1 rounded-xl transition-all ${activeTab==='vitals'?'bg-emerald-50 text-emerald-700':''}`}><span className="text-lg">📊</span>القياسات</button>
+              <button onClick={() => setActiveTab('recipes')} className={`p-2 flex flex-col items-center gap-1 rounded-xl transition-all ${activeTab==='recipes'?'bg-emerald-50 text-emerald-700':''}`}><span className="text-lg">🍲</span>الأطباق</button>
+              <button onClick={() => setActiveTab('ingredients')} className={`p-2 flex flex-col items-center gap-1 rounded-xl transition-all ${activeTab==='ingredients'?'bg-emerald-50 text-emerald-700':''}`}><span className="text-lg">🥦</span>المكونات</button>
+              <button onClick={() => setActiveTab('meals')} className={`p-2 flex flex-col items-center gap-1 rounded-xl transition-all ${activeTab==='meals'?'bg-emerald-50 text-emerald-700':''}`}><span className="text-lg">🍽️</span>الوجبات</button>
             </div>
           </nav>
+
+          {/* DISH CREATION MODAL */}
+          {showDishModal && (
+            <div className="fixed inset-0 z-50 bg-slate-900/50 flex items-center justify-center p-4">
+              <div className="bg-white w-full rounded-3xl p-5 shadow-2xl max-h-[90vh] overflow-y-auto">
+                <h3 className="font-black text-sm mb-3">{editingDishId ? 'تعديل الطبق' : 'تكوين طبق جديد'}</h3>
+                <input type="text" placeholder="اسم الطبق..." value={dishForm.name} onChange={e => setDishForm({...dishForm, name: e.target.value})} className="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-bold mb-3" />
+                
+                <h4 className="text-[10px] font-bold text-slate-500 mb-1">اختر المكونات وحدد مضاعف الكمية:</h4>
+                <div className="space-y-1.5 max-h-48 overflow-y-auto border p-2 rounded-xl bg-slate-50 mb-3">
+                  {ingredients.map(ing => {
+                    const sel = dishForm.items.find(i => i.ingredientId === ing.id);
+                    return (
+                      <div key={ing.id} className={`p-2 rounded-lg border flex justify-between items-center text-xs font-bold ${sel ? 'bg-emerald-50 border-emerald-300' : 'bg-white'}`}>
+                        <button onClick={() => toggleIngInDish(ing.id)} className="flex gap-1.5 items-center flex-1"><span className="text-sm">{ing.icon}</span>{ing.name}</button>
+                        {sel && (
+                          <div className="flex gap-1 bg-white px-1 py-0.5 border rounded">
+                            <button onClick={() => setDishForm(p => ({...p, items: p.items.map(it => it.ingredientId===ing.id ? {...it, qtyMultiplier: Math.max(0.1, it.qtyMultiplier-0.5)} : it)}))} className="px-1.5 bg-slate-100 rounded">-</button>
+                            <span className="text-[10px] w-12 text-center">{Math.round(sel.qtyMultiplier * ing.baseQty)}{ing.unit}</span>
+                            <button onClick={() => setDishForm(p => ({...p, items: p.items.map(it => it.ingredientId===ing.id ? {...it, qtyMultiplier: it.qtyMultiplier+0.5} : it)}))} className="px-1.5 bg-slate-100 rounded">+</button>
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+                
+                <div className="flex gap-2">
+                  <button onClick={handleSaveDish} className="flex-1 bg-emerald-600 text-white font-bold py-2.5 rounded-xl text-xs">حفظ الطبق</button>
+                  <button onClick={() => setShowDishModal(false)} className="bg-slate-100 text-slate-700 font-bold px-4 rounded-xl text-xs">إلغاء</button>
+                </div>
+              </div>
+            </div>
+          )}
 
         </div>
       );
