@@ -110,6 +110,10 @@
       const [activeBottomTab, setActiveBottomTab] = useState('meals');
       const [activeMealIndex, setActiveMealIndex] = useState(0);
 
+      // 5 Nutrient Classification Filter States
+      const [macroFilter, setMacroFilter] = useState('all'); // 'all', 'calories', 'protein', 'carbs', 'fat', 'fiber'
+      const [levelFilter, setLevelFilter] = useState('all'); // 'all', 'high', 'medium', 'low'
+
       const [dailyGoals] = useState({ calories: 1500, protein: 150, carbs: 120, fiber: 25, fat: 45 });
       const [patientVitals, setPatientVitals] = useState({
         startWeight: 85,
@@ -304,6 +308,35 @@
           fiber: Math.round(totals.fiber * 10) / 10,
           calories: Math.round(totals.calories)
         };
+      };
+
+      // Dynamically calculate nutrient averages across all custom dishes
+      const nutrientAverages = useMemo(() => {
+        if (!customDishes.length) return { calories: 300, protein: 20, carbs: 25, fat: 8, fiber: 3 };
+        let sum = { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 };
+        customDishes.forEach(dish => {
+          const dt = getDishTotals(dish.items);
+          sum.calories += dt.calories;
+          sum.protein += dt.protein;
+          sum.carbs += dt.carbs;
+          sum.fat += dt.fat;
+          sum.fiber += dt.fiber;
+        });
+        const n = customDishes.length;
+        return {
+          calories: sum.calories / n,
+          protein: sum.protein / n,
+          carbs: sum.carbs / n,
+          fat: sum.fat / n,
+          fiber: sum.fiber / n
+        };
+      }, [customDishes, ingredients]);
+
+      // Helper to classify nutrient level based on average
+      const getNutrientLevel = (val, avg) => {
+        if (val >= avg * 1.2) return { key: 'high', label: 'عالي جداً', badgeBg: 'bg-rose-500 text-white', textCol: 'text-rose-700' };
+        if (val >= avg * 0.7) return { key: 'medium', label: 'متوسط', badgeBg: 'bg-amber-500 text-white', textCol: 'text-amber-700' };
+        return { key: 'low', label: 'منخفض', badgeBg: 'bg-emerald-500 text-white', textCol: 'text-emerald-700' };
       };
 
       const currentTotals = useMemo(() => {
@@ -687,13 +720,102 @@
                     <span className="text-[10px] text-emerald-600 font-bold">👈 اسحب للتنقل 👉</span>
                   </div>
 
+                  {}
+                  {/* 5 NUTRIENT FILTERS BAR */}
+                  <div className="bg-white rounded-2xl p-3 border border-slate-200 shadow-xs space-y-2 text-[11px]">
+                    <div className="flex items-center justify-between font-bold text-slate-700">
+                      <span>تصفية الأطباق حسب العناصر 📊</span>
+                      <span className="text-[10px] text-slate-400">تصنيف بناءً على متوسط الأطباق</span>
+                    </div>
+
+                    {/* Nutrient Selector Pills */}
+                    <div className="grid grid-cols-5 gap-1 text-center font-bold text-[10px]">
+                      <button
+                        onClick={() => { setMacroFilter(macroFilter === 'calories' ? 'all' : 'calories'); setLevelFilter('all'); }}
+                        className={`py-1.5 px-1 rounded-xl border transition-all ${macroFilter === 'calories' ? 'bg-amber-500 text-white border-amber-600 shadow-xs' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'}`}
+                      >
+                        🔥 السعرات
+                      </button>
+                      <button
+                        onClick={() => { setMacroFilter(macroFilter === 'protein' ? 'all' : 'protein'); setLevelFilter('all'); }}
+                        className={`py-1.5 px-1 rounded-xl border transition-all ${macroFilter === 'protein' ? 'bg-rose-500 text-white border-rose-600 shadow-xs' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'}`}
+                      >
+                        🍗 البروتين
+                      </button>
+                      <button
+                        onClick={() => { setMacroFilter(macroFilter === 'carbs' ? 'all' : 'carbs'); setLevelFilter('all'); }}
+                        className={`py-1.5 px-1 rounded-xl border transition-all ${macroFilter === 'carbs' ? 'bg-amber-600 text-white border-amber-700 shadow-xs' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'}`}
+                      >
+                        🌾 الكارب
+                      </button>
+                      <button
+                        onClick={() => { setMacroFilter(macroFilter === 'fat' ? 'all' : 'fat'); setLevelFilter('all'); }}
+                        className={`py-1.5 px-1 rounded-xl border transition-all ${macroFilter === 'fat' ? 'bg-emerald-600 text-white border-emerald-700 shadow-xs' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'}`}
+                      >
+                        🫒 الدهون
+                      </button>
+                      <button
+                        onClick={() => { setMacroFilter(macroFilter === 'fiber' ? 'all' : 'fiber'); setLevelFilter('all'); }}
+                        className={`py-1.5 px-1 rounded-xl border transition-all ${macroFilter === 'fiber' ? 'bg-sky-600 text-white border-sky-700 shadow-xs' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'}`}
+                      >
+                        🥗 الألياف
+                      </button>
+                    </div>
+
+                    {/* Level Selector (All / Very High / Moderate / Low) */}
+                    {macroFilter !== 'all' && (
+                      <div className="flex items-center justify-center gap-1.5 pt-1 border-t border-slate-100 text-[10px] animate-in fade-in duration-200">
+                        <span className="font-bold text-slate-500 ml-1">المستوى:</span>
+                        <button
+                          onClick={() => setLevelFilter('all')}
+                          className={`px-2.5 py-0.5 rounded-lg font-bold border ${levelFilter === 'all' ? 'bg-slate-800 text-white border-slate-800' : 'bg-slate-100 text-slate-600 border-slate-200'}`}
+                        >
+                          الكل
+                        </button>
+                        <button
+                          onClick={() => setLevelFilter('high')}
+                          className={`px-2.5 py-0.5 rounded-lg font-bold border ${levelFilter === 'high' ? 'bg-rose-600 text-white border-rose-600' : 'bg-rose-50 text-rose-700 border-rose-200'}`}
+                        >
+                          🔴 عالي جداً
+                        </button>
+                        <button
+                          onClick={() => setLevelFilter('medium')}
+                          className={`px-2.5 py-0.5 rounded-lg font-bold border ${levelFilter === 'medium' ? 'bg-amber-600 text-white border-amber-600' : 'bg-amber-50 text-amber-800 border-amber-200'}`}
+                        >
+                          🟡 متوسط
+                        </button>
+                        <button
+                          onClick={() => setLevelFilter('low')}
+                          className={`px-2.5 py-0.5 rounded-lg font-bold border ${levelFilter === 'low' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-emerald-50 text-emerald-800 border-emerald-200'}`}
+                        >
+                          🟢 منخفض
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  {}
                   {customDishes
                     .filter(dish => dish.category === MEAL_TABS[activeMealIndex].title || customDishes.length <= 4)
                     .concat(customDishes.filter(dish => dish.category !== MEAL_TABS[activeMealIndex].title && customDishes.length > 4))
+                    .filter(dish => {
+                      if (macroFilter === 'all') return true;
+                      const dt = getDishTotals(dish.items);
+                      const avg = nutrientAverages[macroFilter];
+                      const val = dt[macroFilter];
+                      const lvl = getNutrientLevel(val, avg);
+                      if (levelFilter === 'all') return true;
+                      return lvl.key === levelFilter;
+                    })
                     .map(dish => {
                     const dt = getDishTotals(dish.items);
                     const qty = selectedLoggedMeals[dish.id] || 0;
                     const isSelected = qty > 0;
+
+                    // Active macro classification badge
+                    const activeMacroVal = macroFilter !== 'all' ? dt[macroFilter] : null;
+                    const activeMacroAvg = macroFilter !== 'all' ? nutrientAverages[macroFilter] : null;
+                    const activeMacroLvl = activeMacroVal !== null ? getNutrientLevel(activeMacroVal, activeMacroAvg) : null;
 
                     const MAX_SCALE = 140;
                     const targetLineRight = (100 / MAX_SCALE) * 100; // ~71.4%
@@ -720,19 +842,39 @@
                               <p className="text-[10px] text-slate-400 font-semibold">{dish.category} • {dish.items.length} مكونات داخل الطبق</p>
                             </div>
                           </div>
-                          {isSelected && (
-                            <span className="bg-emerald-600 text-white text-[9px] font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1">
-                              <IconCheck /> مكرر ({qty}x)
-                            </span>
-                          )}
+                          
+                          <div className="flex flex-col items-end gap-1">
+                            {isSelected && (
+                              <span className="bg-emerald-600 text-white text-[9px] font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                                <IconCheck /> مكرر ({qty}x)
+                              </span>
+                            )}
+                            {activeMacroLvl && (
+                              <span className={`text-[9px] font-bold px-2 py-0.5 rounded-lg ${activeMacroLvl.badgeBg}`}>
+                                {activeMacroLvl.label}
+                              </span>
+                            )}
+                          </div>
                         </div>
 
                         {/* Dish Macro Breakdown Summary */}
                         <div className="grid grid-cols-4 gap-1.5 bg-slate-50 p-2 rounded-xl border border-slate-100 text-[10px] text-center my-2 font-bold">
-                          <div><span className="text-amber-700 block">السعرات</span><strong className="text-slate-800">{dt.calories}</strong></div>
-                          <div><span className="text-rose-700 block">البروتين</span><strong className="text-slate-800">{dt.protein}غ</strong></div>
-                          <div><span className="text-amber-900 block">الكارب</span><strong className="text-slate-800">{dt.carbs}غ</strong></div>
-                          <div><span className="text-emerald-700 block">الدهون</span><strong className="text-slate-800">{dt.fat}غ</strong></div>
+                          <div className={macroFilter === 'calories' ? 'ring-2 ring-amber-500 rounded-lg p-0.5' : ''}>
+                            <span className="text-amber-700 block">السعرات</span>
+                            <strong className="text-slate-800">{dt.calories}</strong>
+                          </div>
+                          <div className={macroFilter === 'protein' ? 'ring-2 ring-rose-500 rounded-lg p-0.5' : ''}>
+                            <span className="text-rose-700 block">البروتين</span>
+                            <strong className="text-slate-800">{dt.protein}غ</strong>
+                          </div>
+                          <div className={macroFilter === 'carbs' ? 'ring-2 ring-amber-900 rounded-lg p-0.5' : ''}>
+                            <span className="text-amber-900 block">الكارب</span>
+                            <strong className="text-slate-800">{dt.carbs}غ</strong>
+                          </div>
+                          <div className={macroFilter === 'fat' || macroFilter === 'fiber' ? 'ring-2 ring-emerald-500 rounded-lg p-0.5' : ''}>
+                            <span className="text-emerald-700 block">{macroFilter === 'fiber' ? 'الألياف' : 'الدهون'}</span>
+                            <strong className="text-slate-800">{macroFilter === 'fiber' ? dt.fiber : dt.fat}غ</strong>
+                          </div>
                         </div>
 
                         {/* Progress & Forecast Bars */}
