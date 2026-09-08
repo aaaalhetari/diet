@@ -116,6 +116,21 @@
       { id: 'high-cal', label: '⚡ سعرات عالية' }
     ];
 
+    const NUTRIENT_FILTER_CONFIG = [
+      { key: 'calories', label: '🔥 السعرات الحرارية' },
+      { key: 'protein', label: '🍗 البروتين' },
+      { key: 'carbs', label: '🌾 الكربوهيدرات' },
+      { key: 'fat', label: '🫒 الدهون' },
+      { key: 'fiber', label: '🥗 الألياف' }
+    ];
+
+    const LEVEL_OPTIONS = [
+      { id: 'all', label: 'الكل' },
+      { id: 'high', label: 'عالي' },
+      { id: 'moderate', label: 'متوسط' },
+      { id: 'low', label: 'منخفض' }
+    ];
+
     function App() {
       const [activeBottomTab, setActiveBottomTab] = useState('meals');
       const [activeMealIndex, setActiveMealIndex] = useState(0);
@@ -123,8 +138,28 @@
       // Customizable Calorie Target Input State
       const [customCalorieInput, setCustomCalorieInput] = useState(1500);
 
-      // Single-Click Quick Nutrient Filter State
-      const [quickFilter, setQuickFilter] = useState('all');
+      // Multi-Nutrient Combined Filter State
+      const [nutrientFilters, setNutrientFilters] = useState({
+        calories: 'all',
+        protein: 'all',
+        carbs: 'all',
+        fat: 'all',
+        fiber: 'all'
+      });
+
+      const setNutrientFilter = (key, val) => {
+        setNutrientFilters(prev => ({ ...prev, [key]: val }));
+      };
+
+      const resetNutrientFilters = () => {
+        setNutrientFilters({
+          calories: 'all',
+          protein: 'all',
+          carbs: 'all',
+          fat: 'all',
+          fiber: 'all'
+        });
+      };
 
       // Dynamically compute Daily Macro Goals based on editable calories
       const dailyGoals = useMemo(() => {
@@ -453,65 +488,63 @@
       return (
         <div className="min-h-screen bg-slate-100 text-slate-800 pb-28 selection:bg-emerald-500">
           
-          {/* Top Fixed Header with Editable Calorie Target Input */}
-          <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs">
-            <div className="max-w-md mx-auto px-4 py-2.5">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-black shadow-xs">Q</div>
-                  <div>
-                    <h1 className="text-xs font-black text-slate-900 leading-none">متابعة التغذية والأطباق</h1>
-                    <p className="text-[10px] text-slate-500 mt-0.5">خطة النزول (85 كجم ← 65 كجم)</p>
-                  </div>
-                </div>
-
-                {/* Editable Calorie Target Input Badge */}
-                <div className="flex items-center gap-1.5 bg-emerald-50 px-2.5 py-1 rounded-xl border border-emerald-300">
-                  <span className="text-[10px] font-bold text-emerald-800">هدف اليوم:</span>
-                  <input
-                    type="number"
-                    min="500"
-                    max="5000"
-                    step="50"
-                    value={customCalorieInput}
-                    onChange={(e) => setCustomCalorieInput(e.target.value)}
-                    className="w-14 bg-white text-emerald-950 font-black text-xs text-center rounded-lg border border-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 p-0.5"
-                  />
-                  <span className="text-[10px] font-bold text-emerald-800">سعرة</span>
-                </div>
-              </div>
-
-              {/* Quick Macro Bar */}
-              <div className="grid grid-cols-4 gap-1.5 text-center text-[10px]">
-                <div className="bg-amber-50 p-1.5 rounded-xl border border-amber-200/60">
-                  <span className="text-amber-800 font-bold block">السعرات 🔥</span>
-                  <span className="font-black text-slate-800">{currentTotals.calories}</span>
-                  <span className="text-slate-400 block text-[9px]">/ {dailyGoals.calories}</span>
-                </div>
-                <div className="bg-rose-50 p-1.5 rounded-xl border border-rose-200/60">
-                  <span className="text-rose-800 font-bold block">البروتين 🍗</span>
-                  <span className="font-black text-slate-800">{currentTotals.protein}غ</span>
-                  <span className="text-slate-400 block text-[9px]">/ {dailyGoals.protein}غ</span>
-                </div>
-                <div className="bg-amber-50/50 p-1.5 rounded-xl border border-amber-100">
-                  <span className="text-amber-900 font-bold block">الكارب 🌾</span>
-                  <span className="font-black text-slate-800">{currentTotals.carbs}غ</span>
-                  <span className="text-slate-400 block text-[9px]">/ {dailyGoals.carbs}غ</span>
-                </div>
-                <div className="bg-emerald-50 p-1.5 rounded-xl border border-emerald-200/60">
-                  <span className="text-emerald-800 font-bold block">الماء 💧</span>
-                  <span className="font-black text-slate-800">{patientVitals.waterGlasses} ك</span>
-                  <span className="text-slate-400 block text-[9px]">/ {patientVitals.waterTarget}</span>
-                </div>
-              </div>
-            </div>
-          </header>
-
-          <main className="max-w-md mx-auto px-4 pt-3">
+          <main className="max-w-md mx-auto px-4 pt-4">
 
             {/* TAB 1: MEALS & LOGGING */}
             {activeBottomTab === 'meals' && (
               <div className="space-y-3">
+
+                {/* MEALS TOP GOAL CARD WITH EDITABLE CALORIES */}
+                <div className="bg-white rounded-3xl p-3.5 border border-slate-200 shadow-xs space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-black shadow-xs">Q</div>
+                      <div>
+                        <h1 className="text-xs font-black text-slate-900 leading-none">متابعة التغذية والأطباق</h1>
+                        <p className="text-[10px] text-slate-500 mt-0.5">خطة النزول (85 كجم ← 65 كجم)</p>
+                      </div>
+                    </div>
+
+                    {/* Editable Calorie Target Input Badge */}
+                    <div className="flex items-center gap-1.5 bg-emerald-50 px-2.5 py-1 rounded-xl border border-emerald-300">
+                      <span className="text-[10px] font-bold text-emerald-800">هدف اليوم:</span>
+                      <input
+                        type="number"
+                        min="500"
+                        max="5000"
+                        step="50"
+                        value={customCalorieInput}
+                        onChange={(e) => setCustomCalorieInput(e.target.value)}
+                        className="w-14 bg-white text-emerald-950 font-black text-xs text-center rounded-lg border border-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 p-0.5"
+                      />
+                      <span className="text-[10px] font-bold text-emerald-800">سعرة</span>
+                    </div>
+                  </div>
+
+                  {/* Quick Macro Bar */}
+                  <div className="grid grid-cols-4 gap-1.5 text-center text-[10px]">
+                    <div className="bg-amber-50 p-1.5 rounded-xl border border-amber-200/60">
+                      <span className="text-amber-800 font-bold block">السعرات 🔥</span>
+                      <span className="font-black text-slate-800">{currentTotals.calories}</span>
+                      <span className="text-slate-400 block text-[9px]">/ {dailyGoals.calories}</span>
+                    </div>
+                    <div className="bg-rose-50 p-1.5 rounded-xl border border-rose-200/60">
+                      <span className="text-rose-800 font-bold block">البروتين 🍗</span>
+                      <span className="font-black text-slate-800">{currentTotals.protein}غ</span>
+                      <span className="text-slate-400 block text-[9px]">/ {dailyGoals.protein}غ</span>
+                    </div>
+                    <div className="bg-amber-50/50 p-1.5 rounded-xl border border-amber-100">
+                      <span className="text-amber-900 font-bold block">الكارب 🌾</span>
+                      <span className="font-black text-slate-800">{currentTotals.carbs}غ</span>
+                      <span className="text-slate-400 block text-[9px]">/ {dailyGoals.carbs}غ</span>
+                    </div>
+                    <div className="bg-emerald-50 p-1.5 rounded-xl border border-emerald-200/60">
+                      <span className="text-emerald-800 font-bold block">الماء 💧</span>
+                      <span className="font-black text-slate-800">{patientVitals.waterGlasses} ك</span>
+                      <span className="text-slate-400 block text-[9px]">/ {patientVitals.waterTarget}</span>
+                    </div>
+                  </div>
+                </div>
                 
                 {/* TOP CREATIVE MULTI-SEGMENT DIRECT-DRAG BARS */}
                 <div className="bg-white rounded-3xl p-4 shadow-xs border border-slate-200 space-y-3.5">
@@ -732,27 +765,56 @@
                     <span className="text-[10px] text-emerald-600 font-bold">👈 اسحب للتنقل 👉</span>
                   </div>
 
-                  {/* ONE-CLICK INSTANT NUTRIENT QUICK FILTERS BAR */}
-                  <div className="bg-white rounded-2xl p-2.5 border border-slate-200 shadow-xs space-y-2 text-[11px]">
-                    <div className="flex items-center justify-between font-bold text-slate-700">
-                      <span>تصفية سريعة للأطباق بنقرة واحدة ⚡</span>
-                      <span className="text-[10px] text-slate-400">تطبيق مباشر للفلتر</span>
+                  {/* OPEN MULTI-NUTRIENT COMBINED FILTER PANEL */}
+                  <div className="bg-white rounded-3xl p-3.5 border border-slate-200 shadow-xs space-y-2.5">
+                    <div className="flex items-center justify-between font-bold text-slate-800 text-xs border-b border-slate-100 pb-2">
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                        <span>تصفية الأطباق المتقدمة (دمج الفلاتر):</span>
+                      </div>
+                      {Object.values(nutrientFilters).some(v => v !== 'all') && (
+                        <button
+                          onClick={resetNutrientFilters}
+                          className="text-[10px] text-rose-600 bg-rose-50 px-2 py-0.5 rounded-lg font-bold border border-rose-200 hover:bg-rose-100 transition-all"
+                        >
+                          إعادة ضبط الفلاتر 🔄
+                        </button>
+                      )}
                     </div>
 
-                    <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
-                      {ONE_CLICK_FILTERS.map(f => (
-                        <button
-                          key={f.id}
-                          onClick={() => setQuickFilter(f.id)}
-                          className={`px-3 py-1.5 rounded-xl font-bold text-[10px] whitespace-nowrap transition-all border ${
-                            quickFilter === f.id
-                              ? 'bg-slate-900 text-white border-slate-900 shadow-xs scale-102'
-                              : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
-                          }`}
-                        >
-                          {f.label}
-                        </button>
-                      ))}
+                    <div className="space-y-2 text-[11px]">
+                      {NUTRIENT_FILTER_CONFIG.map(nConfig => {
+                        const currentVal = nutrientFilters[nConfig.key];
+                        return (
+                          <div key={nConfig.key} className="bg-slate-50 p-2 rounded-2xl border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
+                            <span className="font-bold text-slate-800 text-[11px] min-w-[110px]">{nConfig.label}</span>
+                            <div className="flex items-center gap-1 flex-wrap">
+                              {LEVEL_OPTIONS.map(opt => {
+                                const isSelected = currentVal === opt.id;
+                                return (
+                                  <button
+                                    key={opt.id}
+                                    onClick={() => setNutrientFilter(nConfig.key, opt.id)}
+                                    className={`px-2.5 py-1 rounded-xl font-bold text-[10px] transition-all border ${
+                                      isSelected
+                                        ? opt.id === 'all'
+                                          ? 'bg-slate-900 text-white border-slate-900 shadow-xs scale-102'
+                                          : opt.id === 'high'
+                                          ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs scale-102'
+                                          : opt.id === 'moderate'
+                                          ? 'bg-amber-500 text-white border-amber-500 shadow-xs scale-102'
+                                          : 'bg-rose-600 text-white border-rose-600 shadow-xs scale-102'
+                                        : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-100'
+                                    }`}
+                                  >
+                                    {opt.label}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
 
@@ -761,16 +823,22 @@
                     .filter(dish => dish.category === MEAL_TABS[activeMealIndex].title || customDishes.length <= 4)
                     .concat(customDishes.filter(dish => dish.category !== MEAL_TABS[activeMealIndex].title && customDishes.length > 4))
                     .filter(dish => {
-                      if (quickFilter === 'all') return true;
                       const dt = getDishTotals(dish.items);
                       const avg = nutrientAverages;
 
-                      if (quickFilter === 'high-protein') return dt.protein >= avg.protein * 1.1;
-                      if (quickFilter === 'low-carbs') return dt.carbs <= avg.carbs * 0.8;
-                      if (quickFilter === 'high-fiber') return dt.fiber >= avg.fiber * 1.1;
-                      if (quickFilter === 'low-fat') return dt.fat <= avg.fat * 0.8;
-                      if (quickFilter === 'low-cal') return dt.calories <= avg.calories * 0.8;
-                      if (quickFilter === 'high-cal') return dt.calories >= avg.calories * 1.2;
+                      const getNutrientLevel = (val, mean) => {
+                        if (val >= mean * 1.15) return 'high';
+                        if (val <= mean * 0.85) return 'low';
+                        return 'moderate';
+                      };
+
+                      for (const key of ['calories', 'protein', 'carbs', 'fat', 'fiber']) {
+                        const selectedLevel = nutrientFilters[key];
+                        if (selectedLevel !== 'all') {
+                          const actualLevel = getNutrientLevel(dt[key], avg[key]);
+                          if (actualLevel !== selectedLevel) return false;
+                        }
+                      }
                       return true;
                     })
                     .map(dish => {
