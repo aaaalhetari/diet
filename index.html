@@ -31,7 +31,7 @@
   <div id="root"></div>
 
   <script type="text/babel">
-    const { useState, useMemo, useRef } = React;
+    const { useState, useMemo, useRef, useEffect } = React;
 
     // SVG Icon Helpers
     const IconFlame = () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/></svg>;
@@ -39,19 +39,16 @@
     const IconWheat = () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 3v18m0-18l-4 4m4-4l4 4m-4 5l-4 4m4-4l4 4m-4 5l-4 4m4-4l4 4"/></svg>;
     const IconSalad = () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>;
     const IconDroplets = () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z"/></svg>;
-    const IconHeart = () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>;
     const IconActivity = () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>;
     const IconUtensils = () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>;
     const IconDatabase = () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/></svg>;
     const IconChefHat = () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4a4 4 0 013.83 2.83A4 4 0 0118 10a3 3 0 01-.17 1H6.17A3 3 0 016 10a4 4 0 012.17-3.17A4 4 0 0112 4zM6 14h12v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4z"/></svg>;
     const IconPlus = () => <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4"/></svg>;
-    const IconMinus = () => <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M20 12H4"/></svg>;
     const IconCheck = () => <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"/></svg>;
     const IconInfo = () => <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>;
     const IconX = () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/></svg>;
 
     const INITIAL_INGREDIENTS = [
-      // دواجن ولحوم وأسماك
       { id: 'ing-chicken', name: 'صدر دجاج خام', unit: 'جرام', baseQty: 100, protein: 31, carbs: 0, fat: 3.6, fiber: 0, calories: 165, icon: '🍗' },
       { id: 'ing-chicken-thigh', name: 'فخذ دجاج بدون جلد', unit: 'جرام', baseQty: 100, protein: 24, carbs: 0, fat: 8, fiber: 0, calories: 170, icon: '🍗' },
       { id: 'ing-beef-lean', name: 'لحم بقر مفروم صافي (90%)', unit: 'جرام', baseQty: 100, protein: 26, carbs: 0, fat: 10, fiber: 0, calories: 194, icon: '🥩' },
@@ -60,16 +57,12 @@
       { id: 'ing-salmon', name: 'سلمون طازج خام', unit: 'جرام', baseQty: 100, protein: 22, carbs: 0, fat: 12, fiber: 0, calories: 196, icon: '🐟' },
       { id: 'ing-tuna', name: 'تونة بالماء صافية', unit: 'علبة (120غ)', baseQty: 120, protein: 28, carbs: 0, fat: 1, fiber: 0, calories: 121, icon: '🐟' },
       { id: 'ing-shrimp', name: 'جمبري/ربيان خام', unit: 'جرام', baseQty: 100, protein: 24, carbs: 0.2, fat: 0.3, fiber: 0, calories: 99, icon: '🦐' },
-
-      // بيض وألبان
       { id: 'ing-egg', name: 'بيض مسلوق كامل', unit: 'حبة كبيرة', baseQty: 1, protein: 6.5, carbs: 0.6, fat: 5, fiber: 0, calories: 73, icon: '🥚' },
       { id: 'ing-egg-white', name: 'بياض بيض مسلوق', unit: 'حبة', baseQty: 1, protein: 3.6, carbs: 0.2, fat: 0.1, fiber: 0, calories: 17, icon: '🥚' },
       { id: 'ing-greek-yogurt', name: 'زبادي يوناني سادة 0%', unit: 'علبة (170غ)', baseQty: 170, protein: 18, carbs: 6, fat: 0.5, fiber: 0, calories: 101, icon: '🥣' },
       { id: 'ing-cottage-cheese', name: 'جبن قريش طازج', unit: 'جرام', baseQty: 100, protein: 12, carbs: 3, fat: 2, fiber: 0, calories: 78, icon: '🧀' },
       { id: 'ing-baladna-milk', name: 'حليب بروتين بلدنا', unit: 'عبوة (330مل)', baseQty: 1, protein: 30, carbs: 16, fat: 2.2, fiber: 0, calories: 204, icon: '🥛' },
       { id: 'ing-cheddar', name: 'جبنة شيدر مبشورة', unit: 'جرام', baseQty: 30, protein: 7, carbs: 0.4, fat: 9.5, fiber: 0, calories: 115, icon: '🧀' },
-
-      // نشويات وحبوب
       { id: 'ing-rice', name: 'أرز بسمتي مسلوق', unit: 'جرام', baseQty: 100, protein: 2.7, carbs: 28, fat: 0.3, fiber: 0.4, calories: 126, icon: '🍚' },
       { id: 'ing-oats', name: 'شوفان كامل خام', unit: 'جرام', baseQty: 50, protein: 6.5, carbs: 33, fat: 3.5, fiber: 5, calories: 189, icon: '🌾' },
       { id: 'ing-toast', name: 'توست أسمر بالحبوب', unit: 'شريحة', baseQty: 1, protein: 4, carbs: 12, fat: 1, fiber: 2, calories: 73, icon: '🍞' },
@@ -77,14 +70,10 @@
       { id: 'ing-sweet-potato', name: 'بطاطا حلوة مشوية', unit: 'جرام', baseQty: 100, protein: 1.6, carbs: 20, fat: 0.1, fiber: 3, calories: 87, icon: '🍠' },
       { id: 'ing-potato', name: 'بطاطس مسلوقة', unit: 'جرام', baseQty: 100, protein: 2, carbs: 17, fat: 0.1, fiber: 2, calories: 77, icon: '🥔' },
       { id: 'ing-quinoa', name: 'كينوا مطبوخة', unit: 'جرام', baseQty: 100, protein: 4.4, carbs: 21, fat: 1.9, fiber: 2.8, calories: 120, icon: '🥣' },
-
-      // زيوت ومكسرات وبقوليات
       { id: 'ing-olive-oil', name: 'زيت زيتون بكر', unit: 'ملعقة طعام (10 مل)', baseQty: 10, protein: 0, carbs: 0, fat: 10, fiber: 0, calories: 90, icon: '🫒' },
       { id: 'ing-peanut-butter', name: 'زبدة فول سوداني طبيعية', unit: 'ملعقة (15غ)', baseQty: 15, protein: 4, carbs: 3, fat: 8, fiber: 1, calories: 100, icon: '🥜' },
       { id: 'ing-almonds', name: 'لوز نيء مفيد', unit: 'حفنة (30غ)', baseQty: 30, protein: 6, carbs: 6, fat: 14, fiber: 3.5, calories: 174, icon: '🌰' },
       { id: 'ing-lentils', name: 'عدس بني مسلوق', unit: 'جرام', baseQty: 100, protein: 9, carbs: 20, fat: 0.4, fiber: 8, calories: 116, icon: '🍲' },
-
-      // خضار وفواكه ومكملات
       { id: 'ing-whey-iso', name: 'واي بروتين آيسوليت', unit: 'سكوب (30غ)', baseQty: 1, protein: 25, carbs: 1, fat: 0.5, fiber: 0, calories: 109, icon: '🥤' },
       { id: 'ing-banana', name: 'موز طازج', unit: 'حبة متوسطة (100غ)', baseQty: 1, protein: 1.1, carbs: 23, fat: 0.3, fiber: 2.6, calories: 99, icon: '🍌' },
       { id: 'ing-dates', name: 'تمر خلاص/سكري', unit: '3 حبات (30غ)', baseQty: 1, protein: 0.8, carbs: 22, fat: 0.1, fiber: 2, calories: 92, icon: '🌴' },
@@ -94,182 +83,33 @@
     ];
 
     const INITIAL_CUSTOM_DISHES = [
-      // فطور
-      {
-        id: 'dish-toast-eggs',
-        name: 'سندويش بيض وتوست دايت',
-        category: 'فطور',
-        icon: '🥪',
-        items: [
-          { ingredientId: 'ing-egg', qtyMultiplier: 2 },
-          { ingredientId: 'ing-toast', qtyMultiplier: 2 },
-          { ingredientId: 'ing-olive-oil', qtyMultiplier: 0.3 }
-        ]
-      },
-      {
-        id: 'dish-oatmeal-pro',
-        name: 'طبق شوفان بالبروتين والموز',
-        category: 'فطور',
-        icon: '🥣',
-        items: [
-          { ingredientId: 'ing-oats', qtyMultiplier: 1 },
-          { ingredientId: 'ing-whey-iso', qtyMultiplier: 1 },
-          { ingredientId: 'ing-banana', qtyMultiplier: 1 },
-          { ingredientId: 'ing-peanut-butter', qtyMultiplier: 1 }
-        ]
-      },
-      {
-        id: 'dish-greek-bowl',
-        name: 'طبق الزبادي اليوناني والتمر',
-        category: 'فطور',
-        icon: '🍯',
-        items: [
-          { ingredientId: 'ing-greek-yogurt', qtyMultiplier: 1 },
-          { ingredientId: 'ing-dates', qtyMultiplier: 1 },
-          { ingredientId: 'ing-almonds', qtyMultiplier: 0.5 }
-        ]
-      },
-
-      // غداء
-      {
-        id: 'dish-biryani',
-        name: 'طبق برياني دجاج صحي',
-        category: 'غداء',
-        icon: '🍲',
-        items: [
-          { ingredientId: 'ing-chicken', qtyMultiplier: 2 },
-          { ingredientId: 'ing-rice', qtyMultiplier: 1.5 },
-          { ingredientId: 'ing-olive-oil', qtyMultiplier: 0.5 }
-        ]
-      },
-      {
-        id: 'dish-machboos',
-        name: 'مجبوس لحم بقر صحي',
-        category: 'غداء',
-        icon: '🥩',
-        items: [
-          { ingredientId: 'ing-beef-lean', qtyMultiplier: 1.8 },
-          { ingredientId: 'ing-rice', qtyMultiplier: 1.5 },
-          { ingredientId: 'ing-salad-mix', qtyMultiplier: 1 }
-        ]
-      },
-      {
-        id: 'dish-shish-tawook',
-        name: 'طبق شيش طاووق مع أرز وخضار',
-        category: 'غداء',
-        icon: '🍢',
-        items: [
-          { ingredientId: 'ing-chicken', qtyMultiplier: 2.2 },
-          { ingredientId: 'ing-rice', qtyMultiplier: 1.2 },
-          { ingredientId: 'ing-broccoli', qtyMultiplier: 1 }
-        ]
-      },
-      {
-        id: 'dish-steak-potato',
-        name: 'ستيك بقر مشوي وبطاطا حلوة',
-        category: 'غداء',
-        icon: '🥩',
-        items: [
-          { ingredientId: 'ing-beef-steak', qtyMultiplier: 2 },
-          { ingredientId: 'ing-sweet-potato', qtyMultiplier: 1.5 },
-          { ingredientId: 'ing-broccoli', qtyMultiplier: 1 }
-        ]
-      },
-      {
-        id: 'dish-salmon-quinoa',
-        name: 'طبق سلمون مشوي بالكينوا',
-        category: 'غداء',
-        icon: '🐟',
-        items: [
-          { ingredientId: 'ing-salmon', qtyMultiplier: 1.8 },
-          { ingredientId: 'ing-quinoa', qtyMultiplier: 1.2 },
-          { ingredientId: 'ing-avocado', qtyMultiplier: 1 }
-        ]
-      },
-
-      // عشاء
-      {
-        id: 'dish-tuna-salad',
-        name: 'سلطة تونة زاهية بالزيتون',
-        category: 'عشاء',
-        icon: '🥗',
-        items: [
-          { ingredientId: 'ing-tuna', qtyMultiplier: 1 },
-          { ingredientId: 'ing-salad-mix', qtyMultiplier: 1 },
-          { ingredientId: 'ing-olive-oil', qtyMultiplier: 0.8 },
-          { ingredientId: 'ing-arabic-bread', qtyMultiplier: 1 }
-        ]
-      },
-      {
-        id: 'dish-shrimp-rice',
-        name: 'طبق جمبري مشوي مع أرز بسمتي',
-        category: 'عشاء',
-        icon: '🦐',
-        items: [
-          { ingredientId: 'ing-shrimp', qtyMultiplier: 2 },
-          { ingredientId: 'ing-rice', qtyMultiplier: 1.2 },
-          { ingredientId: 'ing-salad-mix', qtyMultiplier: 1 }
-        ]
-      },
-      {
-        id: 'dish-cottage-bowl',
-        name: 'طبق جبن قريش وزيت زيتون مع خبز',
-        category: 'عشاء',
-        icon: '🧀',
-        items: [
-          { ingredientId: 'ing-cottage-cheese', qtyMultiplier: 2 },
-          { ingredientId: 'ing-olive-oil', qtyMultiplier: 0.5 },
-          { ingredientId: 'ing-arabic-bread', qtyMultiplier: 1 }
-        ]
-      },
-      {
-        id: 'dish-lentil-soup',
-        name: 'شوربة عدس صحية مع توست',
-        category: 'عشاء',
-        icon: '🥣',
-        items: [
-          { ingredientId: 'ing-lentils', qtyMultiplier: 1.5 },
-          { ingredientId: 'ing-toast', qtyMultiplier: 1 },
-          { ingredientId: 'ing-olive-oil', qtyMultiplier: 0.5 }
-        ]
-      },
-
-      // سناك
-      {
-        id: 'dish-baladna-shake',
-        name: 'سناك حليب بلدنا مع موز وتمر',
-        category: 'سناك',
-        icon: '🥛',
-        items: [
-          { ingredientId: 'ing-baladna-milk', qtyMultiplier: 1 },
-          { ingredientId: 'ing-banana', qtyMultiplier: 0.5 }
-        ]
-      },
-      {
-        id: 'dish-protein-shake',
-        name: 'سكوب آيسوليت مع لوز',
-        category: 'سناك',
-        icon: '🥤',
-        items: [
-          { ingredientId: 'ing-whey-iso', qtyMultiplier: 1 },
-          { ingredientId: 'ing-almonds', qtyMultiplier: 1 }
-        ]
-      }
+      { id: 'dish-toast-eggs', name: 'سندويش بيض وتوست دايت', category: 'فطور', icon: '🥪', items: [{ ingredientId: 'ing-egg', qtyMultiplier: 2 }, { ingredientId: 'ing-toast', qtyMultiplier: 2 }, { ingredientId: 'ing-olive-oil', qtyMultiplier: 0.3 }] },
+      { id: 'dish-oatmeal-pro', name: 'طبق شوفان بالبروتين والموز', category: 'فطور', icon: '🥣', items: [{ ingredientId: 'ing-oats', qtyMultiplier: 1 }, { ingredientId: 'ing-whey-iso', qtyMultiplier: 1 }, { ingredientId: 'ing-banana', qtyMultiplier: 1 }, { ingredientId: 'ing-peanut-butter', qtyMultiplier: 1 }] },
+      { id: 'dish-greek-bowl', name: 'طبق الزبادي اليوناني والتمر', category: 'فطور', icon: '🍯', items: [{ ingredientId: 'ing-greek-yogurt', qtyMultiplier: 1 }, { ingredientId: 'ing-dates', qtyMultiplier: 1 }, { ingredientId: 'ing-almonds', qtyMultiplier: 0.5 }] },
+      { id: 'dish-biryani', name: 'طبق برياني دجاج صحي', category: 'غداء', icon: '🍲', items: [{ ingredientId: 'ing-chicken', qtyMultiplier: 2 }, { ingredientId: 'ing-rice', qtyMultiplier: 1.5 }, { ingredientId: 'ing-olive-oil', qtyMultiplier: 0.5 }] },
+      { id: 'dish-machboos', name: 'مجبوس لحم بقر صحي', category: 'غداء', icon: '🥩', items: [{ ingredientId: 'ing-beef-lean', qtyMultiplier: 1.8 }, { ingredientId: 'ing-rice', qtyMultiplier: 1.5 }, { ingredientId: 'ing-salad-mix', qtyMultiplier: 1 }] },
+      { id: 'dish-shish-tawook', name: 'طبق شيش طاووق مع أرز وخضار', category: 'غداء', icon: '🍢', items: [{ ingredientId: 'ing-chicken', qtyMultiplier: 2.2 }, { ingredientId: 'ing-rice', qtyMultiplier: 1.2 }, { ingredientId: 'ing-broccoli', qtyMultiplier: 1 }] },
+      { id: 'dish-steak-potato', name: 'ستيك بقر مشوي وبطاطا حلوة', category: 'غداء', icon: '🥩', items: [{ ingredientId: 'ing-beef-steak', qtyMultiplier: 2 }, { ingredientId: 'ing-sweet-potato', qtyMultiplier: 1.5 }, { ingredientId: 'ing-broccoli', qtyMultiplier: 1 }] },
+      { id: 'dish-salmon-quinoa', name: 'طبق سلمون مشوي بالكينوا', category: 'غداء', icon: '🐟', items: [{ ingredientId: 'ing-salmon', qtyMultiplier: 1.8 }, { ingredientId: 'ing-quinoa', qtyMultiplier: 1.2 }, { ingredientId: 'ing-avocado', qtyMultiplier: 1 }] },
+      { id: 'dish-tuna-salad', name: 'سلطة تونة زاهية بالزيتون', category: 'عشاء', icon: '🥗', items: [{ ingredientId: 'ing-tuna', qtyMultiplier: 1 }, { ingredientId: 'ing-salad-mix', qtyMultiplier: 1 }, { ingredientId: 'ing-olive-oil', qtyMultiplier: 0.8 }, { ingredientId: 'ing-arabic-bread', qtyMultiplier: 1 }] },
+      { id: 'dish-shrimp-rice', name: 'طبق جمبري مشوي مع أرز بسمتي', category: 'عشاء', icon: '🦐', items: [{ ingredientId: 'ing-shrimp', qtyMultiplier: 2 }, { ingredientId: 'ing-rice', qtyMultiplier: 1.2 }, { ingredientId: 'ing-salad-mix', qtyMultiplier: 1 }] },
+      { id: 'dish-cottage-bowl', name: 'طبق جبن قريش وزيت زيتون مع خبز', category: 'عشاء', icon: '🧀', items: [{ ingredientId: 'ing-cottage-cheese', qtyMultiplier: 2 }, { ingredientId: 'ing-olive-oil', qtyMultiplier: 0.5 }, { ingredientId: 'ing-arabic-bread', qtyMultiplier: 1 }] },
+      { id: 'dish-lentil-soup', name: 'شوربة عدس صحية مع توست', category: 'عشاء', icon: '🥣', items: [{ ingredientId: 'ing-lentils', qtyMultiplier: 1.5 }, { ingredientId: 'ing-toast', qtyMultiplier: 1 }, { ingredientId: 'ing-olive-oil', qtyMultiplier: 0.5 }] },
+      { id: 'dish-baladna-shake', name: 'سناك حليب بلدنا مع موز وتمر', category: 'سناك', icon: '🥛', items: [{ ingredientId: 'ing-baladna-milk', qtyMultiplier: 1 }, { ingredientId: 'ing-banana', qtyMultiplier: 0.5 }] },
+      { id: 'dish-protein-shake', name: 'سكوب آيسوليت مع لوز', category: 'سناك', icon: '🥤', items: [{ ingredientId: 'ing-whey-iso', qtyMultiplier: 1 }, { ingredientId: 'ing-almonds', qtyMultiplier: 1 }] }
     ];
 
     const MEAL_TABS = [
-      { id: 'breakfast', title: 'فطور', icon: '🌅' },
-      { id: 'lunch', title: 'غداء', icon: '☀️' },
-      { id: 'dinner', title: 'عشاء', icon: '🌙' },
-      { id: 'snack', title: 'سناك', icon: '🍎' }
+      { id: 'breakfast', title: 'فطور', icon: '🌅', color: 'amber' },
+      { id: 'lunch', title: 'غداء', icon: '☀️', color: 'emerald' },
+      { id: 'dinner', title: 'عشاء', icon: '🌙', color: 'indigo' },
+      { id: 'snack', title: 'سناك', icon: '🍎', color: 'rose' }
     ];
 
     function App() {
-      // Navigation state: 'meals' | 'ingredients' | 'recipes' | 'vitals'
       const [activeBottomTab, setActiveBottomTab] = useState('meals');
       const [activeMealIndex, setActiveMealIndex] = useState(0);
 
-      // Goals & Vitals
       const [dailyGoals] = useState({ calories: 1500, protein: 150, carbs: 120, fiber: 25, fat: 45 });
       const [patientVitals, setPatientVitals] = useState({
         startWeight: 85,
@@ -282,12 +122,22 @@
         waterTarget: 8
       });
 
-      // 3 divider handle positions (percentages 0-100) separating 4 meals (Breakfast, Lunch, Dinner, Snack)
-      // Node 1: Breakfast/Lunch boundary, Node 2: Lunch/Dinner boundary, Node 3: Dinner/Snack boundary
-      const [mealSplit, setMealSplit] = useState([30, 65, 85]); // Default: 30% Bfk (450cal), 35% Lnc (525cal), 20% Din (300cal), 15% Snk (225cal)
+      // 1. MAIN BAR SEGMENT SPLIT PERCENTAGES (3 non-crossing handles: h0, h1, h2)
+      // Representing boundaries for: [Breakfast, Lunch, Dinner, Snack]
+      const [mealSplit, setMealSplit] = useState([30, 65, 85]); 
+
+      // 2. PER-MEAL MACRO SEGMENT SPLIT PERCENTAGES (3 non-crossing handles for each meal)
+      // Representing boundaries for: [Protein %, Carbs %, Fat %, Fiber %]
+      const [mealMacroSplits, setMealMacroSplits] = useState({
+        breakfast: [35, 70, 90], // 35% Pro, 35% Carb, 20% Fat, 10% Fiber
+        lunch: [40, 75, 92],     // 40% Pro, 35% Carb, 17% Fat, 8% Fiber
+        dinner: [35, 65, 88],    // 35% Pro, 30% Carb, 23% Fat, 12% Fiber
+        snack: [30, 60, 85]      // 30% Pro, 30% Carb, 25% Fat, 15% Fiber
+      });
+
       const [showPlannerModal, setShowPlannerModal] = useState(false);
 
-      // Calculated meal calorie budgets from top main bar
+      // Calculates Calorie Budget for each of the 4 meals based on Main Bar handles
       const mealCalBudgets = useMemo(() => {
         const bfk = Math.round((mealSplit[0] / 100) * dailyGoals.calories);
         const lun = Math.round(((mealSplit[1] - mealSplit[0]) / 100) * dailyGoals.calories);
@@ -296,40 +146,102 @@
         return [bfk, lun, din, snk];
       }, [mealSplit, dailyGoals.calories]);
 
-      // Meal Macro Target Allocation (Grams per meal)
-      const [mealMacroTargets, setMealMacroTargets] = useState({
-        breakfast: { protein: 45, carbs: 40, fat: 12, fiber: 7 },
-        lunch: { protein: 55, carbs: 45, fat: 15, fiber: 8 },
-        dinner: { protein: 35, carbs: 25, fat: 10, fiber: 6 },
-        snack: { protein: 15, carbs: 10, fat: 3, fiber: 4 }
-      });
+      // Calculates Exact Target Macro Grams for each meal from its Macro Bar split
+      const mealMacroTargetsGrams = useMemo(() => {
+        const result = {};
+        MEAL_TABS.forEach((mTab, mIdx) => {
+          const mKey = mTab.id;
+          const calBudget = mealCalBudgets[mIdx];
+          const split = mealMacroSplits[mKey] || [35, 70, 90];
 
-      // Handle dragging/moving nodes ensuring no node crosses another
-      const handleNodeMove = (nodeIndex, newVal) => {
-        setMealSplit(prev => {
-          const updated = [...prev];
-          if (nodeIndex === 0) {
-            // Node 1 cannot go below 5% or above Node 2 - 5%
-            updated[0] = Math.max(5, Math.min(updated[1] - 5, newVal));
-          } else if (nodeIndex === 1) {
-            // Node 2 cannot go below Node 1 + 5% or above Node 3 - 5%
-            updated[1] = Math.max(updated[0] + 5, Math.min(updated[2] - 5, newVal));
-          } else if (nodeIndex === 2) {
-            // Node 3 cannot go below Node 2 + 5% or above 95%
-            updated[2] = Math.max(updated[1] + 5, Math.min(95, newVal));
-          }
-          return updated;
+          const pPct = split[0];
+          const cPct = split[1] - split[0];
+          const fPct = split[2] - split[1];
+          const fibPct = 100 - split[2];
+
+          // Calories to Grams conversion:
+          // Protein = 4 kcal/g, Carbs = 4 kcal/g, Fat = 9 kcal/g, Fiber = 2 kcal/g
+          result[mKey] = {
+            protein: Math.round((calBudget * (pPct / 100)) / 4),
+            carbs: Math.round((calBudget * (cPct / 100)) / 4),
+            fat: Math.round((calBudget * (fPct / 100)) / 9),
+            fiber: Math.round((calBudget * (fibPct / 100)) / 2)
+          };
         });
-      };
+        return result;
+      }, [mealCalBudgets, mealMacroSplits]);
 
-      const updateMealMacroTarget = (mealKey, field, value) => {
-        setMealMacroTargets(prev => ({
-          ...prev,
-          [mealKey]: {
-            ...prev[mealKey],
-            [field]: Math.max(0, parseFloat(value) || 0)
+      // Direct Drag Handler Refs
+      const mainBarRef = useRef(null);
+      const mealBarRefs = useRef({});
+      const activeDragRef = useRef(null); // { type: 'main'|'meal', mealKey?: string, handleIdx: number }
+
+      // Touch & Mouse Drag Logic for Multi-Segment Interactive Bars
+      useEffect(() => {
+        const handleMove = (e) => {
+          if (!activeDragRef.current) return;
+
+          const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+          const { type, mealKey, handleIdx } = activeDragRef.current;
+
+          let targetBar = null;
+          if (type === 'main') targetBar = mainBarRef.current;
+          else if (type === 'meal' && mealKey) targetBar = mealBarRefs.current[mealKey];
+
+          if (!targetBar) return;
+
+          const rect = targetBar.getBoundingClientRect();
+          // RTL Math: Distance from right boundary
+          const relativeX = rect.right - clientX;
+          let newPct = Math.max(0, Math.min(100, Math.round((relativeX / rect.width) * 100)));
+
+          if (type === 'main') {
+            setMealSplit(prev => {
+              const updated = [...prev];
+              if (handleIdx === 0) {
+                updated[0] = Math.max(5, Math.min(updated[1] - 5, newPct));
+              } else if (handleIdx === 1) {
+                updated[1] = Math.max(updated[0] + 5, Math.min(updated[2] - 5, newPct));
+              } else if (handleIdx === 2) {
+                updated[2] = Math.max(updated[1] + 5, Math.min(95, newPct));
+              }
+              return updated;
+            });
+          } else if (type === 'meal' && mealKey) {
+            setMealMacroSplits(prev => {
+              const currentSplit = prev[mealKey] || [35, 70, 90];
+              const updated = [...currentSplit];
+              if (handleIdx === 0) {
+                updated[0] = Math.max(5, Math.min(updated[1] - 5, newPct));
+              } else if (handleIdx === 1) {
+                updated[1] = Math.max(updated[0] + 5, Math.min(updated[2] - 5, newPct));
+              } else if (handleIdx === 2) {
+                updated[2] = Math.max(updated[1] + 5, Math.min(95, newPct));
+              }
+              return { ...prev, [mealKey]: updated };
+            });
           }
-        }));
+        };
+
+        const handleEnd = () => {
+          activeDragRef.current = null;
+        };
+
+        window.addEventListener('mousemove', handleMove);
+        window.addEventListener('mouseup', handleEnd);
+        window.addEventListener('touchmove', handleMove);
+        window.addEventListener('touchend', handleEnd);
+
+        return () => {
+          window.removeEventListener('mousemove', handleMove);
+          window.removeEventListener('mouseup', handleEnd);
+          window.removeEventListener('touchmove', handleMove);
+          window.removeEventListener('touchend', handleEnd);
+        };
+      }, []);
+
+      const startDrag = (type, handleIdx, mealKey = null) => {
+        activeDragRef.current = { type, handleIdx, mealKey };
       };
 
       // Databases
@@ -343,20 +255,13 @@
       const [detailModalItem, setDetailModalItem] = useState(null);
 
       // New Ingredient Form State
-      const [newIng, setNewIng] = useState({
-        name: '', unit: 'جرام', baseQty: 100, protein: 0, carbs: 0, fat: 0, fiber: 0, icon: '🥦'
-      });
-
-      // New Dish Form State
-      const [newDish, setNewDish] = useState({
-        name: '', category: 'غداء', icon: '🍲', selectedItems: []
-      });
+      const [newIng, setNewIng] = useState({ name: '', unit: 'جرام', baseQty: 100, protein: 0, carbs: 0, fat: 0, fiber: 0, icon: '🥦' });
+      const [newDish, setNewDish] = useState({ name: '', category: 'غداء', icon: '🍲', selectedItems: [] });
 
       // Swipe Refs
       const touchStartX = useRef(0);
       const touchEndX = useRef(0);
 
-      // Auto-calculated calorie formula: Protein*4 + Carbs*4 + Fat*9
       const calculatedNewIngCalories = useMemo(() => {
         const p = parseFloat(newIng.protein) || 0;
         const c = parseFloat(newIng.carbs) || 0;
@@ -364,7 +269,6 @@
         return Math.round((p * 4) + (c * 4) + (f * 9));
       }, [newIng.protein, newIng.carbs, newIng.fat]);
 
-      // Calculate totals for any dish
       const getDishTotals = (dishItems) => {
         let totals = { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 };
         dishItems.forEach(item => {
@@ -403,7 +307,6 @@
         return totals;
       }, [selectedLoggedMeals, customDishes, ingredients]);
 
-      // Handlers
       const handleSaveIngredient = (e) => {
         e.preventDefault();
         if (!newIng.name) return;
@@ -476,7 +379,6 @@
         }));
       };
 
-      // Swipe Listeners
       const handleTouchStart = (e) => { touchStartX.current = e.targetTouches[0].clientX; };
       const handleTouchMove = (e) => { touchEndX.current = e.targetTouches[0].clientX; };
       const handleTouchEnd = () => {
@@ -490,7 +392,7 @@
       return (
         <div className="min-h-screen bg-slate-100 text-slate-800 pb-28 selection:bg-emerald-500">
           
-          {/* Header */}
+          {/* Top Fixed Header */}
           <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs">
             <div className="max-w-md mx-auto px-4 py-2.5">
               <div className="flex items-center justify-between mb-2">
@@ -539,156 +441,133 @@
             {activeBottomTab === 'meals' && (
               <div className="space-y-3">
                 
-                {}
-                {/* TOP MAIN CALORIE & MACRO TARGET ALLOCATOR CARD */}
-                <div className="bg-white rounded-3xl p-4 shadow-xs border border-slate-200 space-y-3">
+                {/* TOP CREATIVE MULTI-SEGMENT DIRECT-DRAG BARS */}
+                <div className="bg-white rounded-3xl p-4 shadow-xs border border-slate-200 space-y-3.5">
                   <div className="flex items-center justify-between">
                     <div>
                       <h2 className="font-black text-slate-900 text-xs flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                        خطة توزيع الـ 1,500 سعرة والماكروز للوجبات
+                        <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                        خطة التوزيع المباشرة للـ 1,500 سعرة والماكروز
                       </h2>
-                      <p className="text-[10px] text-slate-400 mt-0.5">اسحب النقاط لتقسيم السعرات بدون تخطي النقاط</p>
+                      <p className="text-[10px] text-slate-400 mt-0.5">اسحب المقابض مباشرة على البار لتعديل حصة كل وجبة!</p>
                     </div>
                     <button
                       onClick={() => setShowPlannerModal(!showPlannerModal)}
                       className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-xl border border-emerald-200 hover:bg-emerald-100 transition-all"
                     >
-                      {showPlannerModal ? 'إخفاء الخطة ▲' : 'تعديل الخطة ⚙️'}
+                      {showPlannerModal ? 'إخفاء ماكروز الوجبات ▲' : 'ماكروز الوجبات ⚙️'}
                     </button>
                   </div>
 
-                  {/* 1. MAIN CALORIE ALLOCATOR BAR (1,500 kcal total with 4 non-crossing nodes) */}
-                  <div className="space-y-1.5 pt-1">
-                    <div className="flex justify-between text-[10px] font-bold text-slate-600">
+                  {/* 1. DIRECT-DRAG MAIN CALORIE ALLOCATOR BAR */}
+                  <div className="space-y-1.5">
+                    <div className="flex justify-between text-[10px] font-bold">
                       <span className="text-amber-700">فطور: {mealCalBudgets[0]} سعرة ({Math.round(mealSplit[0])}%)</span>
                       <span className="text-emerald-700">غداء: {mealCalBudgets[1]} سعرة ({Math.round(mealSplit[1] - mealSplit[0])}%)</span>
                       <span className="text-indigo-700">عشاء: {mealCalBudgets[2]} سعرة ({Math.round(mealSplit[2] - mealSplit[1])}%)</span>
                       <span className="text-rose-700">سناك: {mealCalBudgets[3]} سعرة ({Math.round(100 - mealSplit[2])}%)</span>
                     </div>
 
-                    {/* Multi-Segment Interactive Bar Container */}
-                    <div className="relative w-full h-6 bg-slate-100 rounded-2xl overflow-hidden border border-slate-200 shadow-inner flex">
+                    {/* Interactive Multi-Segment Main Bar with Directly Draggable Handles */}
+                    <div ref={mainBarRef} className="relative w-full h-8 bg-slate-100 rounded-2xl border border-slate-200 shadow-inner flex touch-none">
                       {/* Breakfast Segment */}
-                      <div className="h-full bg-amber-400/90 text-[9px] font-black text-amber-950 flex items-center justify-center transition-all" style={{ width: `${mealSplit[0]}%` }}>
+                      <div className="h-full bg-amber-400 text-[9px] font-black text-amber-950 flex items-center justify-center transition-all rounded-r-2xl" style={{ width: `${mealSplit[0]}%` }}>
                         فطور
                       </div>
                       {/* Lunch Segment */}
-                      <div className="h-full bg-emerald-400/90 text-[9px] font-black text-emerald-950 flex items-center justify-center transition-all" style={{ width: `${mealSplit[1] - mealSplit[0]}%` }}>
+                      <div className="h-full bg-emerald-400 text-[9px] font-black text-emerald-950 flex items-center justify-center transition-all" style={{ width: `${mealSplit[1] - mealSplit[0]}%` }}>
                         غداء
                       </div>
                       {/* Dinner Segment */}
-                      <div className="h-full bg-indigo-400/90 text-[9px] font-black text-indigo-950 flex items-center justify-center transition-all" style={{ width: `${mealSplit[2] - mealSplit[1]}%` }}>
+                      <div className="h-full bg-indigo-400 text-[9px] font-black text-indigo-950 flex items-center justify-center transition-all" style={{ width: `${mealSplit[2] - mealSplit[1]}%` }}>
                         عشاء
                       </div>
                       {/* Snack Segment */}
-                      <div className="h-full bg-rose-400/90 text-[9px] font-black text-rose-950 flex items-center justify-center transition-all" style={{ width: `${100 - mealSplit[2]}%` }}>
+                      <div className="h-full bg-rose-400 text-[9px] font-black text-rose-950 flex items-center justify-center transition-all rounded-l-2xl" style={{ width: `${100 - mealSplit[2]}%` }}>
                         سناك
                       </div>
-                    </div>
 
-                    {/* 3 Non-Crossing Divider Node Sliders */}
-                    <div className="space-y-1.5 pt-1 bg-slate-50 p-2 rounded-2xl border border-slate-100">
-                      <div className="flex justify-between text-[9px] font-semibold text-slate-500">
-                        <span>التحكم بالنقاط (تمنع التداخل تلقائياً):</span>
-                        <span>إجمالي المستهدف: 1,500 سعرة</span>
-                      </div>
-                      <div className="grid grid-cols-3 gap-2">
-                        <div>
-                          <label className="block text-[9px] font-bold text-amber-800 mb-0.5">نقطة 1 (فطور/غداء)</label>
-                          <input
-                            type="range"
-                            min="5"
-                            max="90"
-                            value={mealSplit[0]}
-                            onChange={(e) => handleNodeMove(0, parseFloat(e.target.value))}
-                            className="w-full accent-amber-500 h-1.5 bg-slate-200 rounded-lg cursor-pointer"
-                          />
+                      {/* 3 Draggable Handles Directly on the Main Bar */}
+                      {mealSplit.map((val, idx) => (
+                        <div
+                          key={idx}
+                          onMouseDown={() => startDrag('main', idx)}
+                          onTouchStart={() => startDrag('main', idx)}
+                          className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-6 h-9 bg-white border-2 border-slate-800 rounded-lg shadow-lg cursor-ew-resize flex items-center justify-center z-20 hover:scale-110 active:scale-95 transition-transform"
+                          style={{ right: `${val}%` }}
+                        >
+                          <div className="w-1 h-4 bg-slate-400 rounded-full space-y-0.5"></div>
                         </div>
-                        <div>
-                          <label className="block text-[9px] font-bold text-emerald-800 mb-0.5">نقطة 2 (غداء/عشاء)</label>
-                          <input
-                            type="range"
-                            min="10"
-                            max="92"
-                            value={mealSplit[1]}
-                            onChange={(e) => handleNodeMove(1, parseFloat(e.target.value))}
-                            className="w-full accent-emerald-500 h-1.5 bg-slate-200 rounded-lg cursor-pointer"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-[9px] font-bold text-indigo-800 mb-0.5">نقطة 3 (عشاء/سناك)</label>
-                          <input
-                            type="range"
-                            min="15"
-                            max="95"
-                            value={mealSplit[2]}
-                            onChange={(e) => handleNodeMove(2, parseFloat(e.target.value))}
-                            className="w-full accent-indigo-500 h-1.5 bg-slate-200 rounded-lg cursor-pointer"
-                          />
-                        </div>
-                      </div>
+                      ))}
                     </div>
                   </div>
 
-                  {/* 2. SUB-BARS FOR EACH MEAL MACRO TARGET ALLOCATION (EXPANDABLE) */}
+                  {/* 2. DIRECT-DRAG SUB-BARS FOR EACH MEAL MACRO TARGETS */}
                   {showPlannerModal && (
-                    <div className="space-y-2.5 pt-2 border-t border-slate-100 animate-in fade-in duration-200">
-                      <h3 className="font-bold text-[11px] text-slate-700">تخصيص جرامات الماكروز لكل وجبة بناءً على حصتها:</h3>
+                    <div className="space-y-3 pt-2 border-t border-slate-100 animate-in fade-in duration-200">
+                      <div className="flex justify-between items-center text-[11px]">
+                        <h3 className="font-bold text-slate-800">بارات الماكروز لكل وجبة (اسحب المقابض مباشرة):</h3>
+                        <span className="text-[10px] text-slate-400">🍗 بروتين | 🌾 كارب | 🫒 دهون | 🥗 ألياف</span>
+                      </div>
 
                       {MEAL_TABS.map((mTab, mIdx) => {
                         const mKey = mTab.id;
                         const mBudget = mealCalBudgets[mIdx];
-                        const targets = mealMacroTargets[mKey] || { protein: 0, carbs: 0, fat: 0, fiber: 0 };
-                        const targetCaloriesFromMacros = Math.round((targets.protein * 4) + (targets.carbs * 4) + (targets.fat * 9));
+                        const mSplit = mealMacroSplits[mKey] || [35, 70, 90];
+                        const grams = mealMacroTargetsGrams[mKey] || { protein: 0, carbs: 0, fat: 0, fiber: 0 };
+
+                        const pPct = mSplit[0];
+                        const cPct = mSplit[1] - mSplit[0];
+                        const fPct = mSplit[2] - mSplit[1];
+                        const fibPct = 100 - mSplit[2];
 
                         return (
                           <div key={mKey} className="bg-slate-50 p-2.5 rounded-2xl border border-slate-200 space-y-2 text-[10px]">
                             <div className="flex justify-between items-center font-bold">
                               <span className="text-slate-800 text-[11px]">{mTab.icon} وجبة {mTab.title}</span>
                               <span className="bg-white px-2 py-0.5 rounded-lg border border-slate-200 text-slate-600">
-                                الحصة: <strong className="text-emerald-700">{mBudget} سعرة</strong> (الماكروز المحسوبة: {targetCaloriesFromMacros} سعرة)
+                                الحصة: <strong className="text-emerald-700">{mBudget} سعرة</strong>
                               </span>
                             </div>
 
-                            {/* Macro Inputs for this Meal */}
-                            <div className="grid grid-cols-4 gap-1.5">
-                              <div>
-                                <label className="block text-rose-800 font-bold mb-0.5">بروتين (غ)</label>
-                                <input
-                                  type="number"
-                                  value={targets.protein}
-                                  onChange={(e) => updateMealMacroTarget(mKey, 'protein', e.target.value)}
-                                  className="w-full p-1 bg-white border border-slate-200 rounded-lg text-center font-bold text-slate-800"
-                                />
+                            {/* Macro Target Summary Badges */}
+                            <div className="grid grid-cols-4 gap-1 text-center font-bold text-[9px]">
+                              <span className="bg-rose-100 text-rose-800 p-1 rounded-lg">🍗 {grams.protein}غ بروتين ({pPct}%)</span>
+                              <span className="bg-amber-100 text-amber-900 p-1 rounded-lg">🌾 {grams.carbs}غ كارب ({cPct}%)</span>
+                              <span className="bg-emerald-100 text-emerald-900 p-1 rounded-lg">🫒 {grams.fat}غ دهون ({fPct}%)</span>
+                              <span className="bg-sky-100 text-sky-900 p-1 rounded-lg">🥗 {grams.fiber}غ ألياف ({fibPct}%)</span>
+                            </div>
+
+                            {/* Direct Drag Multi-Segment Macro Bar for this Specific Meal */}
+                            <div
+                              ref={el => mealBarRefs.current[mKey] = el}
+                              className="relative w-full h-7 bg-slate-200 rounded-xl border border-slate-300 shadow-inner flex touch-none my-1"
+                            >
+                              <div className="h-full bg-rose-400 text-[8px] font-black text-rose-950 flex items-center justify-center transition-all rounded-r-xl" style={{ width: `${mSplit[0]}%` }}>
+                                بروتين
                               </div>
-                              <div>
-                                <label className="block text-amber-900 font-bold mb-0.5">كارب (غ)</label>
-                                <input
-                                  type="number"
-                                  value={targets.carbs}
-                                  onChange={(e) => updateMealMacroTarget(mKey, 'carbs', e.target.value)}
-                                  className="w-full p-1 bg-white border border-slate-200 rounded-lg text-center font-bold text-slate-800"
-                                />
+                              <div className="h-full bg-amber-400 text-[8px] font-black text-amber-950 flex items-center justify-center transition-all" style={{ width: `${mSplit[1] - mSplit[0]}%` }}>
+                                كارب
                               </div>
-                              <div>
-                                <label className="block text-emerald-800 font-bold mb-0.5">دهون (غ)</label>
-                                <input
-                                  type="number"
-                                  value={targets.fat}
-                                  onChange={(e) => updateMealMacroTarget(mKey, 'fat', e.target.value)}
-                                  className="w-full p-1 bg-white border border-slate-200 rounded-lg text-center font-bold text-slate-800"
-                                />
+                              <div className="h-full bg-emerald-400 text-[8px] font-black text-emerald-950 flex items-center justify-center transition-all" style={{ width: `${mSplit[2] - mSplit[1]}%` }}>
+                                دهون
                               </div>
-                              <div>
-                                <label className="block text-sky-800 font-bold mb-0.5">ألياف (غ)</label>
-                                <input
-                                  type="number"
-                                  value={targets.fiber}
-                                  onChange={(e) => updateMealMacroTarget(mKey, 'fiber', e.target.value)}
-                                  className="w-full p-1 bg-white border border-slate-200 rounded-lg text-center font-bold text-slate-800"
-                                />
+                              <div className="h-full bg-sky-400 text-[8px] font-black text-sky-950 flex items-center justify-center transition-all rounded-l-xl" style={{ width: `${100 - mSplit[2]}%` }}>
+                                ألياف
                               </div>
+
+                              {/* 3 Handles for Macro Segments */}
+                              {mSplit.map((val, idx) => (
+                                <div
+                                  key={idx}
+                                  onMouseDown={() => startDrag('meal', idx, mKey)}
+                                  onTouchStart={() => startDrag('meal', idx, mKey)}
+                                  className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-5 h-8 bg-white border-2 border-slate-700 rounded-md shadow-md cursor-ew-resize flex items-center justify-center z-20 hover:scale-110 active:scale-95 transition-transform"
+                                  style={{ right: `${val}%` }}
+                                >
+                                  <div className="w-0.5 h-3 bg-slate-500"></div>
+                                </div>
+                              ))}
                             </div>
                           </div>
                         );
@@ -728,18 +607,13 @@
                     const qty = selectedLoggedMeals[dish.id] || 0;
                     const isSelected = qty > 0;
 
-                    // Target line 100% fixed for RTL layout
                     const MAX_SCALE = 140;
                     const targetLineRight = (100 / MAX_SCALE) * 100; // ~71.4%
-
-                    // Current Meal Budget Target
-                    const currentMealTargetCal = mealCalBudgets[activeMealIndex] || 500;
 
                     const curCalPct = Math.round((currentTotals.calories / dailyGoals.calories) * 100);
                     const curProPct = Math.round((currentTotals.protein / dailyGoals.protein) * 100);
                     const curCarbPct = Math.round((currentTotals.carbs / dailyGoals.carbs) * 100);
 
-                    // Forecast values when adding 1 serving of this dish
                     const projCal = currentTotals.calories + dt.calories;
                     const projPro = currentTotals.protein + dt.protein;
                     const projCarb = currentTotals.carbs + dt.carbs;
