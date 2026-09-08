@@ -33,7 +33,6 @@
   <script type="text/babel">
     const { useState, useMemo, useRef, useEffect } = React;
 
-    // SVG Icon Helpers
     const IconFlame = () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/></svg>;
     const IconDrumstick = () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>;
     const IconWheat = () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 3v18m0-18l-4 4m4-4l4 4m-4 5l-4 4m4-4l4 4m-4 5l-4 4m4-4l4 4"/></svg>;
@@ -47,6 +46,16 @@
     const IconCheck = () => <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"/></svg>;
     const IconInfo = () => <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>;
     const IconX = () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/></svg>;
+
+    const DISH_GROUPS = [
+      { id: 'all', label: 'الكل 🍽️' },
+      { id: 'group-1', label: 'المجموعة 1 🥩' },
+      { id: 'group-2', label: 'المجموعة 2 🍗' },
+      { id: 'group-3', label: 'المجموعة 3 🥗' },
+      { id: 'group-4', label: 'المجموعة 4 🥣' },
+      { id: 'group-5', label: 'المجموعة 5 🍲' },
+      { id: 'group-6', label: 'المجموعة 6 🍎' }
+    ];
 
     const INITIAL_INGREDIENTS = [
       { id: 'ing-chicken', name: 'صدر دجاج خام', unit: 'جرام', baseQty: 100, protein: 31, carbs: 0, fat: 3.6, fiber: 0, calories: 165, icon: '🍗' },
@@ -83,20 +92,20 @@
     ];
 
     const INITIAL_CUSTOM_DISHES = [
-      { id: 'dish-toast-eggs', name: 'سندويش بيض وتوست دايت', category: 'فطور', icon: '🥪', items: [{ ingredientId: 'ing-egg', qtyMultiplier: 2 }, { ingredientId: 'ing-toast', qtyMultiplier: 2 }, { ingredientId: 'ing-olive-oil', qtyMultiplier: 0.3 }] },
-      { id: 'dish-oatmeal-pro', name: 'طبق شوفان بالبروتين والموز', category: 'فطور', icon: '🥣', items: [{ ingredientId: 'ing-oats', qtyMultiplier: 1 }, { ingredientId: 'ing-whey-iso', qtyMultiplier: 1 }, { ingredientId: 'ing-banana', qtyMultiplier: 1 }, { ingredientId: 'ing-peanut-butter', qtyMultiplier: 1 }] },
-      { id: 'dish-greek-bowl', name: 'طبق الزبادي اليوناني والتمر', category: 'فطور', icon: '🍯', items: [{ ingredientId: 'ing-greek-yogurt', qtyMultiplier: 1 }, { ingredientId: 'ing-dates', qtyMultiplier: 1 }, { ingredientId: 'ing-almonds', qtyMultiplier: 0.5 }] },
-      { id: 'dish-biryani', name: 'طبق برياني دجاج صحي', category: 'غداء', icon: '🍲', items: [{ ingredientId: 'ing-chicken', qtyMultiplier: 2 }, { ingredientId: 'ing-rice', qtyMultiplier: 1.5 }, { ingredientId: 'ing-olive-oil', qtyMultiplier: 0.5 }] },
-      { id: 'dish-machboos', name: 'مجبوس لحم بقر صحي', category: 'غداء', icon: '🥩', items: [{ ingredientId: 'ing-beef-lean', qtyMultiplier: 1.8 }, { ingredientId: 'ing-rice', qtyMultiplier: 1.5 }, { ingredientId: 'ing-salad-mix', qtyMultiplier: 1 }] },
-      { id: 'dish-shish-tawook', name: 'طبق شيش طاووق مع أرز وخضار', category: 'غداء', icon: '🍢', items: [{ ingredientId: 'ing-chicken', qtyMultiplier: 2.2 }, { ingredientId: 'ing-rice', qtyMultiplier: 1.2 }, { ingredientId: 'ing-broccoli', qtyMultiplier: 1 }] },
-      { id: 'dish-steak-potato', name: 'ستيك بقر مشوي وبطاطا حلوة', category: 'غداء', icon: '🥩', items: [{ ingredientId: 'ing-beef-steak', qtyMultiplier: 2 }, { ingredientId: 'ing-sweet-potato', qtyMultiplier: 1.5 }, { ingredientId: 'ing-broccoli', qtyMultiplier: 1 }] },
-      { id: 'dish-salmon-quinoa', name: 'طبق سلمون مشوي بالكينوا', category: 'غداء', icon: '🐟', items: [{ ingredientId: 'ing-salmon', qtyMultiplier: 1.8 }, { ingredientId: 'ing-quinoa', qtyMultiplier: 1.2 }, { ingredientId: 'ing-avocado', qtyMultiplier: 1 }] },
-      { id: 'dish-tuna-salad', name: 'سلطة تونة زاهية بالزيتون', category: 'عشاء', icon: '🥗', items: [{ ingredientId: 'ing-tuna', qtyMultiplier: 1 }, { ingredientId: 'ing-salad-mix', qtyMultiplier: 1 }, { ingredientId: 'ing-olive-oil', qtyMultiplier: 0.8 }, { ingredientId: 'ing-arabic-bread', qtyMultiplier: 1 }] },
-      { id: 'dish-shrimp-rice', name: 'طبق جمبري مشوي مع أرز بسمتي', category: 'عشاء', icon: '🦐', items: [{ ingredientId: 'ing-shrimp', qtyMultiplier: 2 }, { ingredientId: 'ing-rice', qtyMultiplier: 1.2 }, { ingredientId: 'ing-salad-mix', qtyMultiplier: 1 }] },
-      { id: 'dish-cottage-bowl', name: 'طبق جبن قريش وزيت زيتون مع خبز', category: 'عشاء', icon: '🧀', items: [{ ingredientId: 'ing-cottage-cheese', qtyMultiplier: 2 }, { ingredientId: 'ing-olive-oil', qtyMultiplier: 0.5 }, { ingredientId: 'ing-arabic-bread', qtyMultiplier: 1 }] },
-      { id: 'dish-lentil-soup', name: 'شوربة عدس صحية مع توست', category: 'عشاء', icon: '🥣', items: [{ ingredientId: 'ing-lentils', qtyMultiplier: 1.5 }, { ingredientId: 'ing-toast', qtyMultiplier: 1 }, { ingredientId: 'ing-olive-oil', qtyMultiplier: 0.5 }] },
-      { id: 'dish-baladna-shake', name: 'سناك حليب بلدنا مع موز وتمر', category: 'سناك', icon: '🥛', items: [{ ingredientId: 'ing-baladna-milk', qtyMultiplier: 1 }, { ingredientId: 'ing-banana', qtyMultiplier: 0.5 }] },
-      { id: 'dish-protein-shake', name: 'سكوب آيسوليت مع لوز', category: 'سناك', icon: '🥤', items: [{ ingredientId: 'ing-whey-iso', qtyMultiplier: 1 }, { ingredientId: 'ing-almonds', qtyMultiplier: 1 }] }
+      { id: 'dish-toast-eggs', groupId: 'group-1', name: 'سندويش بيض وتوست دايت', category: 'فطور', icon: '🥪', items: [{ ingredientId: 'ing-egg', qtyMultiplier: 2 }, { ingredientId: 'ing-toast', qtyMultiplier: 2 }, { ingredientId: 'ing-olive-oil', qtyMultiplier: 0.3 }] },
+      { id: 'dish-oatmeal-pro', groupId: 'group-1', name: 'طبق شوفان بالبروتين والموز', category: 'فطور', icon: '🥣', items: [{ ingredientId: 'ing-oats', qtyMultiplier: 1 }, { ingredientId: 'ing-whey-iso', qtyMultiplier: 1 }, { ingredientId: 'ing-banana', qtyMultiplier: 1 }, { ingredientId: 'ing-peanut-butter', qtyMultiplier: 1 }] },
+      { id: 'dish-greek-bowl', groupId: 'group-2', name: 'طبق الزبادي اليوناني والتمر', category: 'فطور', icon: '🍯', items: [{ ingredientId: 'ing-greek-yogurt', qtyMultiplier: 1 }, { ingredientId: 'ing-dates', qtyMultiplier: 1 }, { ingredientId: 'ing-almonds', qtyMultiplier: 0.5 }] },
+      { id: 'dish-biryani', groupId: 'group-2', name: 'طبق برياني دجاج صحي', category: 'غداء', icon: '🍲', items: [{ ingredientId: 'ing-chicken', qtyMultiplier: 2 }, { ingredientId: 'ing-rice', qtyMultiplier: 1.5 }, { ingredientId: 'ing-olive-oil', qtyMultiplier: 0.5 }] },
+      { id: 'dish-machboos', groupId: 'group-3', name: 'مجبوس لحم بقر صحي', category: 'غداء', icon: '🥩', items: [{ ingredientId: 'ing-beef-lean', qtyMultiplier: 1.8 }, { ingredientId: 'ing-rice', qtyMultiplier: 1.5 }, { ingredientId: 'ing-salad-mix', qtyMultiplier: 1 }] },
+      { id: 'dish-shish-tawook', groupId: 'group-3', name: 'طبق شيش طاووق مع أرز وخضار', category: 'غداء', icon: '🍢', items: [{ ingredientId: 'ing-chicken', qtyMultiplier: 2.2 }, { ingredientId: 'ing-rice', qtyMultiplier: 1.2 }, { ingredientId: 'ing-broccoli', qtyMultiplier: 1 }] },
+      { id: 'dish-steak-potato', groupId: 'group-4', name: 'ستيك بقر مشوي وبطاطا حلوة', category: 'غداء', icon: '🥩', items: [{ ingredientId: 'ing-beef-steak', qtyMultiplier: 2 }, { ingredientId: 'ing-sweet-potato', qtyMultiplier: 1.5 }, { ingredientId: 'ing-broccoli', qtyMultiplier: 1 }] },
+      { id: 'dish-salmon-quinoa', groupId: 'group-4', name: 'طبق سلمون مشوي بالكينوا', category: 'غداء', icon: '🐟', items: [{ ingredientId: 'ing-salmon', qtyMultiplier: 1.8 }, { ingredientId: 'ing-quinoa', qtyMultiplier: 1.2 }, { ingredientId: 'ing-avocado', qtyMultiplier: 1 }] },
+      { id: 'dish-tuna-salad', groupId: 'group-5', name: 'سلطة تونة زاهية بالزيتون', category: 'عشاء', icon: '🥗', items: [{ ingredientId: 'ing-tuna', qtyMultiplier: 1 }, { ingredientId: 'ing-salad-mix', qtyMultiplier: 1 }, { ingredientId: 'ing-olive-oil', qtyMultiplier: 0.8 }, { ingredientId: 'ing-arabic-bread', qtyMultiplier: 1 }] },
+      { id: 'dish-shrimp-rice', groupId: 'group-5', name: 'طبق جمبري مشوي مع أرز بسمتي', category: 'عشاء', icon: '🦐', items: [{ ingredientId: 'ing-shrimp', qtyMultiplier: 2 }, { ingredientId: 'ing-rice', qtyMultiplier: 1.2 }, { ingredientId: 'ing-salad-mix', qtyMultiplier: 1 }] },
+      { id: 'dish-cottage-bowl', groupId: 'group-6', name: 'طبق جبن قريش وزيت زيتون مع خبز', category: 'عشاء', icon: '🧀', items: [{ ingredientId: 'ing-cottage-cheese', qtyMultiplier: 2 }, { ingredientId: 'ing-olive-oil', qtyMultiplier: 0.5 }, { ingredientId: 'ing-arabic-bread', qtyMultiplier: 1 }] },
+      { id: 'dish-lentil-soup', groupId: 'group-6', name: 'شوربة عدس صحية مع توست', category: 'عشاء', icon: '🥣', items: [{ ingredientId: 'ing-lentils', qtyMultiplier: 1.5 }, { ingredientId: 'ing-toast', qtyMultiplier: 1 }, { ingredientId: 'ing-olive-oil', qtyMultiplier: 0.5 }] },
+      { id: 'dish-baladna-shake', groupId: 'group-6', name: 'سناك حليب بلدنا مع موز وتمر', category: 'سناك', icon: '🥛', items: [{ ingredientId: 'ing-baladna-milk', qtyMultiplier: 1 }, { ingredientId: 'ing-banana', qtyMultiplier: 0.5 }] },
+      { id: 'dish-protein-shake', groupId: 'group-1', name: 'سكوب آيسوليت مع لوز', category: 'سناك', icon: '🥤', items: [{ ingredientId: 'ing-whey-iso', qtyMultiplier: 1 }, { ingredientId: 'ing-almonds', qtyMultiplier: 1 }] }
     ];
 
     const MEAL_TABS = [
@@ -104,16 +113,6 @@
       { id: 'lunch', title: 'غداء', icon: '☀️', color: 'emerald' },
       { id: 'dinner', title: 'عشاء', icon: '🌙', color: 'indigo' },
       { id: 'snack', title: 'سناك', icon: '🍎', color: 'rose' }
-    ];
-
-    const ONE_CLICK_FILTERS = [
-      { id: 'all', label: 'الكل 🍽️' },
-      { id: 'high-protein', label: '🍗 عالي بروتين' },
-      { id: 'low-carbs', label: '🌾 منخفض كارب' },
-      { id: 'high-fiber', label: '🥗 عالي ألياف' },
-      { id: 'low-fat', label: '🫒 منخفض دهون' },
-      { id: 'low-cal', label: '🔥 سعرات قليلة' },
-      { id: 'high-cal', label: '⚡ سعرات عالية' }
     ];
 
     const NUTRIENT_FILTER_CONFIG = [
@@ -134,6 +133,9 @@
     function App() {
       const [activeBottomTab, setActiveBottomTab] = useState('meals');
       const [activeMealIndex, setActiveMealIndex] = useState(0);
+
+      // 7 Groups Active Selection State (Default 'all')
+      const [activeGroupTab, setActiveGroupTab] = useState('all');
 
       // Customizable Calorie Target Input State
       const [customCalorieInput, setCustomCalorieInput] = useState(1500);
@@ -318,7 +320,6 @@
         updateMealMacroSplitHandle(mealKey, handleIdx, split[handleIdx] + delta);
       };
 
-      // Databases
       const [ingredients, setIngredients] = useState(INITIAL_INGREDIENTS);
       const [customDishes, setCustomDishes] = useState(INITIAL_CUSTOM_DISHES);
       const [selectedLoggedMeals, setSelectedLoggedMeals] = useState({ 'dish-biryani': 1, 'dish-toast-eggs': 1 });
@@ -330,7 +331,7 @@
 
       // New Ingredient & Dish Form State
       const [newIng, setNewIng] = useState({ name: '', unit: 'جرام', baseQty: 100, protein: 0, carbs: 0, fat: 0, fiber: 0, icon: '🥦' });
-      const [newDish, setNewDish] = useState({ name: '', category: 'غداء', icon: '🍲', selectedItems: [] });
+      const [newDish, setNewDish] = useState({ name: '', category: 'غداء', groupId: 'group-1', icon: '🍲', selectedItems: [] });
 
       // Swipe Refs
       const touchStartX = useRef(0);
@@ -365,7 +366,6 @@
         };
       };
 
-      // Calculate nutrient averages across all custom dishes for One-Click Filter Thresholds
       const nutrientAverages = useMemo(() => {
         if (!customDishes.length) return { calories: 300, protein: 20, carbs: 25, fat: 8, fiber: 3 };
         let sum = { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 };
@@ -403,6 +403,11 @@
         return totals;
       }, [selectedLoggedMeals, customDishes, ingredients]);
 
+      // Handle dish group reassignment exclusively
+      const handleAssignDishGroup = (dishId, newGroupId) => {
+        setCustomDishes(prev => prev.map(d => d.id === dishId ? { ...d, groupId: newGroupId } : d));
+      };
+
       const handleSaveIngredient = (e) => {
         e.preventDefault();
         if (!newIng.name) return;
@@ -430,11 +435,12 @@
           id: 'dish-' + Date.now(),
           name: newDish.name,
           category: newDish.category,
+          groupId: newDish.groupId || 'group-1',
           icon: newDish.icon || '🍲',
           items: newDish.selectedItems
         };
         setCustomDishes(prev => [...prev, dish]);
-        setNewDish({ name: '', category: 'غداء', icon: '🍲', selectedItems: [] });
+        setNewDish({ name: '', category: 'غداء', groupId: 'group-1', icon: '🍲', selectedItems: [] });
         setShowAddDishModal(false);
       };
 
@@ -490,7 +496,7 @@
           
           <main className="max-w-md mx-auto px-4 pt-4">
 
-            {/* TAB 1: MEALS & LOGGING */}
+            {}
             {activeBottomTab === 'meals' && (
               <div className="space-y-3">
 
@@ -546,7 +552,7 @@
                   </div>
                 </div>
                 
-                {/* TOP CREATIVE MULTI-SEGMENT DIRECT-DRAG BARS */}
+                {}
                 <div className="bg-white rounded-3xl p-4 shadow-xs border border-slate-200 space-y-3.5">
                   <div className="flex items-center justify-between">
                     <div>
@@ -741,6 +747,39 @@
                   )}
                 </div>
 
+                {}
+                <div className="bg-white rounded-2xl p-2 shadow-xs border border-slate-200 space-y-1.5">
+                  <div className="flex items-center justify-between text-[11px] font-bold px-1 text-slate-700">
+                    <span>مجموعات الأطباق الحصرية (7 مجموعات):</span>
+                    <span className="text-[10px] text-emerald-600 font-semibold">كل طبق ينتمي لمجموعة واحدة فقط</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+                    {DISH_GROUPS.map((grp) => {
+                      const isActive = activeGroupTab === grp.id;
+                      const count = grp.id === 'all' 
+                        ? customDishes.length 
+                        : customDishes.filter(d => d.groupId === grp.id).length;
+
+                      return (
+                        <button
+                          key={grp.id}
+                          onClick={() => setActiveGroupTab(grp.id)}
+                          className={`px-3 py-1.5 rounded-xl font-bold text-xs whitespace-nowrap transition-all flex items-center gap-1.5 border ${
+                            isActive
+                              ? 'bg-slate-900 text-white border-slate-900 shadow-xs scale-102'
+                              : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
+                          }`}
+                        >
+                          <span>{grp.label}</span>
+                          <span className={`px-1.5 py-0.2 text-[9px] rounded-full font-black ${isActive ? 'bg-emerald-500 text-white' : 'bg-slate-200 text-slate-700'}`}>
+                            {count}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
                 {/* Meal Categories Switcher Tabs */}
                 <div className="bg-white rounded-2xl p-1.5 shadow-xs border border-slate-200">
                   <div className="grid grid-cols-4 gap-1 text-center">
@@ -749,7 +788,7 @@
                         key={tab.id}
                         onClick={() => setActiveMealIndex(idx)}
                         className={`py-2 rounded-xl font-bold text-xs transition-all flex flex-col items-center gap-0.5 ${
-                          activeMealIndex === idx ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-600 hover:bg-slate-100'
+                          activeMealIndex === idx ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-600 hover:bg-slate-100'
                         }`}
                       >
                         <span className="text-sm">{tab.icon}</span>
@@ -818,10 +857,11 @@
                     </div>
                   </div>
 
-                  {/* DISH CARDS WITH ALL 5 NUTRIENT PROGRESS BARS (CALORIES, PROTEIN, CARBS, FAT, FIBER) */}
+                  {}
                   {customDishes
+                    .filter(dish => activeGroupTab === 'all' || dish.groupId === activeGroupTab)
                     .filter(dish => dish.category === MEAL_TABS[activeMealIndex].title || customDishes.length <= 4)
-                    .concat(customDishes.filter(dish => dish.category !== MEAL_TABS[activeMealIndex].title && customDishes.length > 4))
+                    .concat(customDishes.filter(dish => (activeGroupTab === 'all' || dish.groupId === activeGroupTab) && dish.category !== MEAL_TABS[activeMealIndex].title && customDishes.length > 4))
                     .filter(dish => {
                       const dt = getDishTotals(dish.items);
                       const avg = nutrientAverages;
@@ -869,6 +909,8 @@
                     const projFatPct = Math.round((projFat / dailyGoals.fat) * 100);
                     const projFibPct = Math.round((projFib / dailyGoals.fiber) * 100);
 
+                    const assignedGroupObj = DISH_GROUPS.find(g => g.id === (dish.groupId || 'group-1')) || DISH_GROUPS[1];
+
                     return (
                       <div key={dish.id} className={`bg-white rounded-3xl p-4 border-2 transition-all shadow-xs ${isSelected ? 'border-emerald-500 ring-1 ring-emerald-500/20' : 'border-slate-200'}`}>
                         <div className="flex items-start justify-between mb-2">
@@ -886,6 +928,22 @@
                                 <IconCheck /> مكرر ({qty}x)
                               </span>
                             )}
+
+                            {/* Exclusive Group Select Badge */}
+                            <div className="flex items-center gap-1 bg-slate-100 px-2 py-0.5 rounded-lg border border-slate-200 text-[10px]">
+                              <span className="text-slate-500 font-bold">المجموعة:</span>
+                              <select
+                                value={dish.groupId || 'group-1'}
+                                onChange={(e) => handleAssignDishGroup(dish.id, e.target.value)}
+                                className="bg-transparent font-black text-slate-800 focus:outline-none cursor-pointer"
+                              >
+                                {DISH_GROUPS.filter(g => g.id !== 'all').map(grp => (
+                                  <option key={grp.id} value={grp.id}>
+                                    {grp.label}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
                           </div>
                         </div>
 
@@ -913,7 +971,7 @@
                           </div>
                         </div>
 
-                        {/* Progress & Forecast Bars (All 5 Nutrients Included) */}
+                        {}
                         <div className="space-y-2 bg-slate-50/60 p-2.5 rounded-2xl border border-slate-200/60 my-2 text-[10px]">
                           <div className="flex justify-between font-bold text-slate-500 border-b border-slate-200/60 pb-1 mb-1">
                             <span>هدف 100% (الخط الأسود)</span>
@@ -1014,7 +1072,7 @@
               </div>
             )}
 
-            {/* TAB 2: INGREDIENTS MANAGER */}
+            {}
             {activeBottomTab === 'ingredients' && (
               <div className="space-y-4">
                 <div className="bg-white rounded-3xl p-4 border border-slate-200 shadow-xs space-y-3">
@@ -1055,7 +1113,7 @@
               </div>
             )}
 
-            {/* TAB 3: DISH BUILDER */}
+            {}
             {activeBottomTab === 'recipes' && (
               <div className="space-y-4">
                 <div className="bg-white rounded-3xl p-4 border border-slate-200 shadow-xs space-y-3">
@@ -1075,12 +1133,17 @@
                   <div className="grid grid-cols-1 gap-3 pt-2 max-h-[65vh] overflow-y-auto no-scrollbar">
                     {customDishes.map(dish => {
                       const dt = getDishTotals(dish.items);
+                      const grpObj = DISH_GROUPS.find(g => g.id === (dish.groupId || 'group-1')) || DISH_GROUPS[1];
+
                       return (
                         <div key={dish.id} className="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-3xl p-4 space-y-3 shadow-md">
                           <div className="flex items-center justify-between border-b border-slate-700/80 pb-2">
                             <div className="flex items-center gap-2">
                               <span className="text-2xl">{dish.icon}</span>
-                              <h3 className="font-black text-sm">{dish.name}</h3>
+                              <div>
+                                <h3 className="font-black text-sm">{dish.name}</h3>
+                                <span className="text-[9px] text-emerald-400 font-bold block">{grpObj.label}</span>
+                              </div>
                             </div>
                             <span className="bg-emerald-500/20 text-emerald-300 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-500/30">
                               {dish.category}
@@ -1114,7 +1177,7 @@
               </div>
             )}
 
-            {/* TAB 4: VITALS */}
+            {}
             {activeBottomTab === 'vitals' && (
               <div className="space-y-4">
                 <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-3xl p-5 shadow-lg space-y-4">
@@ -1164,7 +1227,7 @@
 
           </main>
 
-          {/* BOTTOM HOME BAR (4 TABS) */}
+          {}
           <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-lg">
             <div className="max-w-md mx-auto grid grid-cols-4 gap-1 p-2 text-center text-xs">
               
@@ -1187,7 +1250,7 @@
             </div>
           </nav>
 
-          {/* MODAL 1: DISH DETAILS MODAL */}
+          {}
           {detailModalItem && (
             <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
               <div className="bg-white w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-3 max-h-[85vh] overflow-y-auto">
@@ -1198,8 +1261,11 @@
                   </button>
                 </div>
                 <div className="space-y-2 text-xs">
-                  <div className="bg-slate-50 p-2 rounded-xl text-center font-bold text-slate-700">
+                  <div className="bg-slate-50 p-2 rounded-xl text-center font-bold text-slate-700 flex justify-between px-3">
                     <span>التصنيف: {detailModalItem.category}</span>
+                    <span className="text-emerald-700 font-black">
+                      {(DISH_GROUPS.find(g => g.id === detailModalItem.groupId) || {}).label}
+                    </span>
                   </div>
                   <div className="space-y-1.5 pt-1">
                     <span className="font-bold text-slate-800 block">مكونات الطبق بالجرامات:</span>
@@ -1221,7 +1287,7 @@
             </div>
           )}
 
-          {/* MODAL 2: ADD INGREDIENT MODAL */}
+          {/* ADD INGREDIENT MODAL */}
           {showAddIngredientModal && (
             <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
               <div className="bg-white w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-3 max-h-[90vh] overflow-y-auto">
@@ -1286,7 +1352,7 @@
             </div>
           )}
 
-          {/* MODAL 3: ADD DISH MODAL */}
+          {/* ADD DISH MODAL WITH GROUP ASSIGNMENT */}
           {showAddDishModal && (
             <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
               <div className="bg-white w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-3 max-h-[90vh] overflow-y-auto">
@@ -1312,8 +1378,12 @@
                       </select>
                     </div>
                     <div>
-                      <label className="block font-bold text-slate-700 mb-1">رمز الطبق (الأيقونة)</label>
-                      <input type="text" value={newDish.icon} onChange={e => setNewDish({...newDish, icon: e.target.value})} placeholder="🍲" className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl text-center" />
+                      <label className="block font-bold text-slate-700 mb-1">المجموعة التابعة</label>
+                      <select value={newDish.groupId} onChange={e => setNewDish({...newDish, groupId: e.target.value})} className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl font-bold">
+                        {DISH_GROUPS.filter(g => g.id !== 'all').map(grp => (
+                          <option key={grp.id} value={grp.id}>{grp.label}</option>
+                        ))}
+                      </select>
                     </div>
                   </div>
 
